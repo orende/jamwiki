@@ -1,5 +1,6 @@
-addons/bliki-parser/target/
-addons/jamwiki-jflex-parser-tags/target/
-jamwiki-core/target/
-jamwiki-war/target/
-jamwiki-web/target/
+/addons/bliki-parser/target/
+/addons/jamwiki-jflex-parser-tags/target/
+/jamwiki-war/target/
+/jamwiki-core/target/
+/jamwiki-web/target/
+/.idea/
