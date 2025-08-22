@@ -36,7 +36,7 @@ import org.jamwiki.parser.ParserInput;
 import org.jamwiki.parser.ParserOutput;
 import org.jamwiki.parser.ParserUtil;
 import org.jamwiki.parser.WikiLink;
-import org.jamwiki.utils.DiffUtil;
+import org.jamwiki.web.utils.DiffUtil;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.jamwiki.validator.ReCaptchaUtil;

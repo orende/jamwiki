@@ -28,7 +28,7 @@ import org.jamwiki.model.Topic;
 import org.jamwiki.model.TopicVersion;
 import org.jamwiki.model.WikiDiff;
 import org.jamwiki.model.WikiUser;
-import org.jamwiki.utils.DiffUtil;
+import org.jamwiki.web.utils.DiffUtil;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.springframework.web.servlet.ModelAndView;
