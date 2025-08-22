@@ -39,7 +39,7 @@ import java.util.*;
  * @author cclavadetscher
  *
  */
-public class SMTPWikiMail
+public class SMTPWikiMail implements WikiMail
 {
 	private static final WikiLogger logger = WikiLogger.getLogger(SMTPWikiMail.class.getName());
 	
