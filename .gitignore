@@ -4,3 +4,4 @@
 /jamwiki-core/target/
 /jamwiki-web/target/
 /.idea/
+/.mvn/wrapper/maven-wrapper.jar
