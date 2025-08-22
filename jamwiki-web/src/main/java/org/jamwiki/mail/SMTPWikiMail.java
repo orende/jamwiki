@@ -39,9 +39,9 @@ import java.util.*;
  * @author cclavadetscher
  *
  */
-public class WikiMail
+public class SMTPWikiMail
 {
-	private static final WikiLogger logger = WikiLogger.getLogger(WikiMail.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(SMTPWikiMail.class.getName());
 	
 	/**
 	 * The content type for sending plain text messages.
@@ -66,11 +66,11 @@ public class WikiMail
 	// Public interface
 	//-------------------------------------------------------------------------
 
-	public WikiMail() {
+	public SMTPWikiMail() {
 		init(Environment.getInstance());
 	}
 	
-	public WikiMail(Properties props) {
+	public SMTPWikiMail(Properties props) {
 		init(props);
 	}
 	
@@ -250,7 +250,7 @@ public class WikiMail
     		             String[] attachments)
     throws MessagingException
     {
-    	if(contentType == null || !contentType.equals(WikiMail.TEXT) || !contentType.equals(WikiMail.HTML))
+    	if(contentType == null || !contentType.equals(SMTPWikiMail.TEXT) || !contentType.equals(SMTPWikiMail.HTML))
     	{
     		contentType = defContentType;
     	}

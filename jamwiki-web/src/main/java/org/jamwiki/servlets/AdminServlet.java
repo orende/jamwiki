@@ -34,7 +34,7 @@ import org.jamwiki.WikiException;
 import org.jamwiki.WikiMessage;
 import org.jamwiki.authentication.WikiUserDetailsImpl;
 import org.jamwiki.db.WikiDatabase;
-import org.jamwiki.mail.WikiMail;
+import org.jamwiki.mail.SMTPWikiMail;
 import org.jamwiki.model.Role;
 import org.jamwiki.model.VirtualWiki;
 import org.jamwiki.model.WikiConfigurationObject;
@@ -352,7 +352,7 @@ public class AdminServlet extends JAMWikiServlet {
 				if (!StringUtils.isBlank(command) && command.equalsIgnoreCase("send test mail")) {
 					String mailAddress = null;
 					try {
-						WikiMail sender = new WikiMail(props);
+						SMTPWikiMail sender = new SMTPWikiMail(props);
 						logger.error(sender.toString());
 						mailAddress = ServletUtil.currentWikiUser().getEmail();
 						if (StringUtils.isBlank(mailAddress)) {

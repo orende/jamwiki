@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.Environment;
 import org.jamwiki.WikiBase;
 import org.jamwiki.WikiMessage;
-import org.jamwiki.mail.WikiMail;
+import org.jamwiki.mail.SMTPWikiMail;
 import org.jamwiki.model.WikiUser;
 import org.jamwiki.utils.Encryption;
 import org.jamwiki.utils.Utilities;
@@ -120,7 +120,7 @@ public class PasswordResetServlet extends JAMWikiServlet {
 							mailLink.append(username);
 							mailLink.append("&rcode=");
 							mailLink.append(challenge);
-							WikiMail sender = new WikiMail();
+							SMTPWikiMail sender = new SMTPWikiMail();
 							Locale language = Locale.getDefault();
 							String[] localeData = user.getDefaultLocale().split("_");
 							if(localeData.length > 0) {
