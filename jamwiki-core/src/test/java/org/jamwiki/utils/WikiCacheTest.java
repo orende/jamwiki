@@ -19,12 +19,28 @@
 package org.jamwiki.utils;
 
 import org.jamwiki.JAMWikiUnitTest;
+import org.jamwiki.model.Interwiki;
 import org.junit.Test;
+
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 /**
  *
  */
 public class WikiCacheTest extends JAMWikiUnitTest {
-}
+    @Test
+    public void canStoreListsOfInterwikiObjects() {
+        WikiCache<String, List<Interwiki>> cache = new WikiCache<>("org.jamwiki.db.AnsiDataHandler.CACHE_INTERWIKI_LIST", String.class, List.class);
+        Interwiki interwiki = new Interwiki("a", "b", "c");
+        cache.addToCache("example", List.of(interwiki));
+        List<Interwiki> cachedInterwiki = cache.retrieveFromCache("example");
 
+        assertEquals(1, cachedInterwiki.size());
+        assertEquals(interwiki.getInterwikiDisplay(), cachedInterwiki.get(0).getInterwikiDisplay());
+        assertEquals(interwiki.getInterwikiPattern(), cachedInterwiki.get(0).getInterwikiPattern());
+        assertEquals(interwiki.getInterwikiPrefix(), cachedInterwiki.get(0).getInterwikiPrefix());
+        assertEquals(interwiki.getInterwikiType(), cachedInterwiki.get(0).getInterwikiType());
+    }
+}

@@ -37,7 +37,7 @@ public class DiffUtil {
 	// FIXME - make this a property value
 	private static final int DIFF_UNCHANGED_LINE_DISPLAY = 2;
 	/** Cache name for the cache of diff information. */
-	private static final WikiCache<String, List<WikiDiff>> CACHE_DIFF_INFORMATION = new WikiCache<String, List<WikiDiff>>("org.jamwiki.utils.DiffUtil.CACHE_DIFF_INFORMATION");
+	private static final WikiCache<String, List<WikiDiff>> CACHE_DIFF_INFORMATION = new WikiCache<>("org.jamwiki.utils.DiffUtil.CACHE_DIFF_INFORMATION", String.class, List.class);
 
 	/**
 	 *

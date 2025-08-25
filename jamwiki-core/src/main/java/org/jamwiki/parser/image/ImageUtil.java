@@ -61,7 +61,7 @@ public abstract class ImageUtil {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(ImageUtil.class.getName());
 	/** Cache name for the cache of image dimensions. */
-	private static final WikiCache<String, Dimension> CACHE_IMAGE_DIMENSIONS = new WikiCache<String, Dimension>("org.jamwiki.parser.image.ImageUtil.CACHE_IMAGE_DIMENSIONS");
+	private static final WikiCache<String, Dimension> CACHE_IMAGE_DIMENSIONS = new WikiCache<>("org.jamwiki.parser.image.ImageUtil.CACHE_IMAGE_DIMENSIONS", String.class, Dimension.class);
 	/**
 	 * Pattern used in URLs for files uploaded to the database.  Pattern is URL root,
 	 * file ID, version ID, resize increment, and file name.

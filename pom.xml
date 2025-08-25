@@ -41,20 +41,22 @@
         <dependency.spring.version>3.2.10.RELEASE</dependency.spring.version>
         <dependency.spring.security.version>3.2.10.RELEASE</dependency.spring.security.version>
 		<slf4j.version>1.6.1</slf4j.version>
+        <ehcache.version>3.10.0</ehcache.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 	</properties>
 	<prerequisites>
 		<maven>${maven.version}</maven>
 	</prerequisites>
-	<repositories>
-		<repository>
-			<id>congrace.de</id>
-			<name>releases</name>
-			<url>http://nexus.congrace.de/nexus/content/repositories/releases/</url>
-			<layout>default</layout>
-		</repository>
-	</repositories>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -155,11 +157,56 @@
 				<version>4.13.2</version>
 				<scope>test</scope>
 			</dependency>
+            <!-- Dependencies related to ehcache -->
 			<dependency>
-				<groupId>net.sf.ehcache</groupId>
-				<artifactId>ehcache-core</artifactId>
-				<version>2.5.0</version>
+				<groupId>org.ehcache</groupId>
+				<artifactId>ehcache</artifactId>
+				<version>${ehcache.version}</version>
+                <classifier>jakarta</classifier>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.istack</groupId>
+                        <artifactId>istack-commons-runtime</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.xml.fastinfoset</groupId>
+                        <artifactId>FastInfoset</artifactId>
+                    </exclusion>
+                </exclusions>
 			</dependency>
+            <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>4.0.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>4.0.5</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/com.sun.istack/istack-commons-runtime -->
+            <dependency>
+                <groupId>com.sun.istack</groupId>
+                <artifactId>istack-commons-runtime</artifactId>
+                <version>3.0.7</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/com.sun.xml.fastinfoset/FastInfoset -->
+            <dependency>
+                <groupId>com.sun.xml.fastinfoset</groupId>
+                <artifactId>FastInfoset</artifactId>
+                <version>1.2.15</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.cache</groupId>
+                <artifactId>cache-api</artifactId>
+                <version>1.1.0</version>
+            </dependency>
+            <!-- End of dependencies related to ehcache -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>

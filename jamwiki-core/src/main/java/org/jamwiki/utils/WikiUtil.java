@@ -52,7 +52,7 @@ public class WikiUtil {
 
 	/** webapp context path, initialized from JAMWikiFilter. */
 	public static String WEBAPP_CONTEXT_PATH = null;
-	private static final WikiCache<String, MessageFormat> CACHE_TEMPLATE_MESSAGE_FORMATTER = new WikiCache<String, MessageFormat>("org.jamwiki.util.WikiUtil.CACHE_TEMPLATE_MESSAGE_FORMATTER");
+	private static final WikiCache<String, MessageFormat> CACHE_TEMPLATE_MESSAGE_FORMATTER = new WikiCache<>("org.jamwiki.util.WikiUtil.CACHE_TEMPLATE_MESSAGE_FORMATTER", String.class, MessageFormat.class);
 	private static final Pattern HTML_COMMENT_PATTERN = Pattern.compile("<!--.*?-->", Pattern.DOTALL);
 	private static final Pattern INVALID_NAMESPACE_NAME_PATTERN = Pattern.compile(Environment.getValue(Environment.PROP_PATTERN_INVALID_NAMESPACE_NAME));
 	private static final Pattern INVALID_ROLE_NAME_PATTERN = Pattern.compile(Environment.getValue(Environment.PROP_PATTERN_INVALID_ROLE_NAME));

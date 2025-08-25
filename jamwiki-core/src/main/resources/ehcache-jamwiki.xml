@@ -32,10 +32,9 @@ will be detected and monitoring, via the Developer Console, will be enabled. Oth
 are "on" and "off".  The default is "autodetect". This setting does not perform any function when
 used with JMX monitors.
 -->
-<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="ehcache.xsd"
-         updateCheck="false" monitoring="autodetect"
-         dynamicConfig="true" maxBytesLocalHeap="15%">
+<ehcache:config
+                xmlns:ehcache="http://www.ehcache.org/v3"
+                xmlns:jcache="http://www.ehcache.org/v3/jsr107">
 
     <!--
     JAMWiki cache configurations
@@ -45,188 +44,220 @@ used with JMX monitors.
     lookup.  An exception is for particularly slow operations, such as image
     dimension lookups.
     -->
+    <ehcache:persistence directory="${user.home}/cache"/>
 
     <!--
     Cache of parsed versions of the left nav, stylesheet, etc.  It is
     important that these topics always be in the cache as they are used
     on every page.
     -->
-    <cache name="org.jamwiki.WikiBase.CACHE_PARSED_TOPIC_CONTENT"
-           maxBytesLocalHeap="1%"
-           overflowToDisk="false"
-           eternal="false"
-           timeToIdleSeconds="600"
-           timeToLiveSeconds="600"
-           diskPersistent="false"
-    />
+    <ehcache:cache alias="org.jamwiki.WikiBase.CACHE_PARSED_TOPIC_CONTENT">
+        <ehcache:key-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.String</ehcache:key-type>
+        <ehcache:value-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.String</ehcache:value-type>
+        <ehcache:expiry>
+            <ehcache:tti unit="seconds">600</ehcache:tti>
+        </ehcache:expiry>
+        <ehcache:resources>
+            <ehcache:heap unit="MB">20</ehcache:heap>
+        </ehcache:resources>
+    </ehcache:cache>
+
     <!--
     Cache of interwiki values.  This cache will only contain a single element,
     the list of all interwiki values.
     -->
-    <cache name="org.jamwiki.db.AnsiDataHandler.CACHE_INTERWIKI_LIST"
-           maxBytesLocalHeap="1%"
-           overflowToDisk="false"
-           eternal="false"
-           timeToIdleSeconds="600"
-           timeToLiveSeconds="600"
-           diskPersistent="false"
-    />
+    <ehcache:cache alias="org.jamwiki.db.AnsiDataHandler.CACHE_INTERWIKI_LIST">
+        <ehcache:key-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.String</ehcache:key-type>
+        <ehcache:value-type copier="org.ehcache.impl.copy.SerializingCopier" serializer="org.ehcache.impl.serialization.PlainJavaSerializer">java.util.List</ehcache:value-type>
+        <ehcache:expiry>
+            <ehcache:tti unit="seconds">600</ehcache:tti>
+        </ehcache:expiry>
+        <ehcache:resources>
+            <ehcache:heap unit="MB">20</ehcache:heap>
+        </ehcache:resources>
+    </ehcache:cache>
     <!--
     Cache of namespace info.  This cache will only contain a single
     object which is the list of all namespaces.
     -->
-    <cache name="org.jamwiki.db.AnsiDataHandler.CACHE_NAMESPACE_LIST"
-           maxBytesLocalHeap="1%"
-           overflowToDisk="false"
-           eternal="false"
-           timeToIdleSeconds="600"
-           timeToLiveSeconds="600"
-           diskPersistent="false"
-    />
+    <ehcache:cache alias="org.jamwiki.db.AnsiDataHandler.CACHE_NAMESPACE_LIST">
+        <ehcache:key-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.String</ehcache:key-type>
+        <ehcache:value-type copier="org.ehcache.impl.copy.SerializingCopier" serializer="org.ehcache.impl.serialization.PlainJavaSerializer">java.util.List</ehcache:value-type>
+        <ehcache:expiry>
+            <ehcache:tti unit="seconds">600</ehcache:tti>
+        </ehcache:expiry>
+        <ehcache:resources>
+            <ehcache:heap unit="MB">20</ehcache:heap>
+        </ehcache:resources>
+    </ehcache:cache>
     <!--
     Cache of roles within groups.  Compared to other caches the number of
     elements held in this cache should be relatively small.
     -->
-    <cache name="org.jamwiki.db.AnsiDataHandler.CACHE_ROLE_MAP_GROUP"
-           maxBytesLocalHeap="1%"
-           overflowToDisk="false"
-           eternal="false"
-           timeToIdleSeconds="600"
-           timeToLiveSeconds="600"
-           diskPersistent="false"
-    />
+    <ehcache:cache alias="org.jamwiki.db.AnsiDataHandler.CACHE_ROLE_MAP_GROUP">
+        <ehcache:key-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.String</ehcache:key-type>
+        <ehcache:value-type copier="org.ehcache.impl.copy.SerializingCopier" serializer="org.ehcache.impl.serialization.PlainJavaSerializer">java.util.List</ehcache:value-type>
+        <ehcache:expiry>
+            <ehcache:tti unit="seconds">600</ehcache:tti>
+        </ehcache:expiry>
+        <ehcache:resources>
+            <ehcache:heap unit="MB">20</ehcache:heap>
+        </ehcache:resources>
+    </ehcache:cache>
     <!--
     Cache of topic names by lookup ID.  Objects in this cache should
     not be particularly large, so a large cache is probably safe.
     -->
-    <cache name="org.jamwiki.db.AnsiDataHandler.CACHE_TOPIC_IDS_BY_NAME"
-           maxBytesLocalHeap="3%"
-           overflowToDisk="false"
-           eternal="false"
-           timeToIdleSeconds="600"
-           timeToLiveSeconds="600"
-           diskPersistent="false"
-    />
+    <ehcache:cache alias="org.jamwiki.db.AnsiDataHandler.CACHE_TOPIC_IDS_BY_NAME">
+        <ehcache:key-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.String</ehcache:key-type>
+        <ehcache:value-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.Integer</ehcache:value-type>
+        <ehcache:expiry>
+            <ehcache:tti unit="seconds">600</ehcache:tti>
+        </ehcache:expiry>
+        <ehcache:resources>
+            <ehcache:heap unit="MB">60</ehcache:heap>
+        </ehcache:resources>
+    </ehcache:cache>
     <!--
     Cache of topic names by lookup value.  Objects in this cache should
     not be particularly large, so a large cache is probably safe.
     -->
-    <cache name="org.jamwiki.db.AnsiDataHandler.CACHE_TOPIC_NAMES_BY_NAME"
-           maxBytesLocalHeap="3%"
-           overflowToDisk="false"
-           eternal="false"
-           timeToIdleSeconds="600"
-           timeToLiveSeconds="600"
-           diskPersistent="false"
-    />
+    <ehcache:cache alias="org.jamwiki.db.AnsiDataHandler.CACHE_TOPIC_NAMES_BY_NAME">
+        <ehcache:key-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.String</ehcache:key-type>
+        <ehcache:value-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.String</ehcache:value-type>
+        <ehcache:expiry>
+            <ehcache:tti unit="seconds">600</ehcache:tti>
+        </ehcache:expiry>
+        <ehcache:resources>
+            <ehcache:heap unit="MB">60</ehcache:heap>
+        </ehcache:resources>
+    </ehcache:cache>
     <!--
     Cache of topic versions.  Used with diffs, when viewing old topics, and
     when purging topic versions.
     -->
-    <cache name="org.jamwiki.db.AnsiDataHandler.CACHE_TOPIC_VERSIONS"
-           maxBytesLocalHeap="2%"
-           overflowToDisk="false"
-           eternal="false"
-           timeToIdleSeconds="600"
-           timeToLiveSeconds="600"
-           diskPersistent="false"
-    />
+    <ehcache:cache alias="org.jamwiki.db.AnsiDataHandler.CACHE_TOPIC_VERSIONS">
+        <ehcache:key-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.Integer</ehcache:key-type>
+        <ehcache:value-type copier="org.ehcache.impl.copy.SerializingCopier">org.jamwiki.model.TopicVersion</ehcache:value-type>
+        <ehcache:expiry>
+            <ehcache:tti unit="seconds">600</ehcache:tti>
+        </ehcache:expiry>
+        <ehcache:resources>
+            <ehcache:heap unit="MB">40</ehcache:heap>
+        </ehcache:resources>
+    </ehcache:cache>
     <!--
     Cache of topic objects by ID.  This cache can become VERY large in size,
     so limit it based on available heap.
     -->
-    <cache name="org.jamwiki.db.AnsiDataHandler.CACHE_TOPICS_BY_ID"
-           maxBytesLocalHeap="5%"
-           overflowToDisk="false"
-           eternal="false"
-           timeToIdleSeconds="600"
-           timeToLiveSeconds="600"
-           diskPersistent="false"
-    />
+    <ehcache:cache alias="org.jamwiki.db.AnsiDataHandler.CACHE_TOPICS_BY_ID">
+        <ehcache:key-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.Integer</ehcache:key-type>
+        <ehcache:value-type copier="org.ehcache.impl.copy.SerializingCopier">org.jamwiki.model.Topic</ehcache:value-type>
+        <ehcache:expiry>
+            <ehcache:tti unit="seconds">600</ehcache:tti>
+        </ehcache:expiry>
+        <ehcache:resources>
+            <ehcache:heap unit="MB">100</ehcache:heap>
+        </ehcache:resources>
+    </ehcache:cache>
     <!--
     Cache of user block information.  Unless a massive number of users are
     being blocked then this should be a very small cache.
     -->
-    <cache name="org.jamwiki.db.AnsiDataHandler.CACHE_USER_BLOCKS_ACTIVE"
-           maxBytesLocalHeap="1%"
-           overflowToDisk="false"
-           eternal="false"
-           timeToIdleSeconds="1800"
-           timeToLiveSeconds="1800"
-           diskPersistent="false"
-    />
+    <ehcache:cache alias="org.jamwiki.db.AnsiDataHandler.CACHE_USER_BLOCKS_ACTIVE">
+        <ehcache:key-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.String</ehcache:key-type>
+        <ehcache:value-type copier="org.ehcache.impl.copy.SerializingCopier" serializer="org.ehcache.impl.serialization.PlainJavaSerializer">java.util.Map</ehcache:value-type>
+        <ehcache:expiry>
+            <ehcache:tti unit="seconds">1800</ehcache:tti>
+        </ehcache:expiry>
+        <ehcache:resources>
+            <ehcache:heap unit="MB">20</ehcache:heap>
+        </ehcache:resources>
+    </ehcache:cache>
     <!--
-    Cache of user objects by ID.  Make the cache large enough to accomodate
+    Cache of user objects by ID.  Make the cache large enough to accommodate
     a reasonable number of users.
     -->
-    <cache name="org.jamwiki.db.AnsiDataHandler.CACHE_USER_BY_USER_ID"
-           maxBytesLocalHeap="2%"
-           overflowToDisk="false"
-           eternal="false"
-           timeToIdleSeconds="600"
-           timeToLiveSeconds="600"
-           diskPersistent="false"
-    />
+    <ehcache:cache alias="org.jamwiki.db.AnsiDataHandler.CACHE_USER_BY_USER_ID">
+        <ehcache:key-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.Integer</ehcache:key-type>
+        <ehcache:value-type copier="org.ehcache.impl.copy.SerializingCopier">org.jamwiki.model.WikiUser</ehcache:value-type>
+        <ehcache:expiry>
+            <ehcache:tti unit="seconds">600</ehcache:tti>
+        </ehcache:expiry>
+        <ehcache:resources>
+            <ehcache:heap unit="MB">40</ehcache:heap>
+        </ehcache:resources>
+    </ehcache:cache>
     <!--
     Cache of user objects by login.  Make the cache large enough to accomodate
     a reasonable number of users.
     -->
-    <cache name="org.jamwiki.db.AnsiDataHandler.CACHE_USER_BY_USER_NAME"
-           maxBytesLocalHeap="2%"
-           overflowToDisk="false"
-           eternal="false"
-           timeToIdleSeconds="600"
-           timeToLiveSeconds="600"
-           diskPersistent="false"
-    />
+    <ehcache:cache alias="org.jamwiki.db.AnsiDataHandler.CACHE_USER_BY_USER_NAME">
+        <ehcache:key-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.String</ehcache:key-type>
+        <ehcache:value-type copier="org.ehcache.impl.copy.SerializingCopier">org.jamwiki.model.WikiUser</ehcache:value-type>
+        <ehcache:expiry>
+            <ehcache:tti unit="seconds">600</ehcache:tti>
+        </ehcache:expiry>
+        <ehcache:resources>
+            <ehcache:heap unit="MB">40</ehcache:heap>
+        </ehcache:resources>
+    </ehcache:cache>
     <!--
     Cache of virtual wiki info.  This cache will only contain a single
     object which is the list of all virtual wikis.
     -->
-    <cache name="org.jamwiki.db.AnsiDataHandler.CACHE_VIRTUAL_WIKI_LIST"
-           maxBytesLocalHeap="1%"
-           overflowToDisk="false"
-           eternal="false"
-           timeToIdleSeconds="600"
-           timeToLiveSeconds="600"
-           diskPersistent="false"
-    />
+    <ehcache:cache alias="org.jamwiki.db.AnsiDataHandler.CACHE_VIRTUAL_WIKI_LIST">
+        <ehcache:key-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.String</ehcache:key-type>
+        <ehcache:value-type copier="org.ehcache.impl.copy.SerializingCopier" serializer="org.ehcache.impl.serialization.PlainJavaSerializer">java.util.List</ehcache:value-type>
+        <ehcache:expiry>
+            <ehcache:tti unit="seconds">600</ehcache:tti>
+        </ehcache:expiry>
+        <ehcache:resources>
+            <ehcache:heap unit="MB">20</ehcache:heap>
+        </ehcache:resources>
+    </ehcache:cache>
     <!--
     Image dimension cache.  Image dimenstion lookup can be slow, so persist
     lookups to cache.  Note that each dimension element be fairly small.
     -->
-    <cache name="org.jamwiki.parser.image.ImageUtil.CACHE_IMAGE_DIMENSIONS"
-           maxBytesLocalHeap="1%"
-           overflowToDisk="true"
-           maxElementsOnDisk="100000"
-           eternal="false"
-           timeToIdleSeconds="1800"
-           timeToLiveSeconds="1800"
-           diskPersistent="false"
-    />
+    <ehcache:cache alias="org.jamwiki.parser.image.ImageUtil.CACHE_IMAGE_DIMENSIONS">
+        <ehcache:key-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.String</ehcache:key-type>
+        <ehcache:value-type copier="org.ehcache.impl.copy.SerializingCopier">java.awt.Dimension</ehcache:value-type>
+        <ehcache:expiry>
+            <ehcache:tti unit="seconds">1800</ehcache:tti>
+        </ehcache:expiry>
+        <ehcache:resources>
+            <ehcache:heap unit="MB">20</ehcache:heap>
+            <ehcache:disk unit="GB" persistent="false">1</ehcache:disk>
+        </ehcache:resources>
+    </ehcache:cache>
     <!--
     Diff info cache.  Diffs will probably not be frequently re-used so a
     small size should be OK.
     -->
-    <cache name="org.jamwiki.utils.DiffUtil.CACHE_DIFF_INFORMATION"
-           maxBytesLocalHeap="1%"
-           overflowToDisk="true"
-           maxElementsOnDisk="100000"
-           eternal="false"
-           timeToIdleSeconds="1800"
-           timeToLiveSeconds="1800"
-           diskPersistent="false"
-    />
+    <ehcache:cache alias="org.jamwiki.utils.DiffUtil.CACHE_DIFF_INFORMATION">
+        <ehcache:key-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.String</ehcache:key-type>
+        <ehcache:value-type copier="org.ehcache.impl.copy.SerializingCopier" serializer="org.ehcache.impl.serialization.PlainJavaSerializer">java.util.List</ehcache:value-type>
+        <ehcache:expiry>
+            <ehcache:tti unit="seconds">1800</ehcache:tti>
+        </ehcache:expiry>
+        <ehcache:resources>
+            <ehcache:heap unit="MB">20</ehcache:heap>
+            <ehcache:disk unit="GB" persistent="false">1</ehcache:disk>
+        </ehcache:resources>
+    </ehcache:cache>
     <!--
     Message formatters are used for parsing template elements, and the cache
     should be large enough to hold all of them.
     -->
-    <cache name="org.jamwiki.util.WikiUtil.CACHE_TEMPLATE_MESSAGE_FORMATTER"
-           maxBytesLocalHeap="1%"
-           overflowToDisk="false"
-           eternal="false"
-           timeToIdleSeconds="600"
-           timeToLiveSeconds="600"
-           diskPersistent="false"
-    />
-</ehcache>
+    <ehcache:cache alias="org.jamwiki.util.WikiUtil.CACHE_TEMPLATE_MESSAGE_FORMATTER">
+        <ehcache:key-type copier="org.ehcache.impl.copy.SerializingCopier">java.lang.String</ehcache:key-type>
+        <ehcache:value-type copier="org.ehcache.impl.copy.SerializingCopier">java.text.MessageFormat</ehcache:value-type>
+        <ehcache:expiry>
+            <ehcache:tti unit="seconds">600</ehcache:tti>
+        </ehcache:expiry>
+        <ehcache:resources>
+            <ehcache:heap unit="MB">20</ehcache:heap>
+        </ehcache:resources>
+    </ehcache:cache>
+</ehcache:config>

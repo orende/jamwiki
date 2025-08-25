@@ -72,27 +72,27 @@ public class AnsiDataHandler {
 
 	/** Any topic lookup that takes longer than the specified time (in ms) will trigger a log message. */
 	private static final int TIME_LIMIT_TOPIC_LOOKUP = 20;
-	private static final WikiCache<String, List<Interwiki>> CACHE_INTERWIKI_LIST = new WikiCache<String, List<Interwiki>>("org.jamwiki.db.AnsiDataHandler.CACHE_INTERWIKI_LIST");
-	private static final WikiCache<String, List<Namespace>> CACHE_NAMESPACE_LIST = new WikiCache<String, List<Namespace>>("org.jamwiki.db.AnsiDataHandler.CACHE_NAMESPACE_LIST");
-	private static final WikiCache<String, List<RoleMap>> CACHE_ROLE_MAP_GROUP = new WikiCache<String, List<RoleMap>>("org.jamwiki.db.AnsiDataHandler.CACHE_ROLE_MAP_GROUP");
+	private static final WikiCache<String, List<Interwiki>> CACHE_INTERWIKI_LIST = new WikiCache<>("org.jamwiki.db.AnsiDataHandler.CACHE_INTERWIKI_LIST", String.class, List.class);
+	private static final WikiCache<String, List<Namespace>> CACHE_NAMESPACE_LIST = new WikiCache<>("org.jamwiki.db.AnsiDataHandler.CACHE_NAMESPACE_LIST", String.class, List.class);
+	private static final WikiCache<String, List<RoleMap>> CACHE_ROLE_MAP_GROUP = new WikiCache<>("org.jamwiki.db.AnsiDataHandler.CACHE_ROLE_MAP_GROUP", String.class, List.class);
 	/**
 	 * Cache a topic name lookup to the actual topic name, useful for cases where
 	 * a topic name may vary by case.  This cache should not include deleted topics.
 	 */
-	private static final WikiCache<String, String> CACHE_TOPIC_NAMES_BY_NAME = new WikiCache<String, String>("org.jamwiki.db.AnsiDataHandler.CACHE_TOPIC_NAMES_BY_NAME");
+	private static final WikiCache<String, String> CACHE_TOPIC_NAMES_BY_NAME = new WikiCache<>("org.jamwiki.db.AnsiDataHandler.CACHE_TOPIC_NAMES_BY_NAME", String.class, String.class);
 	/** Cache a topic object by its ID value.  This cache may include deleted topics. */
-	private static final WikiCache<Integer, Topic> CACHE_TOPICS_BY_ID = new WikiCache<Integer, Topic>("org.jamwiki.db.AnsiDataHandler.CACHE_TOPICS_BY_ID");
+	private static final WikiCache<Integer, Topic> CACHE_TOPICS_BY_ID = new WikiCache<>("org.jamwiki.db.AnsiDataHandler.CACHE_TOPICS_BY_ID", Integer.class, Topic.class);
 	/** Cache topic IDs by the topic name.  This cache may include deleted topics. */
-	private static final WikiCache<String, Integer> CACHE_TOPIC_IDS_BY_NAME = new WikiCache<String, Integer>("org.jamwiki.db.AnsiDataHandler.CACHE_TOPIC_IDS_BY_NAME");
-	private static final WikiCache<Integer, TopicVersion> CACHE_TOPIC_VERSIONS = new WikiCache<Integer, TopicVersion>("org.jamwiki.db.AnsiDataHandler.CACHE_TOPIC_VERSIONS");
-	private static final WikiCache<String, Map<Object, UserBlock>> CACHE_USER_BLOCKS_ACTIVE = new WikiCache<String, Map<Object, UserBlock>>("org.jamwiki.db.AnsiDataHandler.CACHE_USER_BLOCKS_ACTIVE");
-	private static final WikiCache<Integer, WikiUser> CACHE_USER_BY_USER_ID = new WikiCache<Integer, WikiUser>("org.jamwiki.db.AnsiDataHandler.CACHE_USER_BY_USER_ID");
-	private static final WikiCache<String, WikiUser> CACHE_USER_BY_USER_NAME = new WikiCache<String, WikiUser>("org.jamwiki.db.AnsiDataHandler.CACHE_USER_BY_USER_NAME");
-	private static final WikiCache<String, List<VirtualWiki>> CACHE_VIRTUAL_WIKI_LIST = new WikiCache<String, List<VirtualWiki>>("org.jamwiki.db.AnsiDataHandler.CACHE_VIRTUAL_WIKI_LIST");
+	private static final WikiCache<String, Integer> CACHE_TOPIC_IDS_BY_NAME = new WikiCache<>("org.jamwiki.db.AnsiDataHandler.CACHE_TOPIC_IDS_BY_NAME", String.class, Integer.class);
+	private static final WikiCache<Integer, TopicVersion> CACHE_TOPIC_VERSIONS = new WikiCache<>("org.jamwiki.db.AnsiDataHandler.CACHE_TOPIC_VERSIONS", Integer.class, TopicVersion.class);
+	private static final WikiCache<String, Map<Object, UserBlock>> CACHE_USER_BLOCKS_ACTIVE = new WikiCache<>("org.jamwiki.db.AnsiDataHandler.CACHE_USER_BLOCKS_ACTIVE", String.class, Map.class);
+	private static final WikiCache<Integer, WikiUser> CACHE_USER_BY_USER_ID = new WikiCache<>("org.jamwiki.db.AnsiDataHandler.CACHE_USER_BY_USER_ID", Integer.class, WikiUser.class);
+	private static final WikiCache<String, WikiUser> CACHE_USER_BY_USER_NAME = new WikiCache<>("org.jamwiki.db.AnsiDataHandler.CACHE_USER_BY_USER_NAME", String.class, WikiUser.class);
+	private static final WikiCache<String, List<VirtualWiki>> CACHE_VIRTUAL_WIKI_LIST = new WikiCache<>("org.jamwiki.db.AnsiDataHandler.CACHE_VIRTUAL_WIKI_LIST", String.class, List.class);
 	private static final WikiLogger logger = WikiLogger.getLogger(AnsiDataHandler.class.getName());
 
 	// TODO - remove when the ability to upgrade to 1.3 is deprecated
-	private static final Map<String, String> LEGACY_DATA_HANDLER_MAP = new HashMap<String, String>();
+	private static final Map<String, String> LEGACY_DATA_HANDLER_MAP = new HashMap<>();
 	static {
 		LEGACY_DATA_HANDLER_MAP.put("org.jamwiki.db.AnsiDataHandler", QueryHandler.QUERY_HANDLER_ANSI);
 		LEGACY_DATA_HANDLER_MAP.put("org.jamwiki.db.CacheDataHandler", QueryHandler.QUERY_HANDLER_CACHE);
@@ -188,7 +188,7 @@ public class AnsiDataHandler {
 	 */
 	private void addTopicLinks(List<String> links, String virtualWiki, int topicId, Connection conn) throws DataAccessException {
 		// strip any links longer than 200 characters and any duplicates
-		Map<String, Topic> linksMap = new HashMap<String, Topic>();
+		Map<String, Topic> linksMap = new HashMap<>();
 		for (String link : links) {
 			if (link.length() <= 200) {
 				Namespace namespace = LinkUtil.retrieveTopicNamespace(virtualWiki, link);
@@ -200,7 +200,7 @@ public class AnsiDataHandler {
 				linksMap.put(topic.getName(), topic);
 			}
 		}
-		List<Topic> topicLinks = new ArrayList<Topic>(linksMap.values());
+		List<Topic> topicLinks = new ArrayList<>(linksMap.values());
 		try {
 			this.queryHandler().insertTopicLinks(topicLinks, topicId, conn);
 		} catch (SQLException e) {
@@ -661,7 +661,7 @@ public class AnsiDataHandler {
 		Connection conn = null;
 		try {
 			conn = DatabaseConnection.getConnection();
-			return new ArrayList<String>(this.queryHandler().lookupTopicNames(virtualWikiId, includeDeleted, conn).values());
+			return new ArrayList<>(this.queryHandler().lookupTopicNames(virtualWikiId, includeDeleted, conn).values());
 		} catch (SQLException e) {
 			throw new DataAccessException(e);
 		} finally {
@@ -889,7 +889,7 @@ public class AnsiDataHandler {
 	 */
 	public List<RecentChange> getTopicHistory(Topic topic, Pagination pagination, boolean descending) throws DataAccessException {
 		if (topic == null) {
-			return new ArrayList<RecentChange>();
+			return new ArrayList<>();
 		}
 		try {
 			return this.queryHandler().getTopicHistory(topic.getTopicId(), pagination, descending, topic.getDeleted());
@@ -939,7 +939,7 @@ public class AnsiDataHandler {
 			// should be sure to check whether a result is still active or not
 			return userBlocks;
 		}
-		userBlocks = new LinkedHashMap<Object, UserBlock>();
+		userBlocks = new LinkedHashMap<>();
 		Connection conn = null;
 		try {
 			conn = DatabaseConnection.getConnection();
@@ -995,7 +995,7 @@ public class AnsiDataHandler {
 		if (virtualWikis != null || CACHE_VIRTUAL_WIKI_LIST.isKeyInCache(CACHE_VIRTUAL_WIKI_LIST.getCacheName())) {
 			return virtualWikis;
 		}
-		virtualWikis = new ArrayList<VirtualWiki>();
+		virtualWikis = new ArrayList<>();
 		Connection conn = null;
 		try {
 			conn = DatabaseConnection.getConnection();
@@ -2582,7 +2582,7 @@ public class AnsiDataHandler {
 				if (topicVersion.getPreviousTopicVersionId() == null && topic.getCurrentVersionId() != null) {
 					topicVersion.setPreviousTopicVersionId(topic.getCurrentVersionId());
 				}
-				List<TopicVersion> topicVersions = new ArrayList<TopicVersion>();
+				List<TopicVersion> topicVersions = new ArrayList<>();
 				topicVersions.add(topicVersion);
 				addTopicVersions(topic, topicVersions, conn);
 				// update the topic AFTER creating the version so that the current_topic_version_id parameter is set properly
@@ -2605,7 +2605,7 @@ public class AnsiDataHandler {
 				// add / remove categories associated with the topic
 				this.deleteTopicCategories(topic, conn);
 				if (topic.getDeleteDate() == null && !categories.isEmpty()) {
-					List<Category> categoryList = new ArrayList<Category>();
+					List<Category> categoryList = new ArrayList<>();
 					for (Map.Entry<String, String> entry : categories.entrySet()) {
 						Category category = new Category();
 						category.setName(entry.getKey());

@@ -16,15 +16,16 @@
  */
 package org.jamwiki.utils;
 
+import org.ehcache.Cache;
+import org.ehcache.CacheManager;
+import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.xml.XmlConfiguration;
+
+import javax.cache.CacheException;
 import java.io.File;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheException;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
-import net.sf.ehcache.config.Configuration;
-import net.sf.ehcache.config.ConfigurationFactory;
-import net.sf.ehcache.config.DiskStoreConfiguration;
-import org.jamwiki.Environment;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implement utility functions that interact with the cache and provide the
@@ -32,9 +33,12 @@ import org.jamwiki.Environment;
  */
 public class WikiCache<K, V> {
 
+    private record KeyValueClasses(Class keyClass, Class valueClass) {}
+
 	private static final WikiLogger logger = WikiLogger.getLogger(WikiCache.class.getName());
 	private static CacheManager CACHE_MANAGER = null;
 	private static boolean INITIALIZED = false;
+    private final static Map<String, KeyValueClasses> keyValueClassesMap = new HashMap<>();
 	// track whether this instance was instantiated from an ehcache.xml file or using configured properties.
 	private static final String EHCACHE_XML_CONFIG_FILENAME = "ehcache-jamwiki.xml";
 	/** Directory for cache files. */
@@ -47,11 +51,12 @@ public class WikiCache<K, V> {
 	 * @param cacheName The name of the cache being created.  This name should not
 	 *  be re-used, otherwise unexpected results could be returned.
 	 */
-	public WikiCache(String cacheName) {
-		this.cacheName = cacheName;
-	}
+    public WikiCache(String cacheName, Class keyClass, Class valueClass) {
+        this.cacheName = cacheName;
+        keyValueClassesMap.put(cacheName, new KeyValueClasses(keyClass, valueClass));
+    }
 
-	/**
+    /**
 	 * Add an object to the cache.
 	 *
 	 * @param key A String, Integer, or other object to use as the key for
@@ -59,7 +64,7 @@ public class WikiCache<K, V> {
 	 * @param value The object that is being stored in the cache.
 	 */
 	public void addToCache(K key, V value) {
-		this.getCache().put(new Element(key, value));
+		this.getCache().put(key, value);
 	}
 
 	/**
@@ -72,15 +77,17 @@ public class WikiCache<K, V> {
 	 * @throws IllegalStateException if an attempt is made to retrieve a cache
 	 *  using XML configuration and the cache is not configured.
 	 */
-	private Cache getCache() throws CacheException {
+	private Cache<K,V> getCache() throws CacheException {
 		if (!WikiCache.INITIALIZED) {
 			WikiCache.initialize();
 		}
-		if (!WikiCache.CACHE_MANAGER.cacheExists(this.cacheName)) {
+        KeyValueClasses kv = keyValueClassesMap.get(this.cacheName);
+        Cache<K, V> cache = WikiCache.CACHE_MANAGER.getCache(this.cacheName, kv.keyClass, kv.valueClass);
+        if (cache == null) {
 			// all caches should be configured from ehcache.xml
 			throw new IllegalStateException("No cache named " + this.cacheName + " is configured in the ehcache.xml file");
 		}
-		return WikiCache.CACHE_MANAGER.getCache(this.cacheName);
+		return (Cache<K, V>) cache;
 	}
 
 	/**
@@ -95,29 +102,17 @@ public class WikiCache<K, V> {
 	 * a new cache instance.
 	 */
 	public static void initialize() {
-		try {
-			File file = ResourceUtil.getClassLoaderFile(EHCACHE_XML_CONFIG_FILENAME);
-			logger.info("Initializing cache configuration from " + file.getAbsolutePath());
-			Configuration configuration = ConfigurationFactory.parseConfiguration(file);
-			if (WikiCache.CACHE_MANAGER != null) {
-				WikiCache.CACHE_MANAGER.removalAll();
-				WikiCache.CACHE_MANAGER.shutdown();
-				WikiCache.CACHE_MANAGER = null;
-			}
-			File directory = new File(Environment.getValue(Environment.PROP_BASE_FILE_DIR), CACHE_DIR);
-			if (!directory.exists()) {
-				directory.mkdir();
-			}
-			DiskStoreConfiguration diskStoreConfiguration = new DiskStoreConfiguration();
-			diskStoreConfiguration.setPath(directory.getPath());
-			configuration.addDiskStore(diskStoreConfiguration);
-			WikiCache.CACHE_MANAGER = new CacheManager(configuration);
-		} catch (Exception e) {
-			logger.error("Failure while initializing cache", e);
-			throw new RuntimeException(e);
-		}
-		logger.info("Initializing cache with disk store: " + WikiCache.CACHE_MANAGER.getDiskStorePath());
-		WikiCache.INITIALIZED = true;
+        try {
+            File file = ResourceUtil.getClassLoaderFile(EHCACHE_XML_CONFIG_FILENAME);
+            XmlConfiguration xmlConfiguration = new XmlConfiguration(file.toURI().toURL());
+            WikiCache.CACHE_MANAGER = CacheManagerBuilder.newCacheManager(xmlConfiguration);
+            WikiCache.CACHE_MANAGER.init();
+            WikiCache.INITIALIZED = true;
+            logger.info("Initializing cache with disk store: " + System.getProperty("user.home") + File.pathSeparator + CACHE_DIR);
+        } catch (IOException e) {
+            logger.error("Failure while initializing cache", e);
+            throw new RuntimeException(e);
+        }
 	}
 
 	/**
@@ -125,7 +120,7 @@ public class WikiCache<K, V> {
 	 * if the value associated with that key is <code>null</code>.
 	 */
 	public boolean isKeyInCache(K key) {
-		return this.getCache().isKeyInCache(key);
+		return this.getCache().containsKey(key);
 	}
 
 	/**
@@ -134,7 +129,7 @@ public class WikiCache<K, V> {
 	public static void shutdown() {
 		WikiCache.INITIALIZED = false;
 		if (WikiCache.CACHE_MANAGER != null) {
-			WikiCache.CACHE_MANAGER.shutdown();
+			WikiCache.CACHE_MANAGER.close();
 			WikiCache.CACHE_MANAGER = null;
 		}
 	}
@@ -143,7 +138,7 @@ public class WikiCache<K, V> {
 	 * Remove all values from the cache.
 	 */
 	public void removeAllFromCache() {
-		this.getCache().removeAll();
+		this.getCache().clear();
 	}
 
 	/**
@@ -161,13 +156,12 @@ public class WikiCache<K, V> {
 	 * the key values may not be exactly known.
 	 */
 	public void removeFromCacheCaseInsensitive(String key) {
-		for (Object cacheKey : this.getCache().getKeys()) {
-			// with the upgrade to ehcache 2.4.2 it seems that null cache keys are possible...
-			if (cacheKey != null && cacheKey.toString().equalsIgnoreCase(key)) {
-				this.getCache().remove(cacheKey);
-			}
-		}
-	}
+        this.getCache().iterator().forEachRemaining(kvEntry -> {
+            if (kvEntry.getKey() != null && kvEntry.getKey().toString().equalsIgnoreCase(key)) {
+                this.getCache().remove(kvEntry.getKey());
+            }
+        });
+    }
 
 	/**
 	 * Retrieve an object from the cache.  IMPORTANT: this method will return
@@ -182,7 +176,6 @@ public class WikiCache<K, V> {
 	 * @return The cached object if one is found, <code>null</code> otherwise.
 	 */
 	public V retrieveFromCache(K key) {
-		Element element = this.getCache().get(key);
-		return (element != null) ? (V)element.getObjectValue() : null;
+        return this.getCache().get(key);
 	}
 }
