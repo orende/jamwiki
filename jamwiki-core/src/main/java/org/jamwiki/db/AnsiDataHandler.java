@@ -17,18 +17,15 @@
 package org.jamwiki.db;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.jamwiki.DataAccessException;
 import org.jamwiki.Environment;
 import org.jamwiki.WikiBase;
 import org.jamwiki.WikiException;
@@ -63,7 +60,11 @@ import org.jamwiki.utils.ResourceUtil;
 import org.jamwiki.utils.WikiCache;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.dao.NonTransientDataAccessResourceException;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 /**
  * Default handler for ANSI SQL compatible databases.
@@ -120,73 +121,7 @@ public class AnsiDataHandler {
 	/**
 	 *
 	 */
-	private void addCategories(List<Category> categoryList, int topicId, Connection conn) throws DataAccessException, WikiException {
-		int virtualWikiId = -1;
-		for (Category category : categoryList) {
-			virtualWikiId = this.lookupVirtualWikiId(category.getVirtualWiki());
-			this.dataValidator.validateCategory(category);
-		}
-		try {
-			this.queryHandler().insertCategories(categoryList, virtualWikiId, topicId, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void addGroupMember(String username, int groupId, Connection conn) throws DataAccessException {
-		try {
-			this.queryHandler().insertGroupMember(username, groupId, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void addLogItem(LogItem logItem, Connection conn) throws DataAccessException, WikiException {
-		int virtualWikiId = this.lookupVirtualWikiId(logItem.getVirtualWiki());
-		this.dataValidator.validateLogItem(logItem);
-		try {
-			this.queryHandler().insertLogItem(logItem, virtualWikiId, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void addRecentChange(RecentChange change, Connection conn) throws DataAccessException, WikiException {
-		int virtualWikiId = this.lookupVirtualWikiId(change.getVirtualWiki());
-		this.dataValidator.validateRecentChange(change);
-		try {
-			this.queryHandler().insertRecentChange(change, virtualWikiId, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void addTopic(Topic topic, Connection conn) throws DataAccessException, WikiException {
-		int virtualWikiId = this.lookupVirtualWikiId(topic.getVirtualWiki());
-		try {
-			this.dataValidator.validateTopic(topic);
-			this.queryHandler().insertTopic(topic, virtualWikiId, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void addTopicLinks(List<String> links, String virtualWiki, int topicId, Connection conn) throws DataAccessException {
+	private void addTopicLinks(List<String> links, String virtualWiki, int topicId) {
 		// strip any links longer than 200 characters and any duplicates
 		Map<String, Topic> linksMap = new HashMap<>();
 		for (String link : links) {
@@ -200,125 +135,8 @@ public class AnsiDataHandler {
 				linksMap.put(topic.getName(), topic);
 			}
 		}
-		List<Topic> topicLinks = new ArrayList<>(linksMap.values());
-		try {
-			this.queryHandler().insertTopicLinks(topicLinks, topicId, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void addTopicVersions(Topic topic, List<TopicVersion> topicVersions, Connection conn) throws DataAccessException, WikiException {
-		for (TopicVersion topicVersion : topicVersions) {
-			topicVersion.setTopicId(topic.getTopicId());
-			topicVersion.initializeVersionParams(topic);
-			this.dataValidator.validateTopicVersion(topicVersion);
-		}
-		try {
-			this.queryHandler().insertTopicVersions(topicVersions, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void addUserBlock(UserBlock userBlock, Connection conn) throws DataAccessException, WikiException {
-		try {
-			this.dataValidator.validateUserBlock(userBlock);
-			this.queryHandler().insertUserBlock(userBlock, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void addUserDetails(WikiUserDetails userDetails, Connection conn) throws DataAccessException, WikiException {
-		this.dataValidator.validateUserDetails(userDetails);
-		try {
-			this.queryHandler().insertUserDetails(userDetails, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void addVirtualWiki(VirtualWiki virtualWiki, Connection conn) throws DataAccessException, WikiException {
-		try {
-			this.dataValidator.validateVirtualWiki(virtualWiki);
-			this.queryHandler().insertVirtualWiki(virtualWiki, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void addWatchlistEntry(int virtualWikiId, String topicName, int userId, Connection conn) throws DataAccessException, WikiException {
-		this.dataValidator.validateWatchlistEntry(topicName);
-		try {
-			this.queryHandler().insertWatchlistEntry(virtualWikiId, topicName, userId, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void addWikiFile(WikiFile wikiFile, Connection conn) throws DataAccessException, WikiException {
-		try {
-			int virtualWikiId = this.lookupVirtualWikiId(wikiFile.getVirtualWiki());
-			this.dataValidator.validateWikiFile(wikiFile);
-			this.queryHandler().insertWikiFile(wikiFile, virtualWikiId, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void addWikiFileVersion(WikiFileVersion wikiFileVersion, Connection conn) throws DataAccessException, WikiException {
-		try {
-			this.dataValidator.validateWikiFileVersion(wikiFileVersion);
-			this.queryHandler().insertWikiFileVersion(wikiFileVersion, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void addWikiGroup(WikiGroup group, Connection conn) throws DataAccessException, WikiException {
-		try {
-			this.dataValidator.validateWikiGroup(group);
-			this.queryHandler().insertWikiGroup(group, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void addWikiUser(WikiUser user, Connection conn) throws DataAccessException, WikiException {
-		try {
-			this.dataValidator.validateWikiUser(user);
-			this.queryHandler().insertWikiUser(user, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		List<Topic> topicLinks = new ArrayList<Topic>(linksMap.values());
+		this.queryHandler().insertTopicLinks(topicLinks, topicId);
 	}
 
 	/**
@@ -329,30 +147,20 @@ public class AnsiDataHandler {
 	 * @param password The password that is being validated against.
 	 * @return <code>true</code> if the username / password combination matches
 	 *  an existing record in the data store, <code>false</code> otherwise.
-	 * @throws DataAccessException Thrown if an error occurs while accessing the data
-	 *  store.
 	 */
-	public boolean authenticate(String username, String password) throws DataAccessException {
+	public boolean authenticate(String username, String password) {
 		if (StringUtils.isBlank(password)) {
 			return false;
 		}
-		Connection conn = null;
-		try {
-			conn = DatabaseConnection.getConnection();
-			// password is stored encrypted, so encrypt password
-			String encryptedPassword = Encryption.encrypt(password);
-			return this.queryHandler().authenticateUser(username, encryptedPassword, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		} finally {
-			DatabaseConnection.closeConnection(conn);
-		}
+		// password is stored encrypted, so encrypt password
+		String encryptedPassword = Encryption.encrypt(password);
+		return this.queryHandler().authenticateUser(username, encryptedPassword);
 	}
 
 	/**
 	 * Utility method for retrieving a user display name.
 	 */
-	private String authorName(Integer authorId, String authorName) throws DataAccessException {
+	private String authorName(Integer authorId, String authorName) {
 		if (authorId != null) {
 			WikiUser user = this.lookupWikiUser(authorId);
 			authorName = user.getUsername();
@@ -429,9 +237,8 @@ public class AnsiDataHandler {
 	 * @param destination The new name for the topic.
 	 * @return <code>true</code> if the topic can be moved to the destination,
 	 *  <code>false</code> otherwise.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public boolean canMoveTopic(Topic fromTopic, String destination) throws DataAccessException {
+	public boolean canMoveTopic(Topic fromTopic, String destination) {
 		Topic toTopic = this.lookupTopic(fromTopic.getVirtualWiki(), destination, false);
 		if (toTopic == null || toTopic.getDeleteDate() != null) {
 			// destination doesn't exist or is deleted, so move is OK
@@ -452,30 +259,10 @@ public class AnsiDataHandler {
 	 * Delete an interwiki record from the interwiki table.
 	 *
 	 * @param interwiki The Interwiki record to be deleted.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public void deleteInterwiki(Interwiki interwiki) throws DataAccessException {
-		Connection conn = null;
-		try {
-			conn = DatabaseConnection.getConnection();
-			this.queryHandler().deleteInterwiki(interwiki, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		} finally {
-			DatabaseConnection.closeConnection(conn);
-		}
+	public void deleteInterwiki(Interwiki interwiki) {
+		this.queryHandler().deleteInterwiki(interwiki);
 		CACHE_INTERWIKI_LIST.removeAllFromCache();
-	}
-
-	/**
-	 *
-	 */
-	private void deleteRecentChanges(Topic topic, Connection conn) throws DataAccessException {
-		try {
-			this.queryHandler().deleteRecentChanges(topic.getTopicId(), conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
 	}
 
 	/**
@@ -490,73 +277,35 @@ public class AnsiDataHandler {
 	 *  date, author, and other parameters for the topic.  If this value is
 	 *  <code>null</code> then no version is saved, nor is any recent change
 	 *  entry created.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the topic information is invalid.
 	 */
-	public void deleteTopic(Topic topic, TopicVersion topicVersion) throws DataAccessException, WikiException {
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			if (topicVersion != null) {
-				// delete old recent changes
-				deleteRecentChanges(topic, conn);
+	public void deleteTopic(final Topic topic, final TopicVersion topicVersion) throws WikiException {
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					try {
+						if (topicVersion != null) {
+							// delete old recent changes
+							queryHandler().deleteRecentChanges(topic.getTopicId());
+						}
+						// update topic to indicate deleted, add delete topic version.  parser output
+						// should be empty since no links or categories to update.
+						ParserOutput parserOutput = new ParserOutput();
+						topic.setDeleteDate(new Timestamp(System.currentTimeMillis()));
+						writeTopic(topic, topicVersion, parserOutput.getCategories(), parserOutput.getLinks());
+					} catch (WikiException e) {
+						status.setRollbackOnly();
+						throw new TransactionRuntimeException(e);
+					}
+				}
 			}
-			// update topic to indicate deleted, add delete topic version.  parser output
-			// should be empty since no links or categories to update.
-			ParserOutput parserOutput = new ParserOutput();
-			topic.setDeleteDate(new Timestamp(System.currentTimeMillis()));
-			this.writeTopic(topic, topicVersion, parserOutput.getCategories(), parserOutput.getLinks());
-		} catch (DataAccessException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (WikiException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		}
-		DatabaseConnection.commit(status);
-	}
-
-	/**
-	 *
-	 */
-	private void deleteTopicCategories(Topic topic, Connection conn) throws DataAccessException {
-		try {
-			this.queryHandler().deleteTopicCategories(topic.getTopicId(), conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void deleteTopicLinks(int topicId, Connection conn) throws DataAccessException {
-		try {
-			this.queryHandler().deleteTopicLinks(topicId, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void deleteWatchlistEntry(int virtualWikiId, String topicName, int userId, Connection conn) throws DataAccessException {
-		try {
-			this.queryHandler().deleteWatchlistEntry(virtualWikiId, topicName, userId, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		);
 	}
 
 	/**
 	 * Determine the largest namespace ID for all current defined namespaces.
 	 */
-	private int findMaxNamespaceId() throws DataAccessException {
+	private int findMaxNamespaceId() {
 		int namespaceEnd = 0;
 		for (Namespace namespace : this.lookupNamespaces()) {
 			namespaceEnd = (namespace.getId() > namespaceEnd) ? namespace.getId() : namespaceEnd;
@@ -572,29 +321,19 @@ public class AnsiDataHandler {
 	 * @param pagination A Pagination object indicating the total number of
 	 *  results and offset for the results to be retrieved.
 	 * @return A List of all Category objects for a given virutal wiki.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<Category> getAllCategories(String virtualWiki, Pagination pagination) throws DataAccessException {
+	public List<Category> getAllCategories(String virtualWiki, Pagination pagination) {
 		int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
-		try {
-			return this.queryHandler().getCategories(virtualWikiId, virtualWiki, pagination);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		return this.queryHandler().getCategories(virtualWikiId, virtualWiki, pagination);
 	}
 
 	/**
 	 * Return a List of all Role objects for the wiki.
 	 *
 	 * @return A List of all Role objects for the wiki.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<Role> getAllRoles() throws DataAccessException {
-		try {
-			return this.queryHandler().getRoles();
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public List<Role> getAllRoles() {
+		return this.queryHandler().getRoles();
 	}
 
 	/**
@@ -603,14 +342,9 @@ public class AnsiDataHandler {
 	 * through the application.
 	 *
 	 * @return A List of all custom WikiGroups objects for the wiki
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<WikiGroup> getAllWikiGroups() throws DataAccessException {
-		try {
-			return this.queryHandler().getGroups();
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public List<WikiGroup> getAllWikiGroups() {
+		return this.queryHandler().getGroups();
 	}
 
 	/**
@@ -618,14 +352,9 @@ public class AnsiDataHandler {
 	 * a list of all its members (logins)
 	 * @param groupId The group to retrieve
 	 * @return The GroupMap for the group identified by groupId.
-	 * @throws DataAccessException
 	 */
-	public GroupMap getGroupMapGroup(int groupId) throws DataAccessException {
-		try {
-			return this.queryHandler().lookupGroupMapGroup(groupId);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public GroupMap getGroupMapGroup(int groupId) {
+		return this.queryHandler().lookupGroupMapGroup(groupId);
 	}
 
 	/**
@@ -634,14 +363,9 @@ public class AnsiDataHandler {
 	 *
 	 * @param userLogin The user, whose groups must be looked up
 	 * @return The GroupMap of the user identified by login
-	 * @throws DataAccessException
 	 */
-	public GroupMap getGroupMapUser(String userLogin) throws DataAccessException {
-		try {
-			return this.queryHandler().lookupGroupMapUser(userLogin);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public GroupMap getGroupMapUser(String userLogin) {
+		return this.queryHandler().lookupGroupMapUser(userLogin);
 	}
 
 	/**
@@ -654,19 +378,10 @@ public class AnsiDataHandler {
 	 *  should be included in the results.
 	 * @return A List of all topic names for all non-deleted topics that
 	 *  exist for the virtual wiki.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<String> getAllTopicNames(String virtualWiki, boolean includeDeleted) throws DataAccessException {
+	public List<String> getAllTopicNames(String virtualWiki, boolean includeDeleted) {
 		int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
-		Connection conn = null;
-		try {
-			conn = DatabaseConnection.getConnection();
-			return new ArrayList<>(this.queryHandler().lookupTopicNames(virtualWikiId, includeDeleted, conn).values());
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		} finally {
-			DatabaseConnection.closeConnection(conn);
-		}
+		return new ArrayList<String>(this.queryHandler().lookupTopicNames(virtualWikiId, includeDeleted).values());
 	}
 
 	/**
@@ -680,18 +395,13 @@ public class AnsiDataHandler {
 	 *  results should be sorted with the oldest versions first.
 	 * @return A List of all TopicVersion objects for the given topic.
 	 *  If no matching topic exists then an exception is thrown.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<WikiFileVersion> getAllWikiFileVersions(String virtualWiki, String topicName, boolean descending) throws DataAccessException {
+	public List<WikiFileVersion> getAllWikiFileVersions(String virtualWiki, String topicName, boolean descending) {
 		WikiFile wikiFile = lookupWikiFile(virtualWiki, topicName);
 		if (wikiFile == null) {
-			throw new DataAccessException("No topic exists for " + virtualWiki + " / " + topicName);
+			throw new InvalidDataAccessApiUsageException("No topic exists for " + virtualWiki + " / " + topicName);
 		}
-		try {
-			return this.queryHandler().getAllWikiFileVersions(wikiFile, descending);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		return this.queryHandler().getAllWikiFileVersions(wikiFile, descending);
 	}
 
 	/**
@@ -700,12 +410,8 @@ public class AnsiDataHandler {
 	 * pref_group_key -> Map(pref_key -> pref_value)
 	 * the pref_group_key points to a map of pref key/value pairs that belong to it.
 	 */
-	public Map<String, Map<String, String>> getUserPreferencesDefaults() throws DataAccessException {
-		try {
-			return this.queryHandler().getUserPreferencesDefaults();
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public Map<String, Map<String, String>> getUserPreferencesDefaults() {
+		return this.queryHandler().getUserPreferencesDefaults();
 	}
 
 	/**
@@ -723,15 +429,10 @@ public class AnsiDataHandler {
 	 *  results should be sorted with the oldest items first.
 	 * @return A List of LogItem objects for a given virtual wiki, sorted
 	 *  chronologically.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<LogItem> getLogItems(String virtualWiki, int logType, Pagination pagination, boolean descending) throws DataAccessException {
+	public List<LogItem> getLogItems(String virtualWiki, int logType, Pagination pagination, boolean descending) {
 		int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
-		try {
-			return this.queryHandler().getLogItems(virtualWikiId, virtualWiki, logType, pagination, descending);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		return this.queryHandler().getLogItems(virtualWikiId, virtualWiki, logType, pagination, descending);
 	}
 
 	/**
@@ -747,14 +448,9 @@ public class AnsiDataHandler {
 	 *  results should be sorted with the oldest changes first.
 	 * @return A List of all RecentChange objects for a given virtual
 	 *  wiki, sorted chronologically.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<RecentChange> getRecentChanges(String virtualWiki, Pagination pagination, boolean descending) throws DataAccessException {
-		try {
-			return this.queryHandler().getRecentChanges(virtualWiki, pagination, descending);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public List<RecentChange> getRecentChanges(String virtualWiki, Pagination pagination, boolean descending) {
+		return this.queryHandler().getRecentChanges(virtualWiki, pagination, descending);
 	}
 
 	/**
@@ -768,14 +464,9 @@ public class AnsiDataHandler {
 	 *  users whose login contains the login fragment.  If no matches are
 	 *  found then this method returns an empty List.  This method will
 	 *  never return <code>null</code>.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<RoleMap> getRoleMapByLogin(String loginFragment) throws DataAccessException {
-		try {
-			return this.queryHandler().getRoleMapByLogin(loginFragment);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public List<RoleMap> getRoleMapByLogin(String loginFragment) {
+		return this.queryHandler().getRoleMapByLogin(loginFragment);
 	}
 
 	/**
@@ -787,9 +478,8 @@ public class AnsiDataHandler {
 	 *  users and groups who have been assigned the specified role.  If no
 	 *  matches are found then this method returns an empty List.  This
 	 *  method will never return <code>null</code>.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<RoleMap> getRoleMapByRole(String authority) throws DataAccessException {
+	public List<RoleMap> getRoleMapByRole(String authority) {
 		return getRoleMapByRole(authority,false);
 	}
 
@@ -804,20 +494,15 @@ public class AnsiDataHandler {
 	 *  users and groups who have been assigned the specified role.  If no
 	 *  matches are found then this method returns an empty List.  This
 	 *  method will never return <code>null</code>.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<RoleMap> getRoleMapByRole(String authority, boolean includeInheritedRoles) throws DataAccessException {
+	public List<RoleMap> getRoleMapByRole(String authority, boolean includeInheritedRoles) {
 		// first check the cache
 		List<RoleMap> roleMapList = CACHE_ROLE_MAP_GROUP.retrieveFromCache(authority + includeInheritedRoles);
 		if (roleMapList != null || CACHE_ROLE_MAP_GROUP.isKeyInCache(authority + includeInheritedRoles)) {
 			return roleMapList;
 		}
 		// if not in the cache, go to the database
-		try {
-			roleMapList = this.queryHandler().getRoleMapByRole(authority,includeInheritedRoles);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		roleMapList = this.queryHandler().getRoleMapByRole(authority,includeInheritedRoles);
 		CACHE_ROLE_MAP_GROUP.addToCache(authority + includeInheritedRoles, roleMapList);
 		return roleMapList;
 	}
@@ -829,14 +514,9 @@ public class AnsiDataHandler {
 	 * @return An array of Role objects for the given group, or an empty
 	 *  array if no roles are assigned to the group.  This method will
 	 *  never return <code>null</code>.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<Role> getRoleMapGroup(String groupName) throws DataAccessException {
-		try {
-			return this.queryHandler().getRoleMapGroup(groupName);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public List<Role> getRoleMapGroup(String groupName) {
+		return this.queryHandler().getRoleMapGroup(groupName);
 	}
 
 	/**
@@ -845,14 +525,9 @@ public class AnsiDataHandler {
 	 * @return A list of RoleMap objects containing all roles for all
 	 *  groups.  If no matches are found then this method returns an empty
 	 *  List.  This method will never return <code>null</code>.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<RoleMap> getRoleMapGroups() throws DataAccessException {
-		try {
-			return this.queryHandler().getRoleMapGroups();
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public List<RoleMap> getRoleMapGroups() {
+		return this.queryHandler().getRoleMapGroups();
 	}
 
 	/**
@@ -862,14 +537,9 @@ public class AnsiDataHandler {
 	 * @return A list of Role objects for the given user, or an empty
 	 *  array if no roles are assigned to the user.  This method will
 	 *  never return <code>null</code>.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<Role> getRoleMapUser(String login) throws DataAccessException {
-		try {
-			return this.queryHandler().getRoleMapUser(login);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public List<Role> getRoleMapUser(String login) {
+		return this.queryHandler().getRoleMapUser(login);
 	}
 
 	/**
@@ -885,17 +555,12 @@ public class AnsiDataHandler {
 	 *  results should be sorted with the oldest changes first.
 	 * @return A List of all RecentChange objects representing a topic's history,
 	 *  sorted chronologically.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<RecentChange> getTopicHistory(Topic topic, Pagination pagination, boolean descending) throws DataAccessException {
+	public List<RecentChange> getTopicHistory(Topic topic, Pagination pagination, boolean descending) {
 		if (topic == null) {
 			return new ArrayList<>();
 		}
-		try {
-			return this.queryHandler().getTopicHistory(topic.getTopicId(), pagination, descending, topic.getDeleted());
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		return this.queryHandler().getTopicHistory(topic.getTopicId(), pagination, descending, topic.getDeleted());
 	}
 
 	/**
@@ -908,15 +573,10 @@ public class AnsiDataHandler {
 	 *  results and offset for the results to be retrieved.
 	 * @return A List of topic names for all admin-only topics, sorted
 	 *  alphabetically.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<String> getTopicsAdmin(String virtualWiki, Pagination pagination) throws DataAccessException {
+	public List<String> getTopicsAdmin(String virtualWiki, Pagination pagination) {
 		int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
-		try {
-			return this.queryHandler().getTopicsAdmin(virtualWikiId, pagination);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		return this.queryHandler().getTopicsAdmin(virtualWikiId, pagination);
 	}
 
 	/**
@@ -925,32 +585,33 @@ public class AnsiDataHandler {
 	 *
 	 * @return A map of all active user blocks, where the key is the ip or user id
 	 * of the blocked user and the value is the UserBlock object.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public Map<Object, UserBlock> getUserBlocks() throws DataAccessException {
+	public Map<Object, UserBlock> getUserBlocks() {
 		// for performance reasons cache all active blocks.  in general there
 		// shouldn't be a huge number of active blocks at any given time, so
 		// rather than hit the database for every page request to verify whether
 		// or not the user is blocked it is far more efficient to cache the few
 		// active blocks and query against that cached list.
-		Map<Object, UserBlock> userBlocks = CACHE_USER_BLOCKS_ACTIVE.retrieveFromCache(CACHE_USER_BLOCKS_ACTIVE.getCacheName());
-		if (userBlocks != null || CACHE_USER_BLOCKS_ACTIVE.isKeyInCache(CACHE_USER_BLOCKS_ACTIVE.getCacheName())) {
+		Map<Object, UserBlock> userBlockMap = CACHE_USER_BLOCKS_ACTIVE.retrieveFromCache(CACHE_USER_BLOCKS_ACTIVE.getCacheName());
+		if (userBlockMap != null || CACHE_USER_BLOCKS_ACTIVE.isKeyInCache(CACHE_USER_BLOCKS_ACTIVE.getCacheName())) {
 			// note that due to caching some blocks may have expired, so the caller
 			// should be sure to check whether a result is still active or not
-			return userBlocks;
+			return userBlockMap;
 		}
-		userBlocks = new LinkedHashMap<>();
-		Connection conn = null;
-		try {
-			conn = DatabaseConnection.getConnection();
-			userBlocks = this.queryHandler().getUserBlocks(conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		} finally {
-			DatabaseConnection.closeConnection(conn);
+		List<UserBlock> userBlocks = this.queryHandler().getUserBlocks();
+		userBlockMap = new LinkedHashMap<Object, UserBlock>();
+		if (userBlocks != null) {
+			for (UserBlock userBlock : userBlocks) {
+				if (userBlock.getWikiUserId() != null) {
+					userBlockMap.put(userBlock.getWikiUserId(), userBlock);
+				}
+				if (userBlock.getIpAddress() != null) {
+					userBlockMap.put(userBlock.getIpAddress(), userBlock);
+				}
+			}
 		}
-		CACHE_USER_BLOCKS_ACTIVE.addToCache(CACHE_USER_BLOCKS_ACTIVE.getCacheName(), userBlocks);
-		return userBlocks;
+		CACHE_USER_BLOCKS_ACTIVE.addToCache(CACHE_USER_BLOCKS_ACTIVE.getCacheName(), userBlockMap);
+		return userBlockMap;
 	}
 
 	/**
@@ -969,17 +630,12 @@ public class AnsiDataHandler {
 	 *  results should be sorted with the oldest changes first.
 	 * @return A List of RecentChange objects corresponding to all
 	 *  changes made by a particular user.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<RecentChange> getUserContributions(String virtualWiki, String userString, Pagination pagination, boolean descending) throws DataAccessException {
-		try {
-			if (this.lookupWikiUser(userString) != null) {
-				return this.queryHandler().getUserContributionsByLogin(virtualWiki, userString, pagination, descending);
-			} else {
-				return this.queryHandler().getUserContributionsByUserDisplay(virtualWiki, userString, pagination, descending);
-			}
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
+	public List<RecentChange> getUserContributions(String virtualWiki, String userString, Pagination pagination, boolean descending) {
+		if (this.lookupWikiUser(userString) != null) {
+			return this.queryHandler().getUserContributionsByLogin(virtualWiki, userString, pagination, descending);
+		} else {
+			return this.queryHandler().getUserContributionsByUserDisplay(virtualWiki, userString, pagination, descending);
 		}
 	}
 
@@ -988,23 +644,13 @@ public class AnsiDataHandler {
 	 *
 	 * @return A List of all VirtualWiki objects that exist for the
 	 *  wiki.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<VirtualWiki> getVirtualWikiList() throws DataAccessException {
+	public List<VirtualWiki> getVirtualWikiList() {
 		List<VirtualWiki> virtualWikis = CACHE_VIRTUAL_WIKI_LIST.retrieveFromCache(CACHE_VIRTUAL_WIKI_LIST.getCacheName());
 		if (virtualWikis != null || CACHE_VIRTUAL_WIKI_LIST.isKeyInCache(CACHE_VIRTUAL_WIKI_LIST.getCacheName())) {
 			return virtualWikis;
 		}
-		virtualWikis = new ArrayList<>();
-		Connection conn = null;
-		try {
-			conn = DatabaseConnection.getConnection();
-			virtualWikis = this.queryHandler().getVirtualWikis(conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		} finally {
-			DatabaseConnection.closeConnection(conn);
-		}
+		virtualWikis = this.queryHandler().getVirtualWikis();
 		CACHE_VIRTUAL_WIKI_LIST.addToCache(CACHE_VIRTUAL_WIKI_LIST.getCacheName(), virtualWikis);
 		return virtualWikis;
 	}
@@ -1016,16 +662,11 @@ public class AnsiDataHandler {
 	 *  retrieved.
 	 * @param userId The ID of the user whose watchlist is being retrieved.
 	 * @return The Watchlist object for the user.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public Watchlist getWatchlist(String virtualWiki, int userId) throws DataAccessException {
+	public Watchlist getWatchlist(String virtualWiki, int userId) {
 		int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
-		try {
-			List<String> watchedTopicNames = this.queryHandler().getWatchlist(virtualWikiId, userId);
-			return new Watchlist(virtualWiki, watchedTopicNames);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		List<String> watchedTopicNames = this.queryHandler().getWatchlist(virtualWikiId, userId);
+		return new Watchlist(virtualWiki, watchedTopicNames);
 	}
 
 	/**
@@ -1040,15 +681,10 @@ public class AnsiDataHandler {
 	 *  results and offset for the results to be retrieved.
 	 * @return A List of RecentChange objects corresponding to a user's
 	 *  watchlist.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<RecentChange> getWatchlist(String virtualWiki, int userId, Pagination pagination) throws DataAccessException {
+	public List<RecentChange> getWatchlist(String virtualWiki, int userId, Pagination pagination) {
 		int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
-		try {
-			return this.queryHandler().getWatchlist(virtualWikiId, userId, pagination);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		return this.queryHandler().getWatchlist(virtualWikiId, userId, pagination);
 	}
 
 	/**
@@ -1061,15 +697,10 @@ public class AnsiDataHandler {
 	 * @return A List of all Category objects corresponding to all
 	 *  topics that belong to the category, sorted by either the topic name,
 	 *  or category sort key (if specified).
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<Category> lookupCategoryTopics(String virtualWiki, String categoryName) throws DataAccessException {
+	public List<Category> lookupCategoryTopics(String virtualWiki, String categoryName) {
 		int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
-		try {
-			return this.queryHandler().lookupCategoryTopics(virtualWikiId, virtualWiki, categoryName);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		return this.queryHandler().lookupCategoryTopics(virtualWikiId, virtualWiki, categoryName);
 	}
 
 	/**
@@ -1078,14 +709,9 @@ public class AnsiDataHandler {
 	 *
 	 * @return A map of key-value pairs corresponding to all configuration values
 	 * currently set up for the system.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public Map<String, String> lookupConfiguration() throws DataAccessException {
-		try {
-			return this.queryHandler().lookupConfiguration();
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public Map<String, String> lookupConfiguration() {
+		return this.queryHandler().lookupConfiguration();
 	}
 
 	/**
@@ -1095,9 +721,8 @@ public class AnsiDataHandler {
 	 * @param interwikiPrefix The value to query to see if a matching interwiki record
 	 *  exists.
 	 * @return The matching Interwiki object, or <code>null</code> if no match is found.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public Interwiki lookupInterwiki(String interwikiPrefix) throws DataAccessException {
+	public Interwiki lookupInterwiki(String interwikiPrefix) {
 		if (interwikiPrefix == null) {
 			return null;
 		}
@@ -1115,23 +740,17 @@ public class AnsiDataHandler {
 	 * Return all interwiki records currently available for the wiki.
 	 *
 	 * @return A list of all Interwiki records currently available for the wiki.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<Interwiki> lookupInterwikis() throws DataAccessException {
+	public List<Interwiki> lookupInterwikis() {
 		// first check the cache
 		List<Interwiki> interwikis = CACHE_INTERWIKI_LIST.retrieveFromCache(CACHE_INTERWIKI_LIST.getCacheName());
 		if (interwikis != null || CACHE_INTERWIKI_LIST.isKeyInCache(CACHE_INTERWIKI_LIST.getCacheName())) {
 			return interwikis;
 		}
 		// if not in the cache, go to the database
-		Connection conn = null;
-		try {
-			conn = DatabaseConnection.getConnection();
-			interwikis = this.queryHandler().lookupInterwikis(conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		} finally {
-			DatabaseConnection.closeConnection(conn);
+		interwikis = this.queryHandler().lookupInterwikis();
+		if (interwikis != null) {
+			Collections.sort(interwikis);
 		}
 		CACHE_INTERWIKI_LIST.addToCache(CACHE_INTERWIKI_LIST.getCacheName(), interwikis);
 		return interwikis;
@@ -1144,9 +763,8 @@ public class AnsiDataHandler {
 	 * @param virtualWiki The virtual wiki for the namespace being queried.
 	 * @param namespaceString The value to query to see if a matching namespace exists.
 	 * @return The matching Namespace object, or <code>null</code> if no match is found.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public Namespace lookupNamespace(String virtualWiki, String namespaceString) throws DataAccessException {
+	public Namespace lookupNamespace(String virtualWiki, String namespaceString) {
 		if (namespaceString == null) {
 			return null;
 		}
@@ -1166,9 +784,8 @@ public class AnsiDataHandler {
 	 *
 	 * @param namespaceId The ID for the namespace being retrieved.
 	 * @return The matching Namespace object, or <code>null</code> if no match is found.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public Namespace lookupNamespaceById(int namespaceId) throws DataAccessException {
+	public Namespace lookupNamespaceById(int namespaceId) {
 		for (Namespace namespace : this.lookupNamespaces()) {
 			if (namespace.getId() != null && namespace.getId().intValue() == namespaceId) {
 				// found a match, return it
@@ -1183,24 +800,15 @@ public class AnsiDataHandler {
 	 * Return all namespaces currently available for the wiki.
 	 *
 	 * @return A list of all Namespace objects currently available for the wiki.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<Namespace> lookupNamespaces() throws DataAccessException {
+	public List<Namespace> lookupNamespaces() {
 		// first check the cache
 		List<Namespace> namespaces = CACHE_NAMESPACE_LIST.retrieveFromCache(CACHE_NAMESPACE_LIST.getCacheName());
 		if (namespaces != null || CACHE_NAMESPACE_LIST.isKeyInCache(CACHE_NAMESPACE_LIST.getCacheName())) {
 			return namespaces;
 		}
 		// if not in the cache, go to the database
-		Connection conn = null;
-		try {
-			conn = DatabaseConnection.getConnection();
-			namespaces = this.queryHandler().lookupNamespaces(conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		} finally {
-			DatabaseConnection.closeConnection(conn);
-		}
+		namespaces = this.queryHandler().lookupNamespaces();
 		CACHE_NAMESPACE_LIST.addToCache(CACHE_NAMESPACE_LIST.getCacheName(), namespaces);
 		return namespaces;
 	}
@@ -1218,10 +826,9 @@ public class AnsiDataHandler {
 	 *  retrieved, <code>false</code> otherwise.
 	 * @return A Topic object that matches the given virtual wiki and topic
 	 *  name, or <code>null</code> if no matching topic exists.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public Topic lookupTopic(String virtualWiki, String topicName, boolean deleteOK) throws DataAccessException {
-		return this.lookupTopic(virtualWiki, topicName, deleteOK, null);
+	public Topic lookupTopic(String virtualWiki, String topicName, boolean deleteOK) {
+		return this.lookupTopic(virtualWiki, topicName, deleteOK, true);
 	}
 
 	/**
@@ -1238,73 +845,68 @@ public class AnsiDataHandler {
 	 *  retrieved, <code>false</code> otherwise.
 	 * @return A Topic object that matches the given virtual wiki, namespace
 	 *  and page name, or <code>null</code> if no matching topic exists.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public Topic lookupTopic(String virtualWiki, Namespace namespace, String pageName, boolean deleteOK) throws DataAccessException {
-		return this.lookupTopic(virtualWiki, namespace, pageName, deleteOK, null);
+	public Topic lookupTopic(String virtualWiki, Namespace namespace, String pageName, boolean deleteOK) {
+		return this.lookupTopic(virtualWiki, namespace, pageName, deleteOK, true);
 	}
 
 	/**
 	 *
 	 */
-	private Topic lookupTopic(String virtualWiki, String topicName, boolean deleteOK, Connection conn) throws DataAccessException {
+	private Topic lookupTopic(String virtualWiki, String topicName, boolean deleteOK, boolean useCache) {
 		if (StringUtils.isBlank(virtualWiki) || StringUtils.isBlank(topicName)) {
 			return null;
 		}
 		Namespace namespace = LinkUtil.retrieveTopicNamespace(virtualWiki, topicName);
 		String pageName = LinkUtil.retrieveTopicPageName(namespace, virtualWiki, topicName);
-		return this.lookupTopic(virtualWiki, namespace, pageName, deleteOK, conn);
+		return this.lookupTopic(virtualWiki, namespace, pageName, deleteOK, useCache);
 	}
 
 	/**
 	 *
 	 */
-	private Topic lookupTopic(String virtualWiki, Namespace namespace, String pageName, boolean deleteOK, Connection conn) throws DataAccessException {
+	private Topic lookupTopic(String virtualWiki, Namespace namespace, String pageName, boolean deleteOK, boolean useCache) {
 		long start = System.currentTimeMillis();
 		String key = this.cacheTopicKey(virtualWiki, namespace, pageName);
-		if (conn == null) {
+		if (useCache) {
 			// retrieve topic from the cache only if this call is not currently a part
 			// of a transaction to avoid retrieving data that might have been updated
 			// as part of this transaction and would thus now be out of date
 			Integer cacheTopicId = CACHE_TOPIC_IDS_BY_NAME.retrieveFromCache(key);
 			if (cacheTopicId != null || CACHE_TOPIC_IDS_BY_NAME.isKeyInCache(key)) {
-				Topic cacheTopic = (cacheTopicId != null) ? this.lookupTopicById(cacheTopicId.intValue(), conn) : null;
+				Topic cacheTopic = (cacheTopicId != null) ? this.lookupTopicById(cacheTopicId.intValue()) : null;
 				return (cacheTopic == null || (!deleteOK && cacheTopic.getDeleteDate() != null)) ? null : cacheTopic;
 			}
 		}
 		boolean checkSharedVirtualWiki = this.useSharedVirtualWiki(virtualWiki, namespace);
 		String sharedVirtualWiki = Environment.getValue(Environment.PROP_SHARED_UPLOAD_VIRTUAL_WIKI);
-		if (conn == null && checkSharedVirtualWiki) {
+		if (useCache && checkSharedVirtualWiki) {
 			String sharedKey = this.cacheTopicKey(sharedVirtualWiki, namespace, pageName);
 			Integer cacheTopicId = CACHE_TOPIC_IDS_BY_NAME.retrieveFromCache(sharedKey);
 			if (cacheTopicId != null || CACHE_TOPIC_IDS_BY_NAME.isKeyInCache(sharedKey)) {
-				Topic cacheTopic = (cacheTopicId != null) ? this.lookupTopicById(cacheTopicId.intValue(), conn) : null;
+				Topic cacheTopic = (cacheTopicId != null) ? this.lookupTopicById(cacheTopicId.intValue()) : null;
 				return (cacheTopic == null || (!deleteOK && cacheTopic.getDeleteDate() != null)) ? null : cacheTopic;
 			}
 		}
 		Topic topic = null;
-		try {
-			int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
-			topic = this.queryHandler().lookupTopic(virtualWikiId, namespace, pageName, conn);
-			if (topic == null && Environment.getBooleanValue(Environment.PROP_PARSER_ALLOW_CAPITALIZATION)) {
-				String alternativePageName = (StringUtils.equals(pageName, StringUtils.capitalize(pageName))) ? StringUtils.lowerCase(pageName) : StringUtils.capitalize(pageName);
-				topic = this.queryHandler().lookupTopic(virtualWikiId, namespace, alternativePageName, conn);
+		int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
+		topic = this.queryHandler().lookupTopic(virtualWikiId, namespace, pageName);
+		if (topic == null && Environment.getBooleanValue(Environment.PROP_PARSER_ALLOW_CAPITALIZATION)) {
+			String alternativePageName = (StringUtils.equals(pageName, StringUtils.capitalize(pageName))) ? StringUtils.lowerCase(pageName) : StringUtils.capitalize(pageName);
+			topic = this.queryHandler().lookupTopic(virtualWikiId, namespace, alternativePageName);
+		}
+		if (topic == null && checkSharedVirtualWiki) {
+			topic = this.lookupTopic(sharedVirtualWiki, namespace, pageName, deleteOK, useCache);
+		}
+		if (useCache) {
+			// add topic to the cache only if it is not currently a part of a transaction
+			// to avoid caching something that might need to be rolled back.
+			if (topic == null) {
+				CACHE_TOPIC_IDS_BY_NAME.addToCache(key, null);
+				CACHE_TOPIC_NAMES_BY_NAME.addToCache(key, null);
+			} else {
+				this.cacheTopicRefresh(topic, false, key);
 			}
-			if (topic == null && checkSharedVirtualWiki) {
-				topic = this.lookupTopic(sharedVirtualWiki, namespace, pageName, deleteOK, conn);
-			}
-			if (conn == null) {
-				// add topic to the cache only if it is not currently a part of a transaction
-				// to avoid caching something that might need to be rolled back.
-				if (topic == null) {
-					CACHE_TOPIC_IDS_BY_NAME.addToCache(key, null);
-					CACHE_TOPIC_NAMES_BY_NAME.addToCache(key, null);
-				} else {
-					this.cacheTopicRefresh(topic, false, key);
-				}
-			}
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
 		}
 		if (logger.isDebugEnabled()) {
 			long execution = (System.currentTimeMillis() - start);
@@ -1316,31 +918,14 @@ public class AnsiDataHandler {
 	}
 
 	/**
-	 * Retrieve a Topic object that matches the given topic id and virtual wiki.  Note
-	 * that this method can return deleted topics.
-	 *
-	 * @param topicId The identifier of the topic being queried.
-	 * @return A Topic object that matches the given virtual wiki and topic
-	 * id, or <code>null</code> if no matching topic exists.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
-	 */
-	public Topic lookupTopicById(int topicId) throws DataAccessException {
-		return this.lookupTopicById(topicId, null);
-	}
-
-	/**
 	 *
 	 */
-	private Topic lookupTopicById(int topicId, Connection conn) throws DataAccessException {
+	public Topic lookupTopicById(int topicId) {
 		Topic result = CACHE_TOPICS_BY_ID.retrieveFromCache(topicId);
 		if (result != null || CACHE_TOPICS_BY_ID.isKeyInCache(topicId)) {
 			return (result == null) ? null : new Topic(result);
 		}
-		try {
-			result = this.queryHandler().lookupTopicById(topicId, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		result = this.queryHandler().lookupTopicById(topicId);
 		if (result == null) {
 			logger.info("Attempt to look up topic with non-existent ID: " + topicId + ".  This may indicate a code error");
 		} else {
@@ -1362,17 +947,12 @@ public class AnsiDataHandler {
 	 * @return A count of all topics, including redirects, comments pages and
 	 *  templates, for the given virtual wiki and (optionally) namespace.  Deleted
 	 *  topics are not included in the count.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public int lookupTopicCount(String virtualWiki, Integer namespaceId) throws DataAccessException {
+	public int lookupTopicCount(String virtualWiki, Integer namespaceId) {
 		int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
 		int namespaceStart = (namespaceId != null) ? namespaceId : 0;
 		int namespaceEnd = (namespaceId != null) ? namespaceId : this.findMaxNamespaceId();
-		try {
-			return this.queryHandler().lookupTopicCount(virtualWikiId, namespaceStart, namespaceEnd);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		return this.queryHandler().lookupTopicCount(virtualWikiId, namespaceStart, namespaceEnd);
 	}
 
 	/**
@@ -1390,17 +970,12 @@ public class AnsiDataHandler {
 	 *  results and offset for the results to be retrieved.
 	 * @return A map of topic id and topic name for all non-deleted topics in the
 	 *  virtual wiki that match a specific topic type.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public Map<Integer, String> lookupTopicByType(String virtualWiki, TopicType topicType1, TopicType topicType2, Integer namespaceId, Pagination pagination) throws DataAccessException {
+	public Map<Integer, String> lookupTopicByType(String virtualWiki, TopicType topicType1, TopicType topicType2, Integer namespaceId, Pagination pagination) {
 		int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
 		int namespaceStart = (namespaceId != null) ? namespaceId : 0;
 		int namespaceEnd = (namespaceId != null) ? namespaceId : this.findMaxNamespaceId();
-		try {
-			return this.queryHandler().lookupTopicByType(virtualWikiId, topicType1, topicType2, namespaceStart, namespaceEnd, pagination);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		return this.queryHandler().lookupTopicByType(virtualWikiId, topicType1, topicType2, namespaceStart, namespaceEnd, pagination);
 	}
 
 	/**
@@ -1415,10 +990,9 @@ public class AnsiDataHandler {
 	 * @param pageName The topic pageName (topic name without the namespace) for
 	 *  the topic being retrieved.
 	 * @return The name of the Topic object that matches the given virtual wiki and topic
-	 * name, or <code>null</code> if no matching topic exists.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
+	 *  name, or <code>null</code> if no matching topic exists.
 	 */
-	public String lookupTopicName(String virtualWiki, Namespace namespace, String pageName) throws DataAccessException {
+	public String lookupTopicName(String virtualWiki, Namespace namespace, String pageName) {
 		if (StringUtils.isBlank(virtualWiki) || StringUtils.isBlank(pageName)) {
 			return null;
 		}
@@ -1437,16 +1011,12 @@ public class AnsiDataHandler {
 				return topicName;
 			}
 		}
-		try {
-			int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
-			topicName = this.queryHandler().lookupTopicName(virtualWikiId, virtualWiki, namespace, pageName);
-			if (topicName == null && checkSharedVirtualWiki) {
-				topicName = this.lookupTopicName(sharedVirtualWiki, namespace, pageName);
-			}
-			CACHE_TOPIC_NAMES_BY_NAME.addToCache(key, topicName);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
+		int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
+		topicName = this.queryHandler().lookupTopicName(virtualWikiId, virtualWiki, namespace, pageName);
+		if (topicName == null && checkSharedVirtualWiki) {
+			topicName = this.lookupTopicName(sharedVirtualWiki, namespace, pageName);
 		}
+		CACHE_TOPIC_NAMES_BY_NAME.addToCache(key, topicName);
 		if (logger.isDebugEnabled()) {
 			long execution = (System.currentTimeMillis() - start);
 			if (execution > TIME_LIMIT_TOPIC_LOOKUP) {
@@ -1464,9 +1034,8 @@ public class AnsiDataHandler {
 	 * @return A list of topic name and (for redirects) the redirect topic
 	 *  name for all topics that link to the specified topic.  If no results
 	 *  are found then an empty list is returned.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<String[]> lookupTopicLinks(String virtualWiki, String topicName) throws DataAccessException {
+	public List<String[]> lookupTopicLinks(String virtualWiki, String topicName) {
 		int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
 		Namespace namespace = LinkUtil.retrieveTopicNamespace(virtualWiki, topicName);
 		String pageName = LinkUtil.retrieveTopicPageName(namespace, virtualWiki, topicName);
@@ -1474,11 +1043,7 @@ public class AnsiDataHandler {
 		// rare case of two topics such as "eBay" and "EBay".
 		pageName = StringUtils.capitalize(pageName);
 		Topic topic = new Topic(virtualWiki, namespace, pageName);
-		try {
-			return this.queryHandler().lookupTopicLinks(virtualWikiId, topic);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		return this.queryHandler().lookupTopicLinks(virtualWikiId, topic);
 	}
 
 	/**
@@ -1488,16 +1053,11 @@ public class AnsiDataHandler {
 	 * @param namespaceId The ID for the namespace being retrieved.
 	 * @return A list of topic names for all topics that are not linked to by
 	 *  any other topic.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<String> lookupTopicLinkOrphans(String virtualWiki, int namespaceId) throws DataAccessException {
+	public List<String> lookupTopicLinkOrphans(String virtualWiki, int namespaceId) {
 		// FIXME - caching needed
 		int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
-		try {
-			return this.queryHandler().lookupTopicLinkOrphans(virtualWikiId, namespaceId);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		return this.queryHandler().lookupTopicLinkOrphans(virtualWikiId, namespaceId);
 	}
 
 	/**
@@ -1506,18 +1066,13 @@ public class AnsiDataHandler {
 	 * @param topicVersionId The ID of the topic version being retrieved.
 	 * @return A TopicVersion object matching the given topic version ID,
 	 *  or <code>null</code> if no matching topic version is found.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public TopicVersion lookupTopicVersion(int topicVersionId) throws DataAccessException {
+	public TopicVersion lookupTopicVersion(int topicVersionId) {
 		TopicVersion topicVersion = CACHE_TOPIC_VERSIONS.retrieveFromCache(topicVersionId);
 		if (topicVersion != null || CACHE_TOPIC_VERSIONS.isKeyInCache(topicVersionId)) {
 			return topicVersion;
 		}
-		try {
-			topicVersion = this.queryHandler().lookupTopicVersion(topicVersionId);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		topicVersion = this.queryHandler().lookupTopicVersion(topicVersionId);
 		CACHE_TOPIC_VERSIONS.addToCache(topicVersionId, topicVersion);
 		return topicVersion;
 	}
@@ -1530,14 +1085,9 @@ public class AnsiDataHandler {
 	 *  ID is being retrieved.
 	 * @return The next topic version ID chronologically for a given topic
 	 * version, or <code>null</code> if there is no next topic version ID.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public Integer lookupTopicVersionNextId(int topicVersionId) throws DataAccessException {
-		try {
-			return this.queryHandler().lookupTopicVersionNextId(topicVersionId);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public Integer lookupTopicVersionNextId(int topicVersionId) {
+		return this.queryHandler().lookupTopicVersionNextId(topicVersionId);
 	}
 
 	/**
@@ -1549,9 +1099,8 @@ public class AnsiDataHandler {
 	 *  user ID.
 	 * @return A currently-active user block for the ID or IP address, or
 	 *  <code>null</code> if no block is currently active.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public UserBlock lookupUserBlock(Integer wikiUserId, String ipAddress) throws DataAccessException {
+	public UserBlock lookupUserBlock(Integer wikiUserId, String ipAddress) {
 		Map<Object, UserBlock> userBlocks = this.getUserBlocks();
 		UserBlock userBlock = null;
 		if (wikiUserId != null) {
@@ -1572,9 +1121,8 @@ public class AnsiDataHandler {
 	 * @return The VirtualWiki object that corresponds to the virtual wiki
 	 *  name being queried, or <code>null</code> if no matching VirtualWiki
 	 *  can be found.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public VirtualWiki lookupVirtualWiki(String virtualWikiName) throws DataAccessException {
+	public VirtualWiki lookupVirtualWiki(String virtualWikiName) {
 		List<VirtualWiki> virtualWikis = this.getVirtualWikiList();
 		for (VirtualWiki virtualWiki : virtualWikis) {
 			if (virtualWiki.getName().equals(virtualWikiName)) {
@@ -1589,7 +1137,7 @@ public class AnsiDataHandler {
 	/**
 	 *
 	 */
-	private int lookupVirtualWikiId(String virtualWikiName) throws DataAccessException {
+	private int lookupVirtualWikiId(String virtualWikiName) {
 		VirtualWiki virtualWiki = this.lookupVirtualWiki(virtualWikiName);
 		return (virtualWiki == null) ? -1 : virtualWiki.getVirtualWikiId();
 	}
@@ -1601,9 +1149,8 @@ public class AnsiDataHandler {
 	 * @param topicName The topic name for the file being queried.
 	 * @return The WikiFile object for the given virtual wiki and topic name,
 	 *  or <code>null</code> if no matching WikiFile exists.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public WikiFile lookupWikiFile(String virtualWiki, String topicName) throws DataAccessException {
+	public WikiFile lookupWikiFile(String virtualWiki, String topicName) {
 		if (StringUtils.isBlank(virtualWiki) || StringUtils.isBlank(topicName)) {
 			return null;
 		}
@@ -1615,26 +1162,22 @@ public class AnsiDataHandler {
 	/**
 	 *
 	 */
-	private WikiFile lookupWikiFile(String virtualWiki, Namespace namespace, String pageName) throws DataAccessException {
-		Topic topic = this.lookupTopic(virtualWiki, namespace, pageName, false, null);
+	private WikiFile lookupWikiFile(String virtualWiki, Namespace namespace, String pageName) {
+		Topic topic = this.lookupTopic(virtualWiki, namespace, pageName, false, true);
 		if (topic == null) {
 			return null;
 		}
-		try {
-			int virtualWikiId = this.lookupVirtualWikiId(topic.getVirtualWiki());
-			WikiFile wikiFile = this.queryHandler().lookupWikiFile(virtualWikiId, topic.getVirtualWiki(), topic.getTopicId());
-			if (wikiFile == null && this.useSharedVirtualWiki(topic.getVirtualWiki(), topic.getNamespace())) {
-				// this is a weird corner case.  if there is a shared virtual wiki
-				// then someone might have uploaded the image to the shared virtual
-				// wiki but then created a description on the non-shared image page,
-				// so check for a file on the shared virtual wiki.
-				String sharedVirtualWiki = Environment.getValue(Environment.PROP_SHARED_UPLOAD_VIRTUAL_WIKI);
-				wikiFile = this.lookupWikiFile(sharedVirtualWiki, namespace, pageName);
-			}
-			return wikiFile;
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
+		int virtualWikiId = this.lookupVirtualWikiId(topic.getVirtualWiki());
+		WikiFile wikiFile = this.queryHandler().lookupWikiFile(virtualWikiId, topic.getVirtualWiki(), topic.getTopicId());
+		if (wikiFile == null && this.useSharedVirtualWiki(topic.getVirtualWiki(), topic.getNamespace())) {
+			// this is a weird corner case.  if there is a shared virtual wiki
+			// then someone might have uploaded the image to the shared virtual
+			// wiki but then created a description on the non-shared image page,
+			// so check for a file on the shared virtual wiki.
+			String sharedVirtualWiki = Environment.getValue(Environment.PROP_SHARED_UPLOAD_VIRTUAL_WIKI);
+			wikiFile = this.lookupWikiFile(sharedVirtualWiki, namespace, pageName);
 		}
+		return wikiFile;
 	}
 
 	/**
@@ -1645,15 +1188,10 @@ public class AnsiDataHandler {
 	 *  being returned.
 	 * @return A count of all wiki files for the given virtual wiki.  Deleted
 	 *  files are not included in the count.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public int lookupWikiFileCount(String virtualWiki) throws DataAccessException {
+	public int lookupWikiFileCount(String virtualWiki) {
 		int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
-		try {
-			return this.queryHandler().lookupWikiFileCount(virtualWikiId);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		return this.queryHandler().lookupWikiFileCount(virtualWikiId);
 	}
 
 	/**
@@ -1662,14 +1200,9 @@ public class AnsiDataHandler {
 	 * @param groupName The group name for the group being queried.
 	 * @return The WikiGroup object for the given group name, or
 	 *  <code>null</code> if no matching group exists.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public WikiGroup lookupWikiGroup(String groupName) throws DataAccessException {
-		try {
-			return this.queryHandler().lookupWikiGroup(groupName);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public WikiGroup lookupWikiGroup(String groupName) {
+		return this.queryHandler().lookupWikiGroup(groupName);
 	}
 
 	/**
@@ -1678,18 +1211,13 @@ public class AnsiDataHandler {
 	 * @param userId The ID of the WikiUser being retrieved.
 	 * @return The WikiUser object matching the given user ID, or
 	 *  <code>null</code> if no matching WikiUser exists.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public WikiUser lookupWikiUser(int userId) throws DataAccessException {
+	public WikiUser lookupWikiUser(int userId) {
 		WikiUser user = CACHE_USER_BY_USER_ID.retrieveFromCache(userId);
 		if (user != null || CACHE_USER_BY_USER_ID.isKeyInCache(userId)) {
 			return user;
 		}
-		try {
-			user = this.queryHandler().lookupWikiUser(userId);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+		user = this.queryHandler().lookupWikiUser(userId);
 		CACHE_USER_BY_USER_ID.addToCache(userId, user);
 		return user;
 	}
@@ -1700,47 +1228,34 @@ public class AnsiDataHandler {
 	 * @param username The username of the WikiUser being retrieved.
 	 * @return The WikiUser object matching the given username, or
 	 *  <code>null</code> if no matching WikiUser exists.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public WikiUser lookupWikiUser(String username) throws DataAccessException {
+	public WikiUser lookupWikiUser(String username) {
 		WikiUser result = CACHE_USER_BY_USER_NAME.retrieveFromCache(username);
 		if (result != null || CACHE_USER_BY_USER_NAME.isKeyInCache(username)) {
 			return result;
 		}
-		Connection conn = null;
-		try {
-			conn = DatabaseConnection.getConnection();
-			int userId = this.queryHandler().lookupWikiUser(username, conn);
-			if (userId != -1) {
-				result = lookupWikiUser(userId);
-			}
-			CACHE_USER_BY_USER_NAME.addToCache(username, result);
-			return result;
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
+		int userId = this.queryHandler().lookupWikiUser(username);
+		if (userId != -1) {
+			result = lookupWikiUser(userId);
 		}
+		CACHE_USER_BY_USER_NAME.addToCache(username, result);
+		return result;
 	}
 
-	public WikiUser lookupPwResetChallengeData(String username) throws DataAccessException {
-		try {
-			return this.queryHandler().lookupPwResetChallengeData(username);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	/**
+	 *
+	 */
+	public WikiUser lookupPwResetChallengeData(String username) {
+		return this.queryHandler().lookupPwResetChallengeData(username);
 	}
 	
 	/**
 	 * Return a count of all wiki users.
 	 *
 	 * @return A count of all wiki users.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public int lookupWikiUserCount() throws DataAccessException {
-		try {
-			return this.queryHandler().lookupWikiUserCount();
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public int lookupWikiUserCount() {
+		return this.queryHandler().lookupWikiUserCount();
 	}
 
 	/**
@@ -1749,14 +1264,9 @@ public class AnsiDataHandler {
 	 * @param username The username of the WikiUser being retrieved.
 	 * @return The encrypted password for the given user name, or
 	 *  <code>null</code> if no matching WikiUser exists.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public String lookupWikiUserEncryptedPassword(String username) throws DataAccessException {
-		try {
-			return this.queryHandler().lookupWikiUserEncryptedPassword(username);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public String lookupWikiUserEncryptedPassword(String username) {
+		return this.queryHandler().lookupWikiUserEncryptedPassword(username);
 	}
 
 	/**
@@ -1765,14 +1275,9 @@ public class AnsiDataHandler {
 	 * @param pagination A Pagination object indicating the total number of
 	 *  results and offset for the results to be retrieved.
 	 * @return A List of user logins for all wiki users.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public List<String> lookupWikiUsers(Pagination pagination) throws DataAccessException {
-		try {
-			return this.queryHandler().lookupWikiUsers(pagination);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public List<String> lookupWikiUsers(Pagination pagination) {
+		return this.queryHandler().lookupWikiUsers(pagination);
 	}
 
 	/**
@@ -1787,74 +1292,69 @@ public class AnsiDataHandler {
 	 * @param ipAddress The IP address of the user making the topic move.
 	 * @param moveComment The edit comment to associate with the topic
 	 *  move.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the topic information is invalid.
 	 */
-	public void moveTopic(Topic fromTopic, String destination, WikiUser user, String ipAddress, String moveComment) throws DataAccessException, WikiException {
+	public void moveTopic(final Topic fromTopic, final String destination, WikiUser user, String ipAddress, String moveComment) throws WikiException {
 		// set up the version record to record the topic move
-		TopicVersion fromVersion = new TopicVersion(user, ipAddress, moveComment, fromTopic.getTopicContent(), 0);
+		final TopicVersion fromVersion = new TopicVersion(user, ipAddress, moveComment, fromTopic.getTopicContent(), 0);
 		fromVersion.setEditType(TopicVersion.EDIT_MOVE);
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			if (!this.canMoveTopic(fromTopic, destination)) {
-				throw new WikiException(new WikiMessage("move.exception.destinationexists", destination));
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					try {
+						if (!canMoveTopic(fromTopic, destination)) {
+							throw new WikiException(new WikiMessage("move.exception.destinationexists", destination));
+						}
+						Topic toTopic = lookupTopic(fromTopic.getVirtualWiki(), destination, false, false);
+						boolean detinationExistsFlag = (toTopic != null && toTopic.getDeleteDate() == null);
+						if (detinationExistsFlag) {
+							// if the target topic is a redirect to the source topic then the
+							// target must first be deleted.
+							deleteTopic(toTopic, null);
+						}
+						// first rename the source topic with the new destination name
+						String fromTopicName = fromTopic.getName();
+						fromTopic.setName(destination);
+						// only one version needs to create a recent change entry, so do not create a log entry
+						// for the "from" version
+						fromVersion.setRecentChangeAllowed(false);
+						// handle categories
+						ParserOutput fromParserOutput = ParserUtil.parserOutput(fromTopic.getTopicContent(), fromTopic.getVirtualWiki(), fromTopic.getName());
+						writeTopic(fromTopic, fromVersion, fromParserOutput.getCategories(), fromParserOutput.getLinks());
+						// now either create a new topic that is a redirect with the
+						// source topic's old name, or else undelete the new topic and
+						// rename.
+						if (detinationExistsFlag) {
+							// target topic was deleted, so rename and undelete
+							toTopic.setName(fromTopicName);
+							writeTopic(toTopic, null, null, null);
+							undeleteTopic(toTopic, null);
+						} else {
+							// create a new topic that redirects to the destination
+							toTopic = new Topic(fromTopic);
+							toTopic.setTopicId(-1);
+							toTopic.setName(fromTopicName);
+						}
+						String content = ParserUtil.parserRedirectContent(destination);
+						toTopic.setRedirectTo(destination);
+						toTopic.setTopicType(TopicType.REDIRECT);
+						toTopic.setTopicContent(content);
+						TopicVersion toVersion = fromVersion;
+						toVersion.setTopicVersionId(-1);
+						toVersion.setVersionContent(content);
+						toVersion.setRecentChangeAllowed(true);
+						ParserOutput toParserOutput = ParserUtil.parserOutput(toTopic.getTopicContent(), toTopic.getVirtualWiki(), toTopic.getName());
+						writeTopic(toTopic, toVersion, toParserOutput.getCategories(), toParserOutput.getLinks());
+					} catch (ParserException e) {
+						status.setRollbackOnly();
+						throw new TransactionRuntimeException(e);
+					} catch (WikiException e) {
+						status.setRollbackOnly();
+						throw new TransactionRuntimeException(e);
+					}
+				}
 			}
-			Topic toTopic = this.lookupTopic(fromTopic.getVirtualWiki(), destination, false, conn);
-			boolean detinationExistsFlag = (toTopic != null && toTopic.getDeleteDate() == null);
-			if (detinationExistsFlag) {
-				// if the target topic is a redirect to the source topic then the
-				// target must first be deleted.
-				this.deleteTopic(toTopic, null);
-			}
-			// first rename the source topic with the new destination name
-			String fromTopicName = fromTopic.getName();
-			fromTopic.setName(destination);
-			// only one version needs to create a recent change entry, so do not create a log entry
-			// for the "from" version
-			fromVersion.setRecentChangeAllowed(false);
-			// handle categories
-			ParserOutput fromParserOutput = ParserUtil.parserOutput(fromTopic.getTopicContent(), fromTopic.getVirtualWiki(), fromTopic.getName());
-			writeTopic(fromTopic, fromVersion, fromParserOutput.getCategories(), fromParserOutput.getLinks());
-			// now either create a new topic that is a redirect with the
-			// source topic's old name, or else undelete the new topic and
-			// rename.
-			if (detinationExistsFlag) {
-				// target topic was deleted, so rename and undelete
-				toTopic.setName(fromTopicName);
-				writeTopic(toTopic, null, null, null);
-				this.undeleteTopic(toTopic, null);
-			} else {
-				// create a new topic that redirects to the destination
-				toTopic = new Topic(fromTopic);
-				toTopic.setTopicId(-1);
-				toTopic.setName(fromTopicName);
-			}
-			String content = ParserUtil.parserRedirectContent(destination);
-			toTopic.setRedirectTo(destination);
-			toTopic.setTopicType(TopicType.REDIRECT);
-			toTopic.setTopicContent(content);
-			TopicVersion toVersion = fromVersion;
-			toVersion.setTopicVersionId(-1);
-			toVersion.setVersionContent(content);
-			toVersion.setRecentChangeAllowed(true);
-			ParserOutput toParserOutput = ParserUtil.parserOutput(toTopic.getTopicContent(), toTopic.getVirtualWiki(), toTopic.getName());
-			writeTopic(toTopic, toVersion, toParserOutput.getCategories(), toParserOutput.getLinks());
-		} catch (DataAccessException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (ParserException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (WikiException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		}
-		DatabaseConnection.commit(status);
+		);
 	}
 
 	/**
@@ -1864,16 +1364,17 @@ public class AnsiDataHandler {
 	 * @param topic The topic record to update.
 	 * @param topicVersionIdList A list of all topic version IDs for the topic, sorted
 	 *  chronologically from oldest to newest.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public void orderTopicVersions(Topic topic, List<Integer> topicVersionIdList) throws DataAccessException {
-		try {
-			int virtualWikiId = this.lookupVirtualWikiId(topic.getVirtualWiki());
-			this.queryHandler().orderTopicVersions(topic, virtualWikiId, topicVersionIdList);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-		this.cacheTopicRefresh(topic, true, null);
+	public void orderTopicVersions(final Topic topic, final List<Integer> topicVersionIdList) {
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					int virtualWikiId = lookupVirtualWikiId(topic.getVirtualWiki());
+					queryHandler().orderTopicVersions(topic, virtualWikiId, topicVersionIdList);
+					cacheTopicRefresh(topic, true, null);
+				}
+			}
+		);
 	}
 
 	/**
@@ -1885,12 +1386,11 @@ public class AnsiDataHandler {
 	 * @param user The WikiUser who will be credited in the log record
 	 *  associated with this action.
 	 * @param ipAddress The IP address of the user deleting the topic version.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public void purgeTopicVersion(Topic topic, int topicVersionId, WikiUser user, String ipAddress) throws DataAccessException, WikiException {
+	public void purgeTopicVersion(final Topic topic, final int topicVersionId, final WikiUser user, final String ipAddress) throws WikiException {
 		// 1. get the topic version record.  if no such record exists
 		// throw an exception.
-		TopicVersion topicVersion = this.lookupTopicVersion(topicVersionId);
+		final TopicVersion topicVersion = this.lookupTopicVersion(topicVersionId);
 		if (topicVersion == null) {
 			throw new WikiException(new WikiMessage("purge.error.noversion", Integer.toString(topicVersionId)));
 		}
@@ -1899,43 +1399,51 @@ public class AnsiDataHandler {
 		// with the current version as its previous_topic_version_id.
 		// if there is still no such record throw an exception.
 		Integer previousTopicVersionId = topicVersion.getPreviousTopicVersionId();
-		Integer nextTopicVersionId = this.lookupTopicVersionNextId(topicVersionId);
+		final Integer nextTopicVersionId = this.lookupTopicVersionNextId(topicVersionId);
 		if (previousTopicVersionId == null && nextTopicVersionId == null) {
 			throw new WikiException(new WikiMessage("purge.error.onlyversion", Integer.toString(topicVersionId), topic.getName()));
 		}
-		Integer replacementTopicVersionId = (previousTopicVersionId != null) ? previousTopicVersionId : nextTopicVersionId;
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			// 3. get a reference to any topic which has this topic as its
-			// current_version_id, and update with the value from #2.
-			if (topicVersionId == topic.getCurrentVersionId().intValue()) {
-				topic.setCurrentVersionId(replacementTopicVersionId);
-				this.updateTopic(topic, conn);
+		final Integer replacementTopicVersionId = (previousTopicVersionId != null) ? previousTopicVersionId : nextTopicVersionId;
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					try {
+						// 3. get a reference to any topic which has this topic as its
+						// current_version_id, and update with the value from #2.
+						if (topicVersionId == topic.getCurrentVersionId().intValue()) {
+							topic.setCurrentVersionId(replacementTopicVersionId);
+							int virtualWikiId = lookupVirtualWikiId(topic.getVirtualWiki());
+							dataValidator.validateTopic(topic);
+							queryHandler().updateTopic(topic, virtualWikiId);
+						}
+						// 4. if there is a topic version with this version as its
+						// previous_topic_version_id update it with the value from #2
+						if (nextTopicVersionId != null) {
+							TopicVersion nextTopicVersion = lookupTopicVersion(nextTopicVersionId);
+							nextTopicVersion.setPreviousTopicVersionId(topicVersion.getPreviousTopicVersionId());
+							queryHandler().updateTopicVersion(nextTopicVersion);
+						}
+						// 5. delete the topic version record from all tables
+						queryHandler().deleteTopicVersion(topicVersionId, topicVersion.getPreviousTopicVersionId());
+						// 6. create a log record
+						LogItem logItem = LogItem.initLogItemPurge(topic, topicVersion, user, ipAddress);
+						int logVirtualWikiId = lookupVirtualWikiId(logItem.getVirtualWiki());
+						dataValidator.validateLogItem(logItem);
+						queryHandler().insertLogItem(logItem, logVirtualWikiId);
+						RecentChange change = RecentChange.initRecentChange(logItem);
+						int changeVirtualWikiId = lookupVirtualWikiId(change.getVirtualWiki());
+						dataValidator.validateRecentChange(change);
+						queryHandler().insertRecentChange(change, changeVirtualWikiId);
+						CACHE_TOPIC_VERSIONS.removeFromCache(topicVersionId);
+						CACHE_TOPIC_VERSIONS.removeFromCache(nextTopicVersionId);
+						CACHE_TOPICS_BY_ID.removeFromCache(topic.getTopicId());
+					} catch (WikiException e) {
+						status.setRollbackOnly();
+						throw new TransactionRuntimeException(e);
+					}
+				}
 			}
-			// 4. if there is a topic version with this version as its
-			// previous_topic_version_id update it with the value from #2
-			if (nextTopicVersionId != null) {
-				TopicVersion nextTopicVersion = this.lookupTopicVersion(nextTopicVersionId);
-				nextTopicVersion.setPreviousTopicVersionId(topicVersion.getPreviousTopicVersionId());
-				this.queryHandler().updateTopicVersion(nextTopicVersion, conn);
-			}
-			// 5. delete the topic version record from all tables
-			this.queryHandler().deleteTopicVersion(topicVersionId, topicVersion.getPreviousTopicVersionId(), conn);
-			// 6. create a log record
-			LogItem logItem = LogItem.initLogItemPurge(topic, topicVersion, user, ipAddress);
-			this.addLogItem(logItem, conn);
-			RecentChange change = RecentChange.initRecentChange(logItem);
-			this.addRecentChange(change, conn);
-			CACHE_TOPIC_VERSIONS.removeFromCache(topicVersionId);
-			CACHE_TOPIC_VERSIONS.removeFromCache(nextTopicVersionId);
-			CACHE_TOPICS_BY_ID.removeFromCache(topic.getTopicId());
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		}
-		DatabaseConnection.commit(status);
+		);
 	}
 
 	/**
@@ -1979,43 +1487,32 @@ public class AnsiDataHandler {
 	/**
 	 * Delete all existing log entries and reload the log item table based
 	 * on the most recent topic versions, uploads, and user signups.
-	 *
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public void reloadLogItems() throws DataAccessException {
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			List<VirtualWiki> virtualWikis = this.getVirtualWikiList();
-			for (VirtualWiki virtualWiki : virtualWikis) {
-				this.queryHandler().reloadLogItems(virtualWiki.getVirtualWikiId(), conn);
+	public void reloadLogItems() {
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					for (VirtualWiki virtualWiki : getVirtualWikiList()) {
+						queryHandler().reloadLogItems(virtualWiki.getVirtualWikiId());
+					}
+				}
 			}
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		}
-		DatabaseConnection.commit(status);
+		);
 	}
 
 	/**
 	 * Delete all existing recent changes and reload the recent changes based
 	 * on the most recent topic versions.
-	 *
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public void reloadRecentChanges() throws DataAccessException {
-		int limit = Environment.getIntValue(Environment.PROP_MAX_RECENT_CHANGES);
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			this.queryHandler().reloadRecentChanges(conn, limit);
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		}
-		DatabaseConnection.commit(status);
+	public void reloadRecentChanges() {
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					int limit = Environment.getIntValue(Environment.PROP_MAX_RECENT_CHANGES);
+					queryHandler().reloadRecentChanges(limit);
+				}
+			}
+		);
 	}
 
 	/**
@@ -2029,28 +1526,16 @@ public class AnsiDataHandler {
 	 * @param username The admin user's username (login).
 	 * @param encryptedPassword The admin user's encrypted password.  This value
 	 *  is only required when creating a new admin user.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if a setup failure occurs.
 	 */
-	public void setup(Locale locale, WikiUser user, String username, String encryptedPassword) throws DataAccessException, WikiException {
+	public void setup(Locale locale, WikiUser user, String username, String encryptedPassword) throws WikiException {
 		WikiDatabase.initialize();
 		// determine if database exists
-		Connection conn = null;
-		Statement stmt = null;
 		try {
-			conn = DatabaseConnection.getConnection();
-			stmt = conn.createStatement();
-			stmt.executeQuery(this.queryHandler().existenceValidationQuery());
+			DatabaseConnection.getJdbcTemplate().execute(this.queryHandler().existenceValidationQuery());
 			return;
-		} catch (SQLException e) {
+		} catch (DataAccessException e) {
 			// database not yet set up
-		} finally {
-			DatabaseConnection.closeConnection(conn, stmt);
-			// explicitly null the variable to improve garbage collection.
-			// with very large loops this can help avoid OOM "GC overhead
-			// limit exceeded" errors.
-			stmt = null;
-			conn = null;
 		}
 		WikiDatabase.setup(locale, user, username, encryptedPassword);
 	}
@@ -2065,31 +1550,30 @@ public class AnsiDataHandler {
 	 * @param user The admin user to use when creating the special pages.
 	 * @param virtualWiki The VirtualWiki for which special pages are being
 	 *  created.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if a setup failure occurs.
 	 */
-	public void setupSpecialPages(Locale locale, WikiUser user, VirtualWiki virtualWiki) throws DataAccessException, WikiException {
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			// create the default topics
-			WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_STARTING_POINTS, user, false, false);
-			WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_SIDEBAR, user, true, false);
-			WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_FOOTER, user, true, false);
-			WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_HEADER, user, true, false);
-			WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_SYSTEM_CSS, user, true, true);
-			WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_CUSTOM_CSS, user, true, false);
-		} catch (DataAccessException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (WikiException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		}
-		DatabaseConnection.commit(status);
+	public void setupSpecialPages(final Locale locale, final WikiUser user, final VirtualWiki virtualWiki) throws WikiException {
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					try {
+						// create the default topics
+						WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_STARTING_POINTS, user, false, false);
+						WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_SIDEBAR, user, true, false);
+						WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_FOOTER, user, true, false);
+						WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_HEADER, user, true, false);
+						WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_SYSTEM_CSS, user, true, true);
+						WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_CUSTOM_CSS, user, true, false);
+					} catch (IOException e) {
+						status.setRollbackOnly();
+						throw new TransactionRuntimeException(e);
+					} catch (WikiException e) {
+						status.setRollbackOnly();
+						throw new TransactionRuntimeException(e);
+					}
+				}
+			}
+		);
 	}
 
 	/**
@@ -2103,33 +1587,19 @@ public class AnsiDataHandler {
 	 *  date, author, and other parameters for the topic.  If this value is
 	 *  <code>null</code> then no version is saved, nor is any recent change
 	 *  entry created.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the topic information is invalid.
 	 */
-	public void undeleteTopic(Topic topic, TopicVersion topicVersion) throws DataAccessException, WikiException {
-		TransactionStatus status = null;
+	public void undeleteTopic(Topic topic, TopicVersion topicVersion) throws WikiException {
 		try {
-			status = DatabaseConnection.startTransaction();
 			// update topic to indicate deleted, add delete topic version.  if
 			// topic has categories or other metadata then parser document is
 			// also needed.
 			ParserOutput parserOutput = ParserUtil.parserOutput(topic.getTopicContent(), topic.getVirtualWiki(), topic.getName());
 			topic.setDeleteDate(null);
 			this.writeTopic(topic, topicVersion, parserOutput.getCategories(), parserOutput.getLinks());
-		} catch (DataAccessException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
 		} catch (ParserException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (WikiException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
+			throw new InvalidDataAccessApiUsageException("Failure while parsing topic " + topic.getName(), e);
 		}
-		DatabaseConnection.commit(status);
 	}
 
 	/**
@@ -2145,135 +1615,28 @@ public class AnsiDataHandler {
 	 *  updated.
 	 * @param userDisplay A display name for the user updating special pages,
 	 *  typically the IP address.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the topic information is invalid.
 	 */
-	public void updateSpecialPage(Locale locale, String virtualWiki, String topicName, String userDisplay) throws DataAccessException, WikiException {
+	public void updateSpecialPage(Locale locale, String virtualWiki, String topicName, String userDisplay) throws WikiException {
 		logger.info("Updating special page " + virtualWiki + " / " + topicName);
-		TransactionStatus status = null;
 		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
 			String contents = WikiDatabase.readSpecialPage(locale, topicName);
-			Topic topic = this.lookupTopic(virtualWiki, topicName, false, conn);
+			Topic topic = this.lookupTopic(virtualWiki, topicName, false, false);
 			int charactersChanged = StringUtils.length(contents) - StringUtils.length(topic.getTopicContent());
 			topic.setTopicContent(contents);
 			// FIXME - hard coding
 			TopicVersion topicVersion = new TopicVersion(null, userDisplay, "Automatically updated by system upgrade", contents, charactersChanged);
 			ParserOutput parserOutput = ParserUtil.parserOutput(topic.getTopicContent(), virtualWiki, topicName);
 			writeTopic(topic, topicVersion, parserOutput.getCategories(), parserOutput.getLinks());
-		} catch (DataAccessException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
 		} catch (ParserException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
+			throw new InvalidDataAccessApiUsageException("Failure while parsing topic " + topicName, e);
 		} catch (IOException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (WikiException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		}
-		DatabaseConnection.commit(status);
-	}
-
-	/**
-	 *
-	 */
-	private void updateTopic(Topic topic, Connection conn) throws DataAccessException, WikiException {
-		int virtualWikiId = this.lookupVirtualWikiId(topic.getVirtualWiki());
-		this.dataValidator.validateTopic(topic);
-		try {
-			this.queryHandler().updateTopic(topic, virtualWikiId, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
+			throw new NonTransientDataAccessResourceException("I/O exception accessing special page for " + virtualWiki + " / " + topicName, e);
 		}
 	}
 
-	/**
-	 *
-	 */
-	private void updateUserBlock(UserBlock userBlock, Connection conn) throws DataAccessException, WikiException {
-		this.dataValidator.validateUserBlock(userBlock);
-		try {
-			this.queryHandler().updateUserBlock(userBlock, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void updateUserDetails(WikiUserDetails userDetails, Connection conn) throws DataAccessException, WikiException {
-		this.dataValidator.validateUserDetails(userDetails);
-		try {
-			this.queryHandler().updateUserDetails(userDetails, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void updateVirtualWiki(VirtualWiki virtualWiki, Connection conn) throws DataAccessException, WikiException {
-		this.dataValidator.validateVirtualWiki(virtualWiki);
-		try {
-			this.queryHandler().updateVirtualWiki(virtualWiki, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void updateWikiFile(WikiFile wikiFile, Connection conn) throws DataAccessException, WikiException {
-		int virtualWikiId = this.lookupVirtualWikiId(wikiFile.getVirtualWiki());
-		this.dataValidator.validateWikiFile(wikiFile);
-		try {
-			this.queryHandler().updateWikiFile(wikiFile, virtualWikiId, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void updateWikiGroup(WikiGroup group, Connection conn) throws DataAccessException, WikiException {
-		this.dataValidator.validateWikiGroup(group);
-		try {
-			this.queryHandler().updateWikiGroup(group, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void updateWikiUser(WikiUser user, Connection conn) throws DataAccessException, WikiException {
-		this.dataValidator.validateWikiUser(user);
-		try {
-			this.queryHandler().updateWikiUser(user, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
-	}
-
-	public void updatePwResetChallengeData(WikiUser user) throws DataAccessException {
-		try {
-			this.queryHandler().updatePwResetChallengeData(user);
-		}
-		catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public void updatePwResetChallengeData(WikiUser user) {
+		this.queryHandler().updatePwResetChallengeData(user);
 	}
 	
 	/**
@@ -2299,21 +1662,17 @@ public class AnsiDataHandler {
 	 * @param configuration A map of key-value pairs corresponding to the new
 	 *  configuration information.  These values will replace all existing
 	 *  configuration values in the system.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the configuration information is invalid.
 	 */
-	public void writeConfiguration(Map<String, String> configuration) throws DataAccessException, WikiException {
+	public void writeConfiguration(final Map<String, String> configuration) throws WikiException {
 		this.dataValidator.validateConfiguration(configuration);
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			this.queryHandler().updateConfiguration(configuration, conn);
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		}
-		DatabaseConnection.commit(status);
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					queryHandler().updateConfiguration(configuration);
+				}
+			}
+		);
 	}
 
 	/**
@@ -2329,40 +1688,38 @@ public class AnsiDataHandler {
 	 *  other information about the version being added.
 	 * @param imageData If images are stored in the database then this field holds the
 	 *  image data information, otherwise it will be <code>null</code>.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the file information is invalid.
 	 */
-	public void writeFile(WikiFile wikiFile, WikiFileVersion wikiFileVersion, ImageData imageData) throws DataAccessException, WikiException {
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			LinkUtil.validateTopicName(wikiFile.getVirtualWiki(), wikiFile.getFileName(), false);
-			if (wikiFile.getFileId() <= 0) {
-				addWikiFile(wikiFile, conn);
-			} else {
-				updateWikiFile(wikiFile, conn);
+	public void writeFile(final WikiFile wikiFile, final WikiFileVersion wikiFileVersion, final ImageData imageData) throws WikiException {
+		this.dataValidator.validateWikiFile(wikiFile);
+		final int virtualWikiId = this.lookupVirtualWikiId(wikiFile.getVirtualWiki());
+		LinkUtil.validateTopicName(wikiFile.getVirtualWiki(), wikiFile.getFileName(), false);
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					try {
+						if (wikiFile.getFileId() <= 0) {
+							queryHandler().insertWikiFile(wikiFile, virtualWikiId);
+						} else {
+							queryHandler().updateWikiFile(wikiFile, virtualWikiId);
+						}
+						wikiFileVersion.setFileId(wikiFile.getFileId());
+						// write version
+						dataValidator.validateWikiFileVersion(wikiFileVersion);
+						queryHandler().insertWikiFileVersion(wikiFileVersion);
+						if (imageData != null) {
+							// No more needs of old resized images
+							queryHandler().deleteResizedImages(wikiFile.getFileId());
+							imageData.fileVersionId = wikiFileVersion.getFileVersionId();
+							queryHandler().insertImage(imageData, false);
+						}
+					} catch (WikiException e) {
+						status.setRollbackOnly();
+						throw new TransactionRuntimeException(e);
+					}
+				}
 			}
-			wikiFileVersion.setFileId(wikiFile.getFileId());
-			// write version
-			addWikiFileVersion(wikiFileVersion, conn);
-			if (imageData != null) {
-				// No more needs of old resized images
-				this.queryHandler().deleteResizedImages(wikiFile.getFileId(), conn);
-				imageData.fileVersionId = wikiFileVersion.getFileVersionId();
-				this.queryHandler().insertImage(imageData, false, conn);
-			}
-		} catch (DataAccessException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (WikiException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		}
-		DatabaseConnection.commit(status);
+		);
 	}
 
 	/**
@@ -2371,23 +1728,20 @@ public class AnsiDataHandler {
 	 *
 	 * @param interwiki The Interwiki record to add or update.  If a record
 	 *  already exists with the same prefix then that record will be deleted.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the interwiki information is invalid.
 	 */
-	public void writeInterwiki(Interwiki interwiki) throws DataAccessException, WikiException {
+	public void writeInterwiki(final Interwiki interwiki) throws WikiException {
 		interwiki.validate();
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			this.queryHandler().deleteInterwiki(interwiki, conn);
-			this.queryHandler().insertInterwiki(interwiki, conn);
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		}
-		DatabaseConnection.commit(status);
-		CACHE_INTERWIKI_LIST.removeAllFromCache();
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					queryHandler().deleteInterwiki(interwiki);
+					queryHandler().insertInterwiki(interwiki);
+					// only update the cache if no errors
+					CACHE_INTERWIKI_LIST.removeAllFromCache();
+				}
+			}
+		);
 	}
 
 	/**
@@ -2396,21 +1750,11 @@ public class AnsiDataHandler {
 	 * record.
 	 *
 	 * @param namespace The namespace object to add to the database.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the namespace information is invalid.
 	 */
-	public void writeNamespace(Namespace namespace) throws DataAccessException, WikiException {
+	public void writeNamespace(Namespace namespace) throws WikiException {
 		this.dataValidator.validateNamespace(namespace);
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			this.queryHandler().updateNamespace(namespace, conn);
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		}
-		DatabaseConnection.commit(status);
+		this.queryHandler().updateNamespace(namespace);
 		CACHE_NAMESPACE_LIST.removeAllFromCache();
 	}
 
@@ -2421,24 +1765,14 @@ public class AnsiDataHandler {
 	 * @param namespaces The namespace translation records to add/update.
 	 * @param virtualWiki The virtual wiki for which namespace translations are
 	 *  being added or updated.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the namespace information is invalid.
 	 */
-	public void writeNamespaceTranslations(List<Namespace> namespaces, String virtualWiki) throws DataAccessException, WikiException {
+	public void writeNamespaceTranslations(List<Namespace> namespaces, String virtualWiki) throws WikiException {
 		int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
 		for (Namespace namespace : namespaces) {
 			this.dataValidator.validateNamespaceTranslation(namespace, virtualWiki);
 		}
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			this.queryHandler().updateNamespaceTranslations(namespaces, virtualWiki, virtualWikiId, conn);
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		}
-		DatabaseConnection.commit(status);
+		this.queryHandler().updateNamespaceTranslations(namespaces, virtualWiki, virtualWikiId);
 		CACHE_NAMESPACE_LIST.removeAllFromCache();
 	}
 
@@ -2451,29 +1785,16 @@ public class AnsiDataHandler {
 	 *  performed.
 	 * @param update A boolean value indicating whether this transaction is
 	 *  updating an existing role or not.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the role information is invalid.
 	 */
-	public void writeRole(Role role, boolean update) throws DataAccessException, WikiException {
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			this.dataValidator.validateRole(role);
-			if (update) {
-				this.queryHandler().updateRole(role, conn);
-			} else {
-				this.queryHandler().insertRole(role, conn);
-			}
-			// FIXME - add caching
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (WikiException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
+	public void writeRole(Role role, boolean update) throws WikiException {
+		this.dataValidator.validateRole(role);
+		if (update) {
+			this.queryHandler().updateRole(role);
+		} else {
+			this.queryHandler().insertRole(role);
 		}
-		DatabaseConnection.commit(status);
+		// FIXME - add caching
 	}
 
 	/**
@@ -2484,29 +1805,27 @@ public class AnsiDataHandler {
 	 * @param groupId The group id for whom role mappings are being modified.
 	 * @param roles A List of String role names for all roles that are
 	 *  to be assigned to this group.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the role information is invalid.
 	 */
-	public void writeRoleMapGroup(int groupId, List<String> roles) throws DataAccessException, WikiException {
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			this.queryHandler().deleteGroupAuthorities(groupId, conn);
-			for (String authority : roles) {
-				this.dataValidator.validateAuthority(authority);
-				this.queryHandler().insertGroupAuthority(groupId, authority, conn);
+	public void writeRoleMapGroup(final int groupId, final List<String> roles) throws WikiException {
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					try {
+						queryHandler().deleteGroupAuthorities(groupId);
+						for (String authority : roles) {
+							dataValidator.validateAuthority(authority);
+							queryHandler().insertGroupAuthority(groupId, authority);
+						}
+						// flush the cache
+						CACHE_ROLE_MAP_GROUP.removeAllFromCache();
+					} catch (WikiException e) {
+						status.setRollbackOnly();
+						throw new TransactionRuntimeException(e);
+					}
+				}
 			}
-			// flush the cache
-			CACHE_ROLE_MAP_GROUP.removeAllFromCache();
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (WikiException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		}
-		DatabaseConnection.commit(status);
+		);
 	}
 
 	/**
@@ -2517,29 +1836,27 @@ public class AnsiDataHandler {
 	 * @param username The username for whom role mappings are being modified.
 	 * @param roles A List of String role names for all roles that are
 	 *  to be assigned to this user.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the role information is invalid.
 	 */
-	public void writeRoleMapUser(String username, List<String> roles) throws DataAccessException, WikiException {
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			this.queryHandler().deleteUserAuthorities(username, conn);
-			for (String authority : roles) {
-				this.dataValidator.validateAuthority(authority);
-				this.queryHandler().insertUserAuthority(username, authority, conn);
+	public void writeRoleMapUser(final String username, final List<String> roles) throws WikiException {
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					try {
+						queryHandler().deleteUserAuthorities(username);
+						for (String authority : roles) {
+							dataValidator.validateAuthority(authority);
+							queryHandler().insertUserAuthority(username, authority);
+						}
+						// flush the cache
+						CACHE_ROLE_MAP_GROUP.removeAllFromCache();
+					} catch (WikiException e) {
+						status.setRollbackOnly();
+						throw new TransactionRuntimeException(e);
+					}
+				}
 			}
-			// flush the cache
-			CACHE_ROLE_MAP_GROUP.removeAllFromCache();
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (WikiException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		}
-		DatabaseConnection.commit(status);
+		);
 	}
 
 	/**
@@ -2559,88 +1876,101 @@ public class AnsiDataHandler {
 	 * @param links A List of all topic names that are linked to from the
 	 *  current topic.  These will be passed to the search engine to create
 	 *  searchable metadata.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the topic information is invalid.
 	 */
-	public void writeTopic(Topic topic, TopicVersion topicVersion, Map<String, String> categories, List<String> links) throws DataAccessException, WikiException {
+	public void writeTopic(final Topic topic, final TopicVersion topicVersion, final Map<String, String> categories, final List<String> links) throws WikiException {
 		long start = System.currentTimeMillis();
 		LinkUtil.validateTopicName(topic.getVirtualWiki(), topic.getName(), false);
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			if (topic.getTopicId() <= 0) {
-				// create the initial topic record
-				addTopic(topic, conn);
-			} else if (topicVersion == null) {
-				// if there is no version record then update the topic.  if there is a version
-				// record then the topic will be updated AFTER the version record is created.
-				this.updateTopic(topic, conn);
-			}
-			if (topicVersion != null) {
-				// write version
-				if (topicVersion.getPreviousTopicVersionId() == null && topic.getCurrentVersionId() != null) {
-					topicVersion.setPreviousTopicVersionId(topic.getCurrentVersionId());
-				}
-				List<TopicVersion> topicVersions = new ArrayList<>();
-				topicVersions.add(topicVersion);
-				addTopicVersions(topic, topicVersions, conn);
-				// update the topic AFTER creating the version so that the current_topic_version_id parameter is set properly
-				topic.setCurrentVersionId(topicVersion.getTopicVersionId());
-				this.updateTopic(topic, conn);
-				String authorName = this.authorName(topicVersion.getAuthorId(), topicVersion.getAuthorDisplay());
-				LogItem logItem = LogItem.initLogItem(topic, topicVersion, authorName);
-				RecentChange change = null;
-				if (logItem != null) {
-					this.addLogItem(logItem, conn);
-					change = RecentChange.initRecentChange(logItem);
-				} else {
-					change = RecentChange.initRecentChange(topic, topicVersion, authorName);
-				}
-				if (topicVersion.isRecentChangeAllowed()) {
-					this.addRecentChange(change, conn);
-				}
-			}
-			if (categories != null) {
-				// add / remove categories associated with the topic
-				this.deleteTopicCategories(topic, conn);
-				if (topic.getDeleteDate() == null && !categories.isEmpty()) {
-					List<Category> categoryList = new ArrayList<>();
-					for (Map.Entry<String, String> entry : categories.entrySet()) {
-						Category category = new Category();
-						category.setName(entry.getKey());
-						category.setSortKey(entry.getValue());
-						category.setVirtualWiki(topic.getVirtualWiki());
-						category.setChildTopicName(topic.getName());
-						categoryList.add(category);
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					try {
+						if (topic.getTopicId() <= 0) {
+							// create the initial topic record
+							int virtualWikiId = lookupVirtualWikiId(topic.getVirtualWiki());
+							dataValidator.validateTopic(topic);
+							queryHandler().insertTopic(topic, virtualWikiId);
+						} else if (topicVersion == null) {
+							// if there is no version record then update the topic.  if there is a version
+							// record then the topic will be updated AFTER the version record is created.
+							int virtualWikiId = lookupVirtualWikiId(topic.getVirtualWiki());
+							dataValidator.validateTopic(topic);
+							queryHandler().updateTopic(topic, virtualWikiId);
+						}
+						if (topicVersion != null) {
+							// write version
+							if (topicVersion.getPreviousTopicVersionId() == null && topic.getCurrentVersionId() != null) {
+								topicVersion.setPreviousTopicVersionId(topic.getCurrentVersionId());
+							}
+							List<TopicVersion> topicVersions = new ArrayList<TopicVersion>();
+							topicVersions.add(topicVersion);
+							topicVersion.setTopicId(topic.getTopicId());
+							topicVersion.initializeVersionParams(topic);
+							dataValidator.validateTopicVersion(topicVersion);
+							queryHandler().insertTopicVersions(topicVersions);
+							// update the topic AFTER creating the version so that the current_topic_version_id parameter is set properly
+							topic.setCurrentVersionId(topicVersion.getTopicVersionId());
+							int virtualWikiId = lookupVirtualWikiId(topic.getVirtualWiki());
+							dataValidator.validateTopic(topic);
+							queryHandler().updateTopic(topic, virtualWikiId);
+							String authorName = authorName(topicVersion.getAuthorId(), topicVersion.getAuthorDisplay());
+							LogItem logItem = LogItem.initLogItem(topic, topicVersion, authorName);
+							RecentChange change = null;
+							if (logItem != null) {
+								int logVirtualWikiId = lookupVirtualWikiId(logItem.getVirtualWiki());
+								dataValidator.validateLogItem(logItem);
+								queryHandler().insertLogItem(logItem, logVirtualWikiId);
+								change = RecentChange.initRecentChange(logItem);
+							} else {
+								change = RecentChange.initRecentChange(topic, topicVersion, authorName);
+							}
+							if (topicVersion.isRecentChangeAllowed()) {
+								int changeVirtualWikiId = lookupVirtualWikiId(change.getVirtualWiki());
+								dataValidator.validateRecentChange(change);
+								queryHandler().insertRecentChange(change, changeVirtualWikiId);
+							}
+						}
+						if (categories != null) {
+							// add / remove categories associated with the topic
+							queryHandler().deleteTopicCategories(topic.getTopicId());
+							if (topic.getDeleteDate() == null && !categories.isEmpty()) {
+								List<Category> categoryList = new ArrayList<Category>();
+								for (Map.Entry<String, String> entry : categories.entrySet()) {
+									Category category = new Category();
+									category.setName(entry.getKey());
+									category.setSortKey(entry.getValue());
+									category.setVirtualWiki(topic.getVirtualWiki());
+									category.setChildTopicName(topic.getName());
+									categoryList.add(category);
+								}
+								int virtualWikiId = -1;
+								for (Category category : categoryList) {
+									virtualWikiId = lookupVirtualWikiId(category.getVirtualWiki());
+									dataValidator.validateCategory(category);
+								}
+								queryHandler().insertCategories(categoryList, virtualWikiId, topic.getTopicId());
+							}
+						}
+						if (links != null) {
+							// add / remove links associated with the topic
+							queryHandler().deleteTopicLinks(topic.getTopicId());
+							if (topic.getDeleteDate() == null && !links.isEmpty()) {
+								addTopicLinks(links, topic.getVirtualWiki(), topic.getTopicId());
+							}
+						}
+						if (topicVersion != null) {
+							// topic version is only null during changes that aren't user visible
+							WikiBase.getSearchEngine().updateInIndex(topic);
+						}
+						// update the cache only if update successful
+						cacheTopicRefresh(topic, true, null);
+					} catch (WikiException e) {
+						status.setRollbackOnly();
+						throw new TransactionRuntimeException(e);
 					}
-					this.addCategories(categoryList, topic.getTopicId(), conn);
 				}
 			}
-			if (links != null) {
-				// add / remove links associated with the topic
-				this.deleteTopicLinks(topic.getTopicId(), conn);
-				if (topic.getDeleteDate() == null && !links.isEmpty()) {
-					this.addTopicLinks(links, topic.getVirtualWiki(), topic.getTopicId(), conn);
-				}
-			}
-			if (topicVersion != null) {
-				// topic version is only null during changes that aren't user visible
-				WikiBase.getSearchEngine().updateInIndex(topic);
-			}
-		} catch (DataAccessException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (WikiException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		}
-		DatabaseConnection.commit(status);
-		// update the cache AFTER the commit
-		this.cacheTopicRefresh(topic, true, null);
+		);
 		if (logger.isDebugEnabled()) {
 			logger.debug("Wrote topic " + topic.getVirtualWiki() + ':' + topic.getName() + " with params [categories is null: " + (categories == null) + "] / [links is null: " + (links == null) + "] in " + ((System.currentTimeMillis() - start) / 1000.000) + " s.");
 		}
@@ -2656,23 +1986,19 @@ public class AnsiDataHandler {
 	 * @param topicVersions A list of TopicVersion objects, each containing the
 	 *  author, date, and other information about the version being added.  If
 	 *  this value is <code>null</code> or empty then no versions are saved.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the topic version information is invalid.
 	 */
-	public void writeTopicVersions(Topic topic, List<TopicVersion> topicVersions) throws DataAccessException, WikiException {
+	public void writeTopicVersions(Topic topic, List<TopicVersion> topicVersions) throws WikiException {
 		if (topic == null || topicVersions == null) {
 			logger.warn("Attempt to call writeTopicVersions() with null topic or topic version list");
 			return;
 		}
-		Connection conn = null;
-		try {
-			conn = DatabaseConnection.getConnection();
-			this.addTopicVersions(topic, topicVersions, conn);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		} finally {
-			DatabaseConnection.closeConnection(conn);
+		for (TopicVersion topicVersion : topicVersions) {
+			topicVersion.setTopicId(topic.getTopicId());
+			topicVersion.initializeVersionParams(topic);
+			this.dataValidator.validateTopicVersion(topicVersion);
 		}
+		this.queryHandler().insertTopicVersions(topicVersions);
 	}
 
 	/**
@@ -2683,40 +2009,40 @@ public class AnsiDataHandler {
 	 * @param userBlock The UserBlock record to add or update.  If the
 	 *  UserBlock does not have an ID then a new record is created, otherwise
 	 *  an update is performed.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the user block information is invalid.
 	 */
-	public void writeUserBlock(UserBlock userBlock) throws DataAccessException, WikiException {
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			if (userBlock.getBlockId() <= 0) {
-				this.addUserBlock(userBlock, conn);
-			} else {
-				this.updateUserBlock(userBlock, conn);
+	public void writeUserBlock(final UserBlock userBlock) throws WikiException {
+		this.dataValidator.validateUserBlock(userBlock);
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					try {
+						if (userBlock.getBlockId() <= 0) {
+							queryHandler().insertUserBlock(userBlock);
+						} else {
+							queryHandler().updateUserBlock(userBlock);
+						}
+						// FIXME - reconsider this approach of separate entries for every virtual wiki
+						List<VirtualWiki> virtualWikis = getVirtualWikiList();
+						for (VirtualWiki virtualWiki : virtualWikis) {
+							LogItem logItem = LogItem.initLogItem(userBlock, virtualWiki.getName());
+							int logVirtualWikiId = lookupVirtualWikiId(logItem.getVirtualWiki());
+							dataValidator.validateLogItem(logItem);
+							queryHandler().insertLogItem(logItem, logVirtualWikiId);
+							RecentChange change = RecentChange.initRecentChange(logItem);
+							int changeVirtualWikiId = lookupVirtualWikiId(change.getVirtualWiki());
+							dataValidator.validateRecentChange(change);
+							queryHandler().insertRecentChange(change, changeVirtualWikiId);
+						}
+						// flush the cache if no errors
+						CACHE_USER_BLOCKS_ACTIVE.removeAllFromCache();
+					} catch (WikiException e) {
+						status.setRollbackOnly();
+						throw new TransactionRuntimeException(e);
+					}
+				}
 			}
-			// FIXME - reconsider this approach of separate entries for every virtual wiki
-			List<VirtualWiki> virtualWikis = this.getVirtualWikiList();
-			for (VirtualWiki virtualWiki : virtualWikis) {
-				LogItem logItem = LogItem.initLogItem(userBlock, virtualWiki.getName());
-				this.addLogItem(logItem, conn);
-				RecentChange change = RecentChange.initRecentChange(logItem);
-				this.addRecentChange(change, conn);
-			}
-		} catch (DataAccessException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (WikiException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		}
-		DatabaseConnection.commit(status);
-		// flush the cache
-		CACHE_USER_BLOCKS_ACTIVE.removeAllFromCache();
+		);
 	}
 
 	/**
@@ -2727,33 +2053,24 @@ public class AnsiDataHandler {
 	 * @param virtualWiki The VirtualWiki to add or update.  If the
 	 *  VirtualWiki does not have a virtual wiki ID then a new record is
 	 *  created, otherwise an update is performed.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the virtual wiki information is invalid.
 	 */
-	public void writeVirtualWiki(VirtualWiki virtualWiki) throws DataAccessException, WikiException {
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			WikiUtil.validateVirtualWikiName(virtualWiki.getName());
-			if (virtualWiki.getVirtualWikiId() <= 0) {
-				this.addVirtualWiki(virtualWiki, conn);
-			} else {
-				this.updateVirtualWiki(virtualWiki, conn);
+	public void writeVirtualWiki(final VirtualWiki virtualWiki) throws WikiException {
+		WikiUtil.validateVirtualWikiName(virtualWiki.getName());
+		this.dataValidator.validateVirtualWiki(virtualWiki);
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					if (virtualWiki.getVirtualWikiId() <= 0) {
+						queryHandler().insertVirtualWiki(virtualWiki);
+					} else {
+						queryHandler().updateVirtualWiki(virtualWiki);
+					}
+					// flush the cache if there were no errors
+					CACHE_VIRTUAL_WIKI_LIST.removeAllFromCache();
+				}
 			}
-		} catch (DataAccessException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (WikiException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		}
-		DatabaseConnection.commit(status);
-		// flush the cache
-		CACHE_VIRTUAL_WIKI_LIST.removeAllFromCache();
+		);
 	}
 
 	/**
@@ -2766,41 +2083,31 @@ public class AnsiDataHandler {
 	 * @param topicName The name of the topic being added or removed from
 	 *  the watchlist.
 	 * @param userId The ID of the user whose watchlist is being updated.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the watchlist information is invalid.
 	 */
-	public void writeWatchlistEntry(Watchlist watchlist, String virtualWiki, String topicName, int userId) throws DataAccessException, WikiException {
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
-			String article = LinkUtil.extractTopicLink(virtualWiki, topicName);
-			String comments = LinkUtil.extractCommentsLink(virtualWiki, topicName);
-			if (watchlist.containsTopic(topicName)) {
-				// remove from watchlist
-				this.deleteWatchlistEntry(virtualWikiId, article, userId, conn);
-				this.deleteWatchlistEntry(virtualWikiId, comments, userId, conn);
-				watchlist.remove(article);
-				watchlist.remove(comments);
-			} else {
-				// add to watchlist
-				this.addWatchlistEntry(virtualWikiId, article, userId, conn);
-				this.addWatchlistEntry(virtualWikiId, comments, userId, conn);
-				watchlist.add(article);
-				watchlist.add(comments);
+	public void writeWatchlistEntry(final Watchlist watchlist, final String virtualWiki, final String topicName, final int userId) throws WikiException {
+		final String article = LinkUtil.extractTopicLink(virtualWiki, topicName);
+		final String comments = LinkUtil.extractCommentsLink(virtualWiki, topicName);
+		final int virtualWikiId = this.lookupVirtualWikiId(virtualWiki);
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					if (watchlist.containsTopic(topicName)) {
+						// remove from watchlist
+						queryHandler().deleteWatchlistEntry(virtualWikiId, article, userId);
+						queryHandler().deleteWatchlistEntry(virtualWikiId, comments, userId);
+						watchlist.remove(article);
+						watchlist.remove(comments);
+					} else {
+						// add to watchlist
+						queryHandler().insertWatchlistEntry(virtualWikiId, article, userId);
+						queryHandler().insertWatchlistEntry(virtualWikiId, comments, userId);
+						watchlist.add(article);
+						watchlist.add(comments);
+					}
+				}
 			}
-		} catch (DataAccessException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (WikiException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		}
-		DatabaseConnection.commit(status);
+		);
 	}
 
 	/**
@@ -2810,30 +2117,21 @@ public class AnsiDataHandler {
 	 * @param group The WikiGroup to add or update.  If the group does not have
 	 *  a group ID then a new record is created, otherwise an update is
 	 *  performed.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the group information is invalid.
 	 */
-	public void writeWikiGroup(WikiGroup group) throws DataAccessException, WikiException {
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			if (group.getGroupId() <= 0) {
-				this.addWikiGroup(group, conn);
-			} else {
-				this.updateWikiGroup(group, conn);
+	public void writeWikiGroup(final WikiGroup group) throws WikiException {
+		this.dataValidator.validateWikiGroup(group);
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					if (group.getGroupId() <= 0) {
+						queryHandler().insertWikiGroup(group);
+					} else {
+						queryHandler().updateWikiGroup(group);
+					}
+				}
 			}
-		} catch (DataAccessException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (WikiException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		}
-		DatabaseConnection.commit(status);
+		);
 	}
 
 	/**
@@ -2842,38 +2140,28 @@ public class AnsiDataHandler {
 	 * entry for each group membership.
 	 *
 	 * @param groupMap The GroupMap to store
-	 * @throws DataAccessException
 	 */
-	public void writeGroupMap(GroupMap groupMap) throws DataAccessException {
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			this.queryHandler().deleteGroupMap(groupMap,conn);
-			switch(groupMap.getGroupMapType()) {
-				case GroupMap.GROUP_MAP_GROUP: {
-					int groupId = groupMap.getGroupId();
-					List<String> groupMembers = groupMap.getGroupMembers();
-					for (String groupMember : groupMembers) {
-						this.queryHandler().insertGroupMember(groupMember, groupId, conn);
+	public void writeGroupMap(final GroupMap groupMap) {
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					queryHandler().deleteGroupMap(groupMap);
+					if (groupMap.getGroupMapType() == GroupMap.GROUP_MAP_GROUP) {
+						int groupId = groupMap.getGroupId();
+						List<String> groupMembers = groupMap.getGroupMembers();
+						for (String groupMember : groupMembers) {
+							queryHandler().insertGroupMember(groupMember, groupId);
+						}
+					} else if (groupMap.getGroupMapType() == GroupMap.GROUP_MAP_USER) {
+						String userLogin = groupMap.getUserLogin();
+						List<Integer> groupIds = groupMap.getGroupIds();
+						for (Integer groupId : groupIds) {
+							queryHandler().insertGroupMember(userLogin, groupId.intValue());
+						}
 					}
-					break;
 				}
-				case GroupMap.GROUP_MAP_USER: {
-					String userLogin = groupMap.getUserLogin();
-					List<Integer> groupIds = groupMap.getGroupIds();
-					for (Integer groupId : groupIds) {
-						this.queryHandler().insertGroupMember(userLogin, groupId.intValue(), conn);
-					}
-					break;
-				}
-				default: throw new SQLException("writeGroupMap - Group type invalid");
 			}
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		}
-		DatabaseConnection.commit(status);
+		);
 	}
 
 	/**
@@ -2887,55 +2175,57 @@ public class AnsiDataHandler {
 	 * @param username The user's username (login).
 	 * @param encryptedPassword The user's encrypted password.  Required only when the
 	 *  password is being updated.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the user information is invalid.
 	 */
-	public void writeWikiUser(WikiUser user, String username, String encryptedPassword) throws DataAccessException, WikiException {
+	public void writeWikiUser(final WikiUser user, final String username, final String encryptedPassword) throws WikiException {
 		WikiUtil.validateUserName(user.getUsername());
-		TransactionStatus status = null;
-		Connection conn = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			conn = DatabaseConnection.getConnection();
-			if (user.getUserId() <= 0) {
-				WikiUserDetails userDetails = new WikiUserDetails(username, encryptedPassword);
-				this.addUserDetails(userDetails, conn);
-				this.addWikiUser(user, conn);
-				// add all users to the registered user group
-				this.addGroupMember(user.getUsername(), WikiBase.getGroupRegisteredUser().getGroupId(), conn);
-				// Flush cache to force reading from database for next search
-				// This should be more efficient than looping over the authorities of the
-				// group and update them individually
-				CACHE_ROLE_MAP_GROUP.removeAllFromCache();
-				// FIXME - reconsider this approach of separate entries for every virtual wiki
-				List<VirtualWiki> virtualWikis = this.getVirtualWikiList();
-				for (VirtualWiki virtualWiki : virtualWikis) {
-					LogItem logItem = LogItem.initLogItem(user, virtualWiki.getName());
-					this.addLogItem(logItem, conn);
-					RecentChange change = RecentChange.initRecentChange(logItem);
-					this.addRecentChange(change, conn);
+		DatabaseConnection.getTransactionTemplate().execute(
+			new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					try {
+						if (user.getUserId() <= 0) {
+							WikiUserDetails userDetails = new WikiUserDetails(username, encryptedPassword);
+							dataValidator.validateUserDetails(userDetails);
+							queryHandler().insertUserDetails(userDetails);
+							dataValidator.validateWikiUser(user);
+							queryHandler().insertWikiUser(user);
+							queryHandler().updateWikiUserPreferences(user);
+							// add all users to the registered user group
+							queryHandler().insertGroupMember(user.getUsername(), WikiBase.getGroupRegisteredUser().getGroupId());
+							// Flush cache to force reading from database for next search
+							// This should be more efficient than looping over the authorities of the
+							// group and update them individually
+							CACHE_ROLE_MAP_GROUP.removeAllFromCache();
+							// FIXME - reconsider this approach of separate entries for every virtual wiki
+							List<VirtualWiki> virtualWikis = getVirtualWikiList();
+							for (VirtualWiki virtualWiki : virtualWikis) {
+								LogItem logItem = LogItem.initLogItem(user, virtualWiki.getName());
+								dataValidator.validateLogItem(logItem);
+								queryHandler().insertLogItem(logItem, virtualWiki.getVirtualWikiId());
+								RecentChange change = RecentChange.initRecentChange(logItem);
+								dataValidator.validateRecentChange(change);
+								queryHandler().insertRecentChange(change, virtualWiki.getVirtualWikiId());
+							}
+						} else {
+							if (!StringUtils.isBlank(encryptedPassword)) {
+								WikiUserDetails userDetails = new WikiUserDetails(username, encryptedPassword);
+								dataValidator.validateUserDetails(userDetails);
+								queryHandler().updateUserDetails(userDetails);
+							}
+							dataValidator.validateWikiUser(user);
+							queryHandler().updateWikiUser(user);
+							queryHandler().updateWikiUserPreferences(user);
+						}
+						// update the cache only if everything else is successful
+						CACHE_USER_BY_USER_ID.addToCache(user.getUserId(), user);
+						CACHE_USER_BY_USER_NAME.addToCache(user.getUsername(), user);
+					} catch (WikiException e) {
+						status.setRollbackOnly();
+						throw new TransactionRuntimeException(e);
+					}
 				}
-			} else {
-				if (!StringUtils.isBlank(encryptedPassword)) {
-					WikiUserDetails userDetails = new WikiUserDetails(username, encryptedPassword);
-					this.updateUserDetails(userDetails, conn);
-				}
-				this.updateWikiUser(user, conn);
 			}
-			DatabaseConnection.commit(status);
-			// update the cache AFTER the commit
-			CACHE_USER_BY_USER_ID.addToCache(user.getUserId(), user);
-			CACHE_USER_BY_USER_NAME.addToCache(user.getUsername(), user);
-		} catch (DataAccessException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		} catch (WikiException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw e;
-		}
+		);
 	}
 
 	/**
@@ -2943,22 +2233,13 @@ public class AnsiDataHandler {
 	 *
 	 * @param userPreferenceKey The key (or name) of the preference 
 	 * @param userPreferenceDefaultValue The default value for this preference
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 * @throws WikiException Thrown if the parameter information is invalid.
 	 */
-	public void writeUserPreferenceDefault(String userPreferenceKey, String userPreferenceDefaultValue, String userPreferenceGroupKey, int sequenceNr) throws DataAccessException {
-		Connection conn = null;
-		try {
-			conn = DatabaseConnection.getConnection();
-			if (this.queryHandler().existsUserPreferenceDefault(userPreferenceKey)) {
-				this.queryHandler().updateUserPreferenceDefault(userPreferenceKey, userPreferenceDefaultValue, userPreferenceGroupKey, sequenceNr, conn);
-			} else {
-				this.queryHandler().insertUserPreferenceDefault(userPreferenceKey, userPreferenceDefaultValue, userPreferenceGroupKey, sequenceNr, conn);
-			}
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		} finally {
-			DatabaseConnection.closeConnection(conn);
+	public void writeUserPreferenceDefault(String userPreferenceKey, String userPreferenceDefaultValue, String userPreferenceGroupKey, int sequenceNr) {
+		if (this.queryHandler().existsUserPreferenceDefault(userPreferenceKey)) {
+			this.queryHandler().updateUserPreferenceDefault(userPreferenceKey, userPreferenceDefaultValue, userPreferenceGroupKey, sequenceNr);
+		} else {
+			this.queryHandler().insertUserPreferenceDefault(userPreferenceKey, userPreferenceDefaultValue, userPreferenceGroupKey, sequenceNr);
 		}
 	}
 
@@ -2967,19 +2248,9 @@ public class AnsiDataHandler {
 	 *
 	 * @param imageData The image and it's arrtibutes to store.
 	 * @param resized Must be true when inserting resized version of image and false otherwise.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public void insertImage(ImageData imageData, boolean resized) throws DataAccessException {
-		TransactionStatus status = null;
-		try {
-			status = DatabaseConnection.startTransaction();
-			Connection conn = DatabaseConnection.getConnection();
-			this.queryHandler().insertImage(imageData, resized, conn);
-		} catch (SQLException e) {
-			DatabaseConnection.rollbackOnException(status, e);
-			throw new DataAccessException(e);
-		}
-		DatabaseConnection.commit(status);
+	public void insertImage(ImageData imageData, boolean resized) {
+		this.queryHandler().insertImage(imageData, resized);
 	}
 
 	/**
@@ -2989,14 +2260,9 @@ public class AnsiDataHandler {
 	 * @param resized Image width or zero for original.
 	 * @return The image info or null if image not found. Result's width and height components must
 	 * be negative when data are not an image. Result's data component may be null.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public ImageData getImageInfo(int fileId, int resized) throws DataAccessException {
-		try {
-			return this.queryHandler().getImageInfo(fileId, resized);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public ImageData getImageInfo(int fileId, int resized) {
+		return this.queryHandler().getImageInfo(fileId, resized);
 	}
 
 	/**
@@ -3005,14 +2271,9 @@ public class AnsiDataHandler {
 	 * @param fileId File identifier.
 	 * @param resized Image width or zero for original.
 	 * @return The image data or null if image not found.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public ImageData getImageData(int fileId, int resized) throws DataAccessException {
-		try {
-			return this.queryHandler().getImageData(fileId, resized);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public ImageData getImageData(int fileId, int resized) {
+		return this.queryHandler().getImageData(fileId, resized);
 	}
 
 	/**
@@ -3021,13 +2282,8 @@ public class AnsiDataHandler {
 	 * @param fileVersionId File identifier.
 	 * @param resized Image width or zero for original.
 	 * @return The image data or null if image version not found.
-	 * @throws DataAccessException Thrown if any error occurs during method execution.
 	 */
-	public ImageData getImageVersionData(int fileVersionId, int resized) throws DataAccessException {
-		try {
-			return this.queryHandler().getImageVersionData(fileVersionId, resized);
-		} catch (SQLException e) {
-			throw new DataAccessException(e);
-		}
+	public ImageData getImageVersionData(int fileVersionId, int resized) {
+		return this.queryHandler().getImageVersionData(fileVersionId, resized);
 	}
 }

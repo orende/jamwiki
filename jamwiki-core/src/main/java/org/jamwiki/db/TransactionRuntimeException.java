@@ -14,28 +14,31 @@
  * along with this program (LICENSE.txt); if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package org.jamwiki.model;
-
-import java.io.Serializable;
+package org.jamwiki.db;
 
 /**
- * Class for image and other data storing and loading.
+ * Wrapper for exceptions thrown during transactions since TransactionCallback
+ * does not support exception handling directly.
  */
-public class ImageData implements Serializable {
+public class TransactionRuntimeException extends RuntimeException {
 
-	public int fileVersionId = -1;
-	public final String mimeType;
-	public int width;
-	public int height;
-	public byte data[];
+	private final Exception wrappedException;
 
 	/**
+	 * Standard constructor including the wrapped exception.
 	 *
+	 * @param wrappedException The wrapped exception.
 	 */
-	public ImageData(String mimeType, int width, int height, byte data[]) {
-		this.mimeType      = mimeType;
-		this.width         = width;
-		this.height        = height;
-		this.data          = data;
+	public TransactionRuntimeException(Exception wrappedException) {
+		this.wrappedException = wrappedException;
+	}
+
+	/**
+	 * Return the wrapped exception.
+	 *
+	 * @return wrappedException The wrapped exception.
+	 */
+	public Exception getWrappedException() {
+		return this.wrappedException;
 	}
 }

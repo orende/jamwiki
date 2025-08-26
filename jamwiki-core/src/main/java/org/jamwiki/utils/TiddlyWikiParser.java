@@ -27,7 +27,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
-import org.jamwiki.DataAccessException;
 import org.jamwiki.WikiBase;
 import org.jamwiki.WikiException;
 import org.jamwiki.model.Topic;
@@ -65,14 +64,14 @@ public class TiddlyWikiParser {
 	 * @author Michael Greifeneder mikegr@gmx.net
 	 */
 	public interface WikiBaseFascade {
-		public void writeTopic(Topic topic, TopicVersion topicVersion, LinkedHashMap categories, List<String> links, Object transactionObject) throws DataAccessException, WikiException;
+		public void writeTopic(Topic topic, TopicVersion topicVersion, LinkedHashMap categories, List<String> links, Object transactionObject) throws WikiException;
 	}
 
 	/**
 	 * Defaul WikiBaseFascade for production.
 	 */
 	private WikiBaseFascade wikiBase = new WikiBaseFascade() {
-		public void writeTopic(Topic topic, TopicVersion topicVersion, LinkedHashMap categories, List<String> links, Object transactionObject) throws DataAccessException, WikiException {
+		public void writeTopic(Topic topic, TopicVersion topicVersion, LinkedHashMap categories, List<String> links, Object transactionObject) throws WikiException {
 			WikiBase.getDataHandler().writeTopic(topic, topicVersion, null, null);
 		}
 	};
@@ -111,7 +110,7 @@ public class TiddlyWikiParser {
 	 * @param file TiddlyWiki file
 	 * @return main topic for this TiddlyWiki
 	 */
-	public String parse(File file) throws DataAccessException, IOException, WikiException {
+	public String parse(File file) throws IOException, WikiException {
 		Reader r = new FileReader(file);
 		BufferedReader br = new BufferedReader(r);
 		return parse(br);
@@ -123,7 +122,7 @@ public class TiddlyWikiParser {
 	 * @param br TiddlyWiki file content
 	 * @return main topic for this TiddlyWiki
 	 */
-	public String parse(BufferedReader br) throws DataAccessException, IOException, WikiException {
+	public String parse(BufferedReader br) throws IOException, WikiException {
 		String line = br.readLine();
 		boolean inTiddler = false;
 		int start = 0;
@@ -160,7 +159,7 @@ public class TiddlyWikiParser {
 	/**
 	 *
 	 */
-	private void processContent(String content) throws DataAccessException, IOException, WikiException {
+	private void processContent(String content) throws IOException, WikiException {
 		logger.debug("Content: " + content);
 		String name = findName(content, TIDLLER);
 		if (name == null|| "%0".equals(user)) {
@@ -204,7 +203,7 @@ public class TiddlyWikiParser {
 	/**
 	 *
 	 */
-	private void saveTopic(String name, Date lastMod, String content) throws DataAccessException, WikiException {
+	private void saveTopic(String name, Date lastMod, String content) throws WikiException {
 		WikiLink wikiLink = new WikiLink(null, virtualWiki, name);
 		Topic topic = new Topic(virtualWiki, wikiLink.getNamespace(), wikiLink.getArticle());
 		topic.setTopicContent(content);

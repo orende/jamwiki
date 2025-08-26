@@ -26,7 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import org.jamwiki.DataAccessException;
 import org.jamwiki.JAMWikiUnitTest;
 import org.jamwiki.WikiException;
 import org.jamwiki.model.Topic;
@@ -69,7 +68,7 @@ public class TiddlyWikiParserTest extends JAMWikiUnitTest {
 		public ArrayList<Topic> topics = new ArrayList<Topic>();
 		public ArrayList<TopicVersion> versions = new ArrayList<TopicVersion>();
 
-		public void writeTopic(Topic topic, TopicVersion topicVersion, LinkedHashMap categories, List<String> links, Object transactionObject) throws DataAccessException, WikiException {
+		public void writeTopic(Topic topic, TopicVersion topicVersion, LinkedHashMap categories, List<String> links, Object transactionObject) throws WikiException {
 			topics.add(topic);
 			versions.add(topicVersion);
 		}

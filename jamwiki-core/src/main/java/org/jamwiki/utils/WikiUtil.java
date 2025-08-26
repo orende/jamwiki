@@ -28,7 +28,6 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jamwiki.DataAccessException;
 import org.jamwiki.Environment;
 import org.jamwiki.JAMWikiParser;
 import org.jamwiki.SearchEngine;
@@ -121,11 +120,7 @@ public class WikiUtil {
 	public static String findDefaultVirtualWikiUrl(String virtualWikiName) {
 		VirtualWiki virtualWiki = VirtualWiki.defaultVirtualWiki();
 		if (!StringUtils.isBlank(virtualWikiName)) {
-			try {
-				virtualWiki = WikiBase.getDataHandler().lookupVirtualWiki(virtualWikiName);
-			} catch (DataAccessException e) {
-				logger.warn("Unable to retrieve default topic for virtual wiki", e);
-			}
+			virtualWiki = WikiBase.getDataHandler().lookupVirtualWiki(virtualWikiName);
 		}
 		return "/" + virtualWiki.getName() + "/" + virtualWiki.getRootTopicName();
 	}
@@ -535,12 +530,7 @@ public class WikiUtil {
 		if (m.find()) {
 			throw new WikiException(new WikiMessage("admin.vwiki.error.namespace.characters", name));
 		}
-		List<Namespace> namespaces = null;
-		try {
-			namespaces = WikiBase.getDataHandler().lookupNamespaces();
-		} catch (DataAccessException e) {
-			throw new WikiException(new WikiMessage("error.unknown", e.getMessage()));
-		}
+		List<Namespace> namespaces = WikiBase.getDataHandler().lookupNamespaces();
 		for (Namespace namespace : namespaces) {
 			// verify that the namespace name is unique
 			if (name.equals(namespace.getDefaultLabel())) {
