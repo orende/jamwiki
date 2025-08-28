@@ -116,6 +116,7 @@ public abstract class ImageUtil {
 	 */
 	public static File buildAbsoluteFile(String relativeFile) {
 		if (!ImageUtil.isImagesOnFS()) {
+            logger.warn("Cannot build absolute file path because filesystem image storage is not configured");
 			return null;
 		}
 		File fileDirectory = new File(Environment.getValue(Environment.PROP_BASE_FILE_DIR), DEFAULT_RELATIVE_FILE_DIRECTORY);
@@ -167,6 +168,7 @@ public abstract class ImageUtil {
 	public static String buildImageFileUrl(String context, String virtualWiki, String topicName, boolean forceAbsoluteUrl) {
 		WikiFile wikiFile = WikiBase.getDataHandler().lookupWikiFile(virtualWiki, topicName);
 		if (wikiFile == null) {
+            logger.warn("Wiki file not found for virtualWiki " + virtualWiki + " and topicName " + topicName);
 			return null;
 		}
 		String relativeFileUrl = wikiFile.getUrl();
@@ -712,6 +714,7 @@ public abstract class ImageUtil {
 	 */
 	public static String sanitizeFilename(String filename) {
 		if (StringUtils.isBlank(filename)) {
+            logger.warn("Could not sanitize null filename");
 			return null;
 		}
 		// some browsers set the full path, so strip to just the file name

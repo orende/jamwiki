@@ -18,91 +18,75 @@ package org.jamwiki.model;
 
 import org.jamwiki.JAMWikiUnitTest;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
-/**
- *
- */
 public class NamespaceTest extends JAMWikiUnitTest {
 
-	/**
-	 *
-	 */
 	@Test
 	public void testFindMainNamespace() {
 		Namespace result = Namespace.findMainNamespace(null);
-		assertNull("result", result);
+        assertThat(result).isNull();
 	}
 
-	/**
-	 *
-	 */
 	@Test
 	public void testFindMainNamespace1() {
 		Namespace result = Namespace.findMainNamespace(Namespace.namespace(Namespace.MAIN_ID));
-		assertEquals("result", Namespace.namespace(Namespace.MAIN_ID), result);
+		assertThat(Namespace.namespace(Namespace.MAIN_ID))
+                .extracting("id", "defaultLabel", "mainNamespaceId")
+                .contains(result.getId(), result.getDefaultLabel(), result.getMainNamespaceId());
 	}
 
-	/**
-	 *
-	 */
 	@Test
 	public void testFindMainNamespace2() {
 		Namespace result = Namespace.findMainNamespace(Namespace.namespace(Namespace.USER_ID));
-		assertEquals("result", Namespace.namespace(Namespace.USER_ID), result);
+		assertThat(Namespace.namespace(Namespace.USER_ID))
+                .extracting("id", "defaultLabel", "mainNamespaceId")
+                .contains(result.getId(), result.getDefaultLabel(), result.getMainNamespaceId());
 	}
 
-	/**
-	 *
-	 */
 	@Test
 	public void testFindMainNamespace3() {
 		Namespace result = Namespace.findMainNamespace(Namespace.namespace(Namespace.USER_COMMENTS_ID));
-		assertEquals("result", Namespace.namespace(Namespace.USER_ID), result);
+		assertThat(Namespace.namespace(Namespace.USER_ID))
+                .extracting("id", "defaultLabel", "mainNamespaceId")
+                .contains(result.getId(), result.getDefaultLabel(), result.getMainNamespaceId());
 	}
 
-	/**
-	 *
-	 */
 	@Test
 	public void testFindMainNamespace4() {
 		Namespace result = Namespace.findMainNamespace(Namespace.namespace(Namespace.SPECIAL_ID));
-		assertEquals("result", Namespace.namespace(Namespace.SPECIAL_ID), result);
+		assertThat(Namespace.namespace(Namespace.SPECIAL_ID))
+                .extracting("id", "defaultLabel", "mainNamespaceId")
+                .contains(result.getId(), result.getDefaultLabel(), result.getMainNamespaceId());
 	}
 
-	/**
-	 *
-	 */
 	@Test
 	public void testFindCommentsNamespace1() {
 		Namespace result = Namespace.findCommentsNamespace(Namespace.namespace(Namespace.MAIN_ID));
-		assertEquals("result", Namespace.namespace(Namespace.COMMENTS_ID), result);
+		assertThat(Namespace.namespace(Namespace.COMMENTS_ID))
+                .extracting("id", "defaultLabel", "mainNamespaceId")
+                .contains(result.getId(), result.getDefaultLabel(), result.getMainNamespaceId());
 	}
 
-	/**
-	 *
-	 */
 	@Test
 	public void testFindCommentsNamespace2() {
 		Namespace result = Namespace.findCommentsNamespace(Namespace.namespace(Namespace.USER_ID));
-		assertEquals("result", Namespace.namespace(Namespace.USER_COMMENTS_ID), result);
+		assertThat(Namespace.namespace(Namespace.USER_COMMENTS_ID))
+                .extracting("id", "defaultLabel", "mainNamespaceId")
+                .contains(result.getId(), result.getDefaultLabel(), result.getMainNamespaceId());
 	}
 
-	/**
-	 *
-	 */
 	@Test
 	public void testFindCommentsNamespace3() {
 		Namespace result = Namespace.findCommentsNamespace(Namespace.namespace(Namespace.USER_COMMENTS_ID));
-		assertEquals("result", Namespace.namespace(Namespace.USER_COMMENTS_ID), result);
+		assertThat(Namespace.namespace(Namespace.USER_COMMENTS_ID))
+                .extracting("id", "defaultLabel", "mainNamespaceId")
+                .contains(result.getId(), result.getDefaultLabel(), result.getMainNamespaceId());
 	}
 
-	/**
-	 *
-	 */
 	@Test
 	public void testFindCommentsNamespace4() {
 		Namespace result = Namespace.findCommentsNamespace(Namespace.namespace(Namespace.SPECIAL_ID));
-		assertNull("result", result);
+        assertThat(result).isNull();
 	}
 }

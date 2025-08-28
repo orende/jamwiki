@@ -20,106 +20,76 @@ package org.jamwiki.parser;
 
 import org.jamwiki.JAMWikiUnitTest;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.jamwiki.model.Namespace;
 
-/**
- *
- */
 public class WikiLinkTest extends JAMWikiUnitTest {
 
-	/**
-	 *
-	 */
 	@Test
 	public void testConstructor() throws Throwable {
 		WikiLink wikiLink = new WikiLink("/wiki", "en");
-		assertNull("wikiLink.getQuery()", wikiLink.getQuery());
-		assertNull("wikiLink.getSection()", wikiLink.getSection());
-		assertNull("wikiLink.getText()", wikiLink.getText());
-		assertNull("wikiLink.getArticle()", wikiLink.getArticle());
-		assertEquals("wikiLink.getNamespace()", Namespace.namespace(Namespace.MAIN_ID), wikiLink.getNamespace());
-		assertNull("wikiLink.getDestination()", wikiLink.getDestination());
-		assertFalse("wikiLink.getColon()", wikiLink.getColon());
+		assertThat(wikiLink.getQuery()).isNull();;
+		assertThat(wikiLink.getSection()).isNull();;
+		assertThat(wikiLink.getText()).isNull();;
+		assertThat(wikiLink.getArticle()).isNull();;
+		assertThat(Namespace.namespace(Namespace.MAIN_ID)).isEqualTo(wikiLink.getNamespace());
+		assertThat(wikiLink.getDestination()).isNull();;
+		assertThat(wikiLink.getColon()).isFalse();
 	}
 
-	/**
-	 *
-	 */
 	@Test
 	public void testSetArticle() throws Throwable {
 		WikiLink wikiLink = new WikiLink("/wiki", "en");
 		wikiLink.setArticle("testWikiLinkArticle");
-		assertEquals("wikiLink.getArticle()", "testWikiLinkArticle", wikiLink.getArticle());
+		assertThat("testWikiLinkArticle").isEqualTo(wikiLink.getArticle());
 	}
 
-	/**
-	 *
-	 */
 	@Test
 	public void testSetColon() throws Throwable {
 		WikiLink wikiLink = new WikiLink("/wiki", "en");
 		wikiLink.setColon(true);
-		assertTrue("wikiLink.getColon()", wikiLink.getColon());
+		assertThat(wikiLink.getColon()).isTrue();
 	}
 
-	/**
-	 *
-	 */
 	@Test
 	public void testSetDestination() throws Throwable {
 		WikiLink wikiLink = new WikiLink("/wiki", "en", "testWikiLinkDestination");
-		assertEquals("wikiLink.getDestination()", "testWikiLinkDestination", wikiLink.getDestination());
+		assertThat("testWikiLinkDestination").isEqualTo(wikiLink.getDestination());
 	}
 
-	/**
-	 *
-	 */
 	@Test
 	public void testSetNamespace() throws Throwable {
 		WikiLink wikiLink = new WikiLink("/wiki", "en");
 		wikiLink.setNamespace(Namespace.namespace(Namespace.FILE_ID));
-		assertEquals("wikiLink.getNamespace()", Namespace.namespace(Namespace.FILE_ID), wikiLink.getNamespace());
+		assertThat(Namespace.namespace(Namespace.FILE_ID)).isEqualTo(wikiLink.getNamespace());
 	}
 
-	/**
-	 *
-	 */
 	@Test(expected=IllegalArgumentException.class)
 	public void testSetNamespace2() throws Throwable {
 		WikiLink wikiLink = new WikiLink("/wiki", "en");
 		wikiLink.setNamespace(null);
-		assertEquals("wikiLink.getNamespace()", Namespace.namespace(Namespace.FILE_ID), wikiLink.getNamespace());
+		assertThat(Namespace.namespace(Namespace.FILE_ID)).isEqualTo(wikiLink.getNamespace());
 	}
 
-	/**
-	 *
-	 */
 	@Test
 	public void testSetQuery() throws Throwable {
 		WikiLink wikiLink = new WikiLink("/wiki", "en");
 		wikiLink.setQuery("testWikiLinkQuery");
-		assertEquals("wikiLink.getQuery()", "testWikiLinkQuery", wikiLink.getQuery());
+		assertThat("testWikiLinkQuery").isEqualTo(wikiLink.getQuery());
 	}
 
-	/**
-	 *
-	 */
 	@Test
 	public void testSetSection() throws Throwable {
 		WikiLink wikiLink = new WikiLink("/wiki", "en");
 		wikiLink.setSection("testWikiLinkSection");
-		assertEquals("wikiLink.getSection()", "testWikiLinkSection", wikiLink.getSection());
+		assertThat("testWikiLinkSection").isEqualTo(wikiLink.getSection());
 	}
 
-	/**
-	 *
-	 */
 	@Test
 	public void testSetText() throws Throwable {
 		WikiLink wikiLink = new WikiLink("/wiki", "en");
 		wikiLink.setText("testWikiLinkText");
-		assertEquals("wikiLink.getText()", "testWikiLinkText", wikiLink.getText());
+		assertThat("testWikiLinkText").isEqualTo(wikiLink.getText());
 	}
 }
 

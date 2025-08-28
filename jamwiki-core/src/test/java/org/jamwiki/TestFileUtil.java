@@ -32,9 +32,6 @@ public class TestFileUtil {
 	public static final String TEST_TOPICS_DIR = "data/topics/";
 	public static final String TEST_FILES_DIR = "data/files/";
 
-	/**
-	 *
-	 */
 	public static String decodeTopicName(String fileName) {
 		// files containing colons aren't allowed, so they are replaced with "_-_"
 		String result = StringUtils.replace(fileName, "_-_", ":");
@@ -44,18 +41,12 @@ public class TestFileUtil {
 		return result;
 	}
 
-	/**
-	 *
-	 */
 	public static String encodeTopicName(String topicName) {
 		// files containing colons aren't allowed, so they are replaced with "_-_"
 		String result = StringUtils.replace(topicName, ":", "_-_");
 		return StringUtils.replace(result, " ", "_");
 	}
 
-	/**
-	 *
-	 */
 	public static File getClassLoaderFile(String fileName) throws IOException {
 		try {
 			return ResourceUtil.getClassLoaderFile(fileName);
@@ -65,28 +56,20 @@ public class TestFileUtil {
 		return new File(ResourceUtil.getClassLoaderRoot(), fileName);
 	}
 
-	/**
-	 *
-	 */
-	public static File retrieveFile(String directory, String fileName) {
+	public static File retrieveFile(String directory, String fileName) throws IOException {
 		fileName = encodeTopicName(fileName);
 		String fullName = directory + fileName;
 		try {
 			return ResourceUtil.getClassLoaderFile(fullName);
-		} catch (IOException e) { }
-		try {
-			return new File(ResourceUtil.getClassLoaderRoot(), fullName);
-		} catch (IOException e) { }
-		return null;
+		} catch (IOException e) {
+            return new File(ResourceUtil.getClassLoaderRoot(), fullName);
+        }
 	}
 
-	/**
-	 *
-	 */
 	public static String retrieveFileContent(String directory, String fileName) throws IOException {
 		File file = TestFileUtil.retrieveFile(directory, fileName);
 		if (file == null || !file.exists()) {
-			return null;
+			throw new IllegalStateException("File '%s' does not exist".formatted(fileName));
 		}
 		return FileUtils.readFileToString(file, "UTF-8");
 	}

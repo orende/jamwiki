@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
+
 import org.jamwiki.WikiBase;
 import org.jamwiki.utils.WikiLogger;
 
@@ -265,4 +267,22 @@ public class Namespace implements Serializable {
 	public boolean equals(Namespace namespace) {
 		return (namespace != null && this.defaultLabel.equals(namespace.getDefaultLabel()));
 	}
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Namespace)) {
+            return false;
+        }
+        Namespace namespace = (Namespace) obj;
+        return this.defaultLabel.equals(namespace.getDefaultLabel()) || namespace.id.equals(this.id);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", Namespace.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("defaultLabel='" + defaultLabel + "'")
+                .add("mainNamespaceId=" + mainNamespaceId)
+                .toString();
+    }
 }

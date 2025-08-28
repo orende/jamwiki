@@ -19,6 +19,7 @@ package org.jamwiki;
 import java.io.IOException;
 import java.util.Locale;
 import org.jamwiki.db.AnsiDataHandler;
+import org.jamwiki.db.DataHandler;
 import org.jamwiki.model.WikiGroup;
 import org.jamwiki.model.WikiUser;
 import org.jamwiki.utils.WikiUtil;
@@ -39,7 +40,7 @@ public class WikiBase {
 	/** The singleton instance of this class. */
 	private static WikiBase instance = null;
 	/** The data handler that looks after read/write operations. */
-	private static AnsiDataHandler dataHandler = null;
+	private static DataHandler dataHandler = null;
 	/** The search engine instance. */
 	private static SearchEngine searchEngine = null;
 	/** An instance of the current parser. */
@@ -100,7 +101,7 @@ public class WikiBase {
 	 * @return The current data handler instance, or <code>null</code>
 	 *  if the handler has not yet been initialized.
 	 */
-	public static AnsiDataHandler getDataHandler() {
+	public static DataHandler getDataHandler() {
 		if (WikiBase.dataHandler == null) {
 			WikiBase.dataHandler = new AnsiDataHandler();
 		}
@@ -175,4 +176,8 @@ public class WikiBase {
 		WikiCache.initialize();
 		WikiBase.dataHandler.setup(locale, user, username, encryptedPassword);
 	}
+
+    public static void overrideDataHandler(DataHandler dataHandler) {
+        WikiBase.dataHandler = dataHandler;
+    }
 }
