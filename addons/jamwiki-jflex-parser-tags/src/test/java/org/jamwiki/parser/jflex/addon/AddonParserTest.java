@@ -29,13 +29,11 @@ import org.junit.Test;
  */
 public class AddonParserTest extends JAMWikiUnitTest {
 
-	private ParserTestUtils parserTestUtils = new ParserTestUtils();
-
 	/**
 	 *
 	 */
 	@Test
 	public void testCustomTags() throws IOException {
-		this.parserTestUtils.parseAllResults(TestFileUtil.TEST_RESULTS_DIR, null);
+		ParserTestUtils.parseAllResults(TestFileUtil.TEST_RESULTS_DIR, null);
 	}
 }
