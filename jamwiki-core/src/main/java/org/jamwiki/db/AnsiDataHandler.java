@@ -1064,10 +1064,10 @@ public class AnsiDataHandler implements DataHandler {
 			topicName = this.lookupTopicName(sharedVirtualWiki, namespace, pageName);
 		}
         if (topicName == null) {
-            logger.error("Topic name not found for virtualWikiId %s, virtualWiki %s, namespace %s and pageName %s".formatted(virtualWikiId, virtualWiki, namespace, pageName));
-            throw new IllegalStateException("Topic name not found for virtualWikiId %s, virtualWiki %s, namespace %s and pageName %s".formatted(virtualWikiId, virtualWiki, namespace, pageName));
+            logger.warn("Topic name not found for virtualWikiId %s, virtualWiki %s, namespace %s and pageName %s".formatted(virtualWikiId, virtualWiki, namespace, pageName));
+        } else {
+            CACHE_TOPIC_NAMES_BY_NAME.addToCache(key, topicName);
         }
-		CACHE_TOPIC_NAMES_BY_NAME.addToCache(key, topicName);
 		if (logger.isDebugEnabled()) {
 			long execution = (System.currentTimeMillis() - start);
 			if (execution > TIME_LIMIT_TOPIC_LOOKUP) {
