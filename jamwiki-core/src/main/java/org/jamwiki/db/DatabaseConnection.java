@@ -160,6 +160,7 @@ public class DatabaseConnection {
 		String url = Environment.getValue(Environment.PROP_DB_URL);
 		DataSource targetDataSource = null;
 		if (url.startsWith("jdbc:")) {
+            logger.debug("Using jdbc data source, url: %s".formatted(url));
 			try {
 				// Use an internal "LocalDataSource" configured from the Environment
 				targetDataSource = new LocalDataSource();
@@ -168,6 +169,8 @@ public class DatabaseConnection {
 				throw new IllegalArgumentException("Failure while configuring local data source: " + e.toString());
 			}
 		} else {
+            // TODO remove JNDI and replace with Spring bean instantiation
+            logger.debug("Using data source from JNDI");
 			try {
 				// Use a container DataSource obtained via JNDI lookup
 				// TODO: Should try prefix java:comp/env/ if not already part of the JNDI name?
