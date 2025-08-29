@@ -5,3 +5,7 @@
 /jamwiki-web/target/
 /.idea/
 /.mvn/wrapper/maven-wrapper.jar
+
+# local db for testing
+hsqldb/
+wikidata/
