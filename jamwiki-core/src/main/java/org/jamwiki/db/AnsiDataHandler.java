@@ -1311,10 +1311,13 @@ public class AnsiDataHandler implements DataHandler {
 		if (userId != -1) {
 			result = lookupWikiUser(userId);
 		} else {
-            logger.error("User not found for username " + username);
-            throw new IllegalStateException("User not found for username " + username);
+            logger.warn("User not found for username " + username);
         }
-		CACHE_USER_BY_USER_NAME.addToCache(username, result);
+        if (result == null) {
+            logger.error("Not caching null result for user " + username);
+        } else {
+            CACHE_USER_BY_USER_NAME.addToCache(username, result);
+        }
 		return result;
 	}
 
