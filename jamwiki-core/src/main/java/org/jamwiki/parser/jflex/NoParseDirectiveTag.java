@@ -61,10 +61,9 @@ public class NoParseDirectiveTag implements JFlexParserTag {
 			// during the final stage of parsing remove the tags and return the content
 			return JFlexParserUtil.tagContent(raw);
 		}
-		if (lexer instanceof JAMWikiLexer) {
+		if (lexer instanceof JAMWikiLexer jamwikiLexer) {
 			// during main processing handle this as a push and a pop to allow
 			// paragraphs to be processed correctly.
-			JAMWikiLexer jamwikiLexer = (JAMWikiLexer)lexer;
 			jamwikiLexer.pushTag(new JFlexTagItem(NOPARSE_DIRECTIVE));
 			jamwikiLexer.peekTag().getTagContent().append(JFlexParserUtil.tagContent(raw));
 			jamwikiLexer.popTag(NOPARSE_DIRECTIVE);

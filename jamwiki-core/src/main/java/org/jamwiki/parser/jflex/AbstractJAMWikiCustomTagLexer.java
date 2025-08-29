@@ -85,22 +85,21 @@ public abstract class AbstractJAMWikiCustomTagLexer extends JFlexLexer {
 				logger.warn("Could not instantiate configured custom parser tag: " + parserCustomTagClass);
 				continue;
 			}
-			if (!(object instanceof JFlexCustomTagItem)) {
-				logger.warn("Custom tag does not implement interface JFlexCustomTagItem: " + parserCustomTagClass);
-				continue;
-			}
-			logger.info("Initializing custom parser tag: " + parserCustomTagClass);
-			JFlexCustomTagItem jflexCustomTagItem = (JFlexCustomTagItem)object;
-			if (!StringUtils.isBlank(wikiConfigurationObject.getKey())) {
-				jflexCustomTagItem.setTagName(wikiConfigurationObject.getKey());
-			}
-			if (StringUtils.isBlank(jflexCustomTagItem.getTagName())) {
-				logger.warn("No tag name specified for custom tag: " + parserCustomTagClass);
-				continue;
-			}
-			jflexCustomTagItem.initParams(wikiConfigurationObject.getInitParams());
-			CUSTOM_TAG_REGISTRY.put(jflexCustomTagItem.getTagName(), jflexCustomTagItem);
-		}
+            if (object instanceof JFlexCustomTagItem jflexCustomTagItem) {
+                logger.info("Initializing custom parser tag: " + parserCustomTagClass);
+                if (!StringUtils.isBlank(wikiConfigurationObject.getKey())) {
+                    jflexCustomTagItem.setTagName(wikiConfigurationObject.getKey());
+                }
+                if (StringUtils.isBlank(jflexCustomTagItem.getTagName())) {
+                    logger.warn("No tag name specified for custom tag: " + parserCustomTagClass);
+                    continue;
+                }
+                jflexCustomTagItem.initParams(wikiConfigurationObject.getInitParams());
+                CUSTOM_TAG_REGISTRY.put(jflexCustomTagItem.getTagName(), jflexCustomTagItem);
+            } else {
+                logger.warn("Custom tag does not implement interface JFlexCustomTagItem: " + parserCustomTagClass);
+            }
+        }
 	}
 
 	/**

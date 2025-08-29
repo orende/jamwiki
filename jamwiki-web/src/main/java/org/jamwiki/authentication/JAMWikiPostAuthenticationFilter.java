@@ -114,12 +114,12 @@ public class JAMWikiPostAuthenticationFilter implements Filter {
 		}
 		// find out authenticated username
 		String username;
-		if (principal instanceof UserDetails) {
+		if (principal instanceof UserDetails userDetails) {
 			// using custom authentication with Spring Security UserDetail service
-			username = ((UserDetails)principal).getUsername();
-		} else if (principal instanceof String) {
+			username = userDetails.getUsername();
+		} else if (principal instanceof String principalString) {
 			// external authentication returns only username
-			username = String.valueOf(principal);
+			username = principalString;
 		} else {
 			// no known principal was found
 			logger.warn("Unknown principal type: " + principal);

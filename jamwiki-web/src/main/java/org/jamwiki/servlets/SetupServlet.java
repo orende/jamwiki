@@ -110,8 +110,7 @@ public class SetupServlet extends JAMWikiServlet {
 		} catch (Exception ex) {
 			logger.error("Unable to set up page view object for setup.jsp", ex);
 		}
-		if (e instanceof WikiException) {
-			WikiException we = (WikiException)e;
+		if (e instanceof WikiException we) {
 			next.addObject("messageObject", we.getWikiMessage());
 		} else {
 			next.addObject("messageObject", new WikiMessage("error.unknown", e.getMessage()));

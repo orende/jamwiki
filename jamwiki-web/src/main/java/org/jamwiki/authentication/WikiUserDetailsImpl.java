@@ -233,8 +233,8 @@ public class WikiUserDetailsImpl implements UserDetails {
 			return new WikiUserDetailsImpl(ANONYMOUS_USER_USERNAME, "", true, true, true, true, auth.getAuthorities());
 		}
 		// logged-in (or remembered) user
-		if (auth.getPrincipal() instanceof WikiUserDetailsImpl) {
-			return (WikiUserDetailsImpl)auth.getPrincipal();
+		if (auth.getPrincipal() instanceof WikiUserDetailsImpl wikiUserDetails) {
+			return wikiUserDetails;
 		}
 		return new WikiUserDetailsImpl((UserDetails)auth.getPrincipal());
 	}

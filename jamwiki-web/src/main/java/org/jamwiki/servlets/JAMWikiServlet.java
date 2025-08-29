@@ -450,8 +450,7 @@ public abstract class JAMWikiServlet extends AbstractController implements JAMWi
 		pageInfo.setPageTitle(new WikiMessage("error.title"));
 		pageInfo.setContentJsp(JSP_ERROR);
 		pageInfo.setSpecial(true);
-		if (t instanceof WikiException) {
-			WikiException we = (WikiException)t;
+		if (t instanceof WikiException we) {
 			pageInfo.addError(we.getWikiMessage());
 			next.addObject("messageObject", we.getWikiMessage());
 		} else {

@@ -53,8 +53,8 @@ public class JAMWikiFilter implements Filter {
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		request.setCharacterEncoding(this.encoding);
-		if (WikiUtil.WEBAPP_CONTEXT_PATH == null && request instanceof HttpServletRequest) {
-			WikiUtil.WEBAPP_CONTEXT_PATH = ((HttpServletRequest)request).getContextPath();
+		if (WikiUtil.WEBAPP_CONTEXT_PATH == null && request instanceof HttpServletRequest httpServletRequest) {
+			WikiUtil.WEBAPP_CONTEXT_PATH = httpServletRequest.getContextPath();
 		}
 		if (redirectNeeded(request, response)) {
 			return;

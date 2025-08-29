@@ -134,16 +134,16 @@ public abstract class AbstractHeadingTag implements JFlexParserTag {
 			lexer.getParserOutput().setSectionName(sectionName);
 			return raw;
 		}
-		if (!(lexer instanceof JAMWikiLexer)) {
-			throw new IllegalStateException("Cannot parse heading tags except with instances of JAMWikiLexer or in slice/splice mode");
-		}
-		JAMWikiLexer jamwikiLexer = (JAMWikiLexer)lexer;
-		if (jamwikiLexer.paragraphIsOpen()) {
-			// close any open paragraph
-			jamwikiLexer.popTag("p");
-		}
-		return this.generateOutput(jamwikiLexer, tagName, tocText, tagText, level, raw, args);
-	}
+        if (lexer instanceof JAMWikiLexer jamwikiLexer) {
+            if (jamwikiLexer.paragraphIsOpen()) {
+                // close any open paragraph
+                jamwikiLexer.popTag("p");
+            }
+            return this.generateOutput(jamwikiLexer, tagName, tocText, tagText, level, raw, args);
+        } else {
+            throw new IllegalStateException("Cannot parse heading tags except with instances of JAMWikiLexer or in slice/splice mode");
+        }
+    }
 
 	/**
 	 * Process all text inside of the equals signs.

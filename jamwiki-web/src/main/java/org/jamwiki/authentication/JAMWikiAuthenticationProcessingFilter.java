@@ -81,12 +81,12 @@ public class JAMWikiAuthenticationProcessingFilter extends UsernamePasswordAuthe
 		Object principal = auth.getPrincipal();
 		// find authenticated username
 		String username = null;
-		if (principal instanceof UserDetails) {
+		if (principal instanceof UserDetails userDetails) {
 			// using custom authentication with Spring Security UserDetail service
-			username = ((UserDetails)principal).getUsername();
-		} else if (principal instanceof String) {
+			username = userDetails.getUsername();
+		} else if (principal instanceof String principalString) {
 			// external authentication returns only username
-			username = String.valueOf(principal);
+			username = principalString;
 		}
 		if (username != null) {
 			try {

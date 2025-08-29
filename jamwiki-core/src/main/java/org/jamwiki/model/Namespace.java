@@ -270,11 +270,10 @@ public class Namespace implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Namespace)) {
-            return false;
+        if (obj instanceof Namespace namespace) {
+            return this.defaultLabel.equals(namespace.getDefaultLabel()) || namespace.id.equals(this.id);
         }
-        Namespace namespace = (Namespace) obj;
-        return this.defaultLabel.equals(namespace.getDefaultLabel()) || namespace.id.equals(this.id);
+        return false;
     }
 
     @Override

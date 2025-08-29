@@ -90,12 +90,12 @@ public class DatabaseConnection {
 	protected static void closeConnectionPool() {
 		try {
 			DataSource testDataSource = dataSource;
-			while (testDataSource instanceof DelegatingDataSource) {
-				testDataSource = ((DelegatingDataSource) testDataSource).getTargetDataSource();
+			while (testDataSource instanceof DelegatingDataSource delegatingDataSource) {
+				testDataSource = delegatingDataSource.getTargetDataSource();
 			}
-			if (testDataSource instanceof BasicDataSource) {
+			if (testDataSource instanceof BasicDataSource basicDataSource) {
 				// required to release any connections e.g. in case of servlet shutdown
-				((BasicDataSource) testDataSource).close();
+				basicDataSource.close();
 			}
 		} catch (SQLException e) {
 			// log the connection pool closing failure, but there is no need to propagate
