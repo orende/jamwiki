@@ -36,7 +36,7 @@ import org.jamwiki.utils.WikiLogger;
 public class WikiBase {
 
 	/** Standard logger. */
-	private static final WikiLogger logger = WikiLogger.getLogger(WikiBase.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** The singleton instance of this class. */
 	private static WikiBase instance = null;
 	/** The data handler that looks after read/write operations. */

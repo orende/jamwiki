@@ -34,7 +34,7 @@ import org.jamwiki.utils.WikiUtil;
  */
 public class LinkTag extends BodyTagSupport {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(LinkTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private String escape = null;
 	private String style = null;
 	private String target = null;

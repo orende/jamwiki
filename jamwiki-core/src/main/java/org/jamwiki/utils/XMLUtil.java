@@ -40,7 +40,7 @@ import org.xml.sax.SAXException;
 public class XMLUtil {
 
 	/** Logger */
-	public static final WikiLogger logger = WikiLogger.getLogger(XMLUtil.class.getName());
+	public static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 *

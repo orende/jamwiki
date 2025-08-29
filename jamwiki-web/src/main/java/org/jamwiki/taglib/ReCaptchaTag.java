@@ -30,7 +30,7 @@ import org.jamwiki.validator.ReCaptchaUtil;
  */
 public class ReCaptchaTag extends BodyTagSupport {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(ReCaptchaTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private static final String RECAPTCHA_PROP_LANGUAGE = "lang";
 	private static final String RECAPTCHA_PROP_TAB_INDEX = "tabindex";
 	private static final String RECAPTCHA_PROP_THEME = "theme";

@@ -48,6 +48,11 @@ public class WikiLogger {
 		return new WikiLogger(logger);
 	}
 
+	public static WikiLogger getLogger(Class clazz) {
+		Logger logger = LoggerFactory.getLogger(clazz);
+		return new WikiLogger(logger);
+	}
+
 	/**
 	 * Log a message at the {@link org.slf4j.Logger#DEBUG} level,
 	 * provided that the current log level is {@link org.slf4j.Logger#DEBUG}

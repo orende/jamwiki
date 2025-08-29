@@ -90,7 +90,7 @@ public class AnsiDataHandler implements DataHandler {
 	private static final WikiCache<Integer, WikiUser> CACHE_USER_BY_USER_ID = new WikiCache<>("org.jamwiki.db.AnsiDataHandler.CACHE_USER_BY_USER_ID", Integer.class, WikiUser.class);
 	private static final WikiCache<String, WikiUser> CACHE_USER_BY_USER_NAME = new WikiCache<>("org.jamwiki.db.AnsiDataHandler.CACHE_USER_BY_USER_NAME", String.class, WikiUser.class);
 	private static final WikiCache<String, List<VirtualWiki>> CACHE_VIRTUAL_WIKI_LIST = new WikiCache<>("org.jamwiki.db.AnsiDataHandler.CACHE_VIRTUAL_WIKI_LIST", String.class, List.class);
-	private static final WikiLogger logger = WikiLogger.getLogger(AnsiDataHandler.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	// TODO - remove when the ability to upgrade to 1.3 is deprecated
 	private static final Map<String, String> LEGACY_DATA_HANDLER_MAP = new HashMap<>();

@@ -24,7 +24,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class WikiHeadingTag extends AbstractHeadingTag {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(WikiHeadingTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 *

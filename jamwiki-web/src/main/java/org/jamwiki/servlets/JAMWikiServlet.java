@@ -50,7 +50,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public abstract class JAMWikiServlet extends AbstractController implements JAMWikiController {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(JAMWikiServlet.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private static final HoneypotValidator HONEYPOT_VALIDATOR = new HoneypotValidator();
 	private static final UserBlockValidator USER_BLOCK_VALIDATOR = new UserBlockValidator();
 

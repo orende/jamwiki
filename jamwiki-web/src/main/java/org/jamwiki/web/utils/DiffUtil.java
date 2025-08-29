@@ -31,7 +31,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class DiffUtil {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(DiffUtil.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** The number of lines of unchanged text to display before and after each diff. */
 	// FIXME - make this a property value
 	private static final int DIFF_UNCHANGED_LINE_DISPLAY = 2;

@@ -49,7 +49,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class JAMWikiPostAuthenticationFilter implements Filter {
 
 	/** Standard logger. */
-	private static final WikiLogger logger = WikiLogger.getLogger(JAMWikiPostAuthenticationFilter.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private String key;
 	private boolean useJAMWikiAnonymousRoles;
 

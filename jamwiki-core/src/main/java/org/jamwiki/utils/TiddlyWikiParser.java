@@ -45,7 +45,7 @@ import org.jamwiki.parser.WikiLink;
  */
 public class TiddlyWikiParser {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(TiddlyWikiParser.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	private static final String DIV_START = "<div tiddler";
 	private static final String DIV_END = "</div>";

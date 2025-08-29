@@ -67,7 +67,7 @@ import org.jamwiki.utils.WikiLogger;
 public class LuceneSearchEngine implements SearchEngine {
 
 	/** Where to log to */
-	private static final WikiLogger logger = WikiLogger.getLogger(LuceneSearchEngine.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** Directory for search index files */
 	private static final String SEARCH_DIR = "search";
 	/** Name of the search index field that holds the processed topic content. */

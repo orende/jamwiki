@@ -27,7 +27,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class UserBlock implements Serializable {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(UserBlock.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** The start date for the block. */
 	private Timestamp blockDate = new Timestamp(System.currentTimeMillis());
 	/** The ID of the user who applied the block. */

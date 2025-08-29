@@ -54,7 +54,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class MediaWikiXmlImporter extends DefaultHandler implements TopicImporter {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(MediaWikiXmlImporter.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** Maximum number of topic versions that can be stored before being flushed to the database. */
 	private static final int MAX_TOPIC_VERSION_BUFFER = 50;
 	private static final SAXParserFactory SAX_PARSER_FACTORY;

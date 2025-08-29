@@ -63,7 +63,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 public class WikiDatabase {
 
 	private static String CONNECTION_VALIDATION_QUERY = null;
-	private static final WikiLogger logger = WikiLogger.getLogger(WikiDatabase.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** Root directory within the WAR distribution that contains the default topic pages. */
 	public static final String SPECIAL_PAGE_DIR = "pages";
 	// array used in database migration - elements are table name and, if elements within the

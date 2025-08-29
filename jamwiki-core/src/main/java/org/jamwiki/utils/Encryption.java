@@ -36,7 +36,7 @@ import org.jamwiki.WikiException;
  */
 public class Encryption {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(Encryption.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	public static final String DES_ALGORITHM = "DES";
 	public static final String ENCRYPTION_KEY = "JAMWiki Key 12345";
 

@@ -24,7 +24,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public abstract class AbstractJAMWikiTemplateLexer extends JFlexLexer {
 
-	protected static final WikiLogger logger = WikiLogger.getLogger(AbstractJAMWikiTemplateLexer.class.getName());
+	protected static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** String used to build up current template tag content. */
 	protected StringBuilder templateString = new StringBuilder();
 

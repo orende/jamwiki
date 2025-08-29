@@ -43,7 +43,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public abstract class ParserFunctionUtil {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(ParserFunctionUtil.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private static final String PARSER_FUNCTION_ANCHOR_ENCODE = "anchorencode:";
 	private static final String PARSER_FUNCTION_FILE_PATH = "filepath:";
 	private static final String PARSER_FUNCTION_FULL_URL = "fullurl:";

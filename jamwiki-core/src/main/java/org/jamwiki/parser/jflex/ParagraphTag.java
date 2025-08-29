@@ -25,7 +25,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class ParagraphTag implements JFlexParserTag {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(ParagraphTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 * Parse a pargraph open or close tag, which will generally consist of one or

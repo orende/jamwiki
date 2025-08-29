@@ -34,7 +34,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class JFlexParser implements JAMWikiParser {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(JFlexParser.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/** Mode used when parsing edit comments. */
 	public static final int MODE_EDIT_COMMENT = 0;

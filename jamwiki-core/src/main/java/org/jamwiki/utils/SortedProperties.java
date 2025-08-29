@@ -29,7 +29,7 @@ import java.util.Vector;
 public class SortedProperties extends Properties {
 
 	/** Logger */
-	public static final WikiLogger logger = WikiLogger.getLogger(SortedProperties.class.getName());
+	public static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 * Standard constructor for creating a sorted properties file.

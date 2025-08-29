@@ -58,7 +58,7 @@ import org.jamwiki.utils.WikiUtil;
  */
 public abstract class ImageUtil {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(ImageUtil.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** Cache name for the cache of image dimensions. */
 	private static final WikiCache<String, Dimension> CACHE_IMAGE_DIMENSIONS = new WikiCache<>("org.jamwiki.parser.image.ImageUtil.CACHE_IMAGE_DIMENSIONS", String.class, Dimension.class);
 	/**

@@ -58,7 +58,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public class RecentChangesFeedServlet extends AbstractController {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(RecentChangesFeedServlet.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private static final String MIME_TYPE = "application/xml";
 	private static final String FEED_ENCODING = "UTF-8";
 	private static final String DEFAULT_FEED_TYPE = "rss_2.0";

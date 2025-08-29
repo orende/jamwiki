@@ -36,7 +36,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class NoParseDirectiveTag implements JFlexParserTag {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(NoParseDirectiveTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/**
 	 * Parser directive that can be used in custom tag output when the generated
 	 * custom tag content contains HTML or other content that would not normally

@@ -77,7 +77,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class ServletUtil {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(ServletUtil.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** The name of the output parameter used to store page information. */
 	public static final String PARAMETER_PAGE_INFO = "pageInfo";
 	/** The name of the output parameter used to store topic information. */

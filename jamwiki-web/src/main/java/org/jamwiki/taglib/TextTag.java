@@ -27,7 +27,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class TextTag extends TagSupport {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(TextTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private String id = null;
 	private String maxlength = null;
 	private String name = null;

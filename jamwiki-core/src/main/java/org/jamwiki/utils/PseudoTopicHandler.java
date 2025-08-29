@@ -28,7 +28,7 @@ public class PseudoTopicHandler {
 	private static List<String> PSEUDO_TOPICS;
 
 	/** Logger */
-	private static final WikiLogger logger = WikiLogger.getLogger(PseudoTopicHandler.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 *

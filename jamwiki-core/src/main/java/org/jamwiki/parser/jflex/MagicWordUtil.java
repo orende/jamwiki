@@ -44,7 +44,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class MagicWordUtil {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(MagicWordUtil.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	// current date values
 	private static final String MAGIC_CURRENT_DAY = "CURRENTDAY";
 	private static final String MAGIC_CURRENT_DAY2 = "CURRENTDAY2";

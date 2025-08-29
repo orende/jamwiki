@@ -28,7 +28,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class RedirectTag implements JFlexParserTag {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(RedirectTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** Pattern to determine if the topic is a redirect. */
 	private static final Pattern REDIRECT_PATTERN = Pattern.compile("#REDIRECT[ ]*\\[\\[([^\\n\\r\\]]+)\\]\\]", Pattern.CASE_INSENSITIVE);
 

@@ -33,7 +33,7 @@ import org.springframework.dao.NonTransientDataAccessResourceException;
 public class SpamFilter {
 
 	/** Logger */
-	public static final WikiLogger logger = WikiLogger.getLogger(SpamFilter.class.getName());
+	public static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** Spam blacklist file name. */
 	private static final String SPAM_BLACKLIST_FILE = "spam-blacklist.txt";
 	private static Pattern spamRegexPattern = null;

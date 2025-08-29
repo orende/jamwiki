@@ -33,7 +33,7 @@ import org.jamwiki.utils.WikiUtil;
  */
 public class EditCommentTag extends TagSupport {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(EditCommentTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private String comment = null;
 	private String topic = null;
 

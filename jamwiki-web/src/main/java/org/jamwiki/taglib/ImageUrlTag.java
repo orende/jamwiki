@@ -35,7 +35,7 @@ import org.jamwiki.utils.WikiUtil;
  */
 public class ImageUrlTag extends TagSupport {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(ImageUrlTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private WikiFileVersion fileVersion;
 	private String topicName;
 	private String virtualWiki;

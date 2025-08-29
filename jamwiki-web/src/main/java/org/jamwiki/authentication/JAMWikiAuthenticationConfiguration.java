@@ -34,7 +34,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 public class JAMWikiAuthenticationConfiguration {
 
 	/** Standard logger. */
-	private static final WikiLogger logger = WikiLogger.getLogger(JAMWikiAuthenticationConfiguration.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 *

@@ -37,7 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class BlockServlet extends JAMWikiServlet {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(BlockServlet.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** The name of the JSP file used to render the block page servlet output. */
 	protected static final String JSP_ADMIN_BLOCK = "admin-block.jsp";
 	/** The name of the JSP file used to render the unblock page servlet output. */

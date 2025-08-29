@@ -8,7 +8,7 @@ import org.jamwiki.parser.jflex.JFlexParser;
 import org.jamwiki.utils.WikiLogger;
 
 public class BlikiParser extends JFlexParser {
-	private static final WikiLogger logger = WikiLogger.getLogger(BlikiParser.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 * Perform a bare minimum of parsing as required prior to saving a topic to

@@ -29,7 +29,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class UserBlockValidator implements RequestValidator {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(UserBlockValidator.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 * Determine if the specified request represents a user or IP

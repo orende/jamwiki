@@ -31,7 +31,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class ReCaptchaUtil {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(ReCaptchaUtil.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	public static final int RECAPTCHA_NEVER = 0;
 	public static final int RECAPTCHA_UNREGISTERED_ONLY = 1;
 	public static final int RECAPTCHA_ALWAYS = 2;

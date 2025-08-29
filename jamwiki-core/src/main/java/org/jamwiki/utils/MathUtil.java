@@ -31,7 +31,7 @@ import de.congrace.exp4j.UnparsableExpressionException;
  */
 public abstract class MathUtil {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(MathUtil.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private static final String MATH_NUMBER_PATTERN_STRING = "((?:\\-)?[0-9]*(?:\\.)?[0-9]+)";
 	private static final String MATH_FUNCTION_PATTERN_STRING = "(abs|acos|asin|atan|cbrt|ceil|cos|cosh|e|exp|floor|ln|log|round|sin|sinh|sqrt|tan|tanh|trunc)(?:\\s)*" + MATH_NUMBER_PATTERN_STRING;
 	private static final Pattern MATH_FUNCTION_PATTERN = Pattern.compile(MATH_FUNCTION_PATTERN_STRING);

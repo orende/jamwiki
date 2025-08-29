@@ -28,7 +28,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class LinkParamTag extends BodyTagSupport {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(LinkParamTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private String value = null;
 	private String key = null;
 

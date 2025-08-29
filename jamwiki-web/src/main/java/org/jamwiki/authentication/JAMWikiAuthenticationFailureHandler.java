@@ -34,7 +34,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 public class JAMWikiAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
 	/** Standard logger. */
-	private static final WikiLogger logger = WikiLogger.getLogger(JAMWikiAuthenticationFailureHandler.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private String authenticationFailureUrl;
 
 	/**

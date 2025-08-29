@@ -41,7 +41,7 @@ import java.util.*;
  */
 public class SMTPWikiMail implements WikiMail
 {
-	private static final WikiLogger logger = WikiLogger.getLogger(SMTPWikiMail.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	
 	/**
 	 * The content type for sending plain text messages.

@@ -44,7 +44,7 @@ import org.jamwiki.utils.WikiUtil;
  */
 public class TwitterTag implements JFlexCustomTagItem {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(TwitterTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** Tag attribute name for the "count" layout.  If not specifies defaults to "horizontal". */
 	private static final String ATTRIBUTE_COUNT_TYPE = "data-count";
 	/** Tag attribute name for the page URL.  If not specifies defaults to the current page URL. */

@@ -26,7 +26,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class ParserUtil {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(ParserUtil.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 * Using the system parser, parse system content.

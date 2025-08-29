@@ -32,7 +32,7 @@ import org.jamwiki.utils.WikiUtil;
  */
 public class WatchlistTag extends BodyTagSupport {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(WatchlistTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private String topic = null;
 
 	/**

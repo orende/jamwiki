@@ -38,7 +38,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
  */
 public class DatabaseUpgrades {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(DatabaseUpgrades.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 *

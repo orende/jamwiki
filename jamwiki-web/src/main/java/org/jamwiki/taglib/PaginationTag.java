@@ -32,7 +32,7 @@ import org.jamwiki.utils.WikiUtil;
  */
 public class PaginationTag extends BodyTagSupport {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(PaginationTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	private String rootUrl = null;
 	private String total = null;

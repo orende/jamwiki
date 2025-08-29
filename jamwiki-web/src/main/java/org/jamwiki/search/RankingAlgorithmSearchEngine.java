@@ -39,7 +39,7 @@ import org.jamwiki.utils.WikiLogger;
 public class RankingAlgorithmSearchEngine extends LuceneSearchEngine {
 
 	/** Where to log to */
-	private static final WikiLogger logger = WikiLogger.getLogger(RankingAlgorithmSearchEngine.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 * Find all documents that contain a specific search term, ordered by relevance.

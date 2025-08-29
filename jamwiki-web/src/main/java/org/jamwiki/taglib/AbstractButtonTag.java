@@ -31,7 +31,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public abstract class AbstractButtonTag extends TagSupport {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(AbstractButtonTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private String checked = null;
 	private String id = null;
 	private String name = null;

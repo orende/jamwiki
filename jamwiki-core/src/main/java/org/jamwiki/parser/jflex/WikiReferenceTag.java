@@ -26,7 +26,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class WikiReferenceTag implements JFlexParserTag {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(WikiReferenceTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	protected static final String REFERENCES_PARAM = "WikiReferenceTag.REFERENCES_PARAM";
 
 	/**

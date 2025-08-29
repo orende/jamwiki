@@ -33,7 +33,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class WikiLinkTag implements JFlexParserTag {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(WikiLinkTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	// temporary parameter passed to indicate that the fragment being parsed is a link caption
 	protected static final String LINK_CAPTION = "link-caption";
 

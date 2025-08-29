@@ -46,7 +46,7 @@ import org.jamwiki.web.utils.UserPreferencesUtil;
  */
 public class WikiPageInfo {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(WikiPageInfo.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** The name of the JSP file used to render the servlet output. */
 	protected static final String JSP_TOPIC = "topic.jsp";
 	private boolean admin = false;

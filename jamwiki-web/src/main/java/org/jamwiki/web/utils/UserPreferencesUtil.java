@@ -29,7 +29,7 @@ import org.jamwiki.utils.WikiLogger;
 
 public class UserPreferencesUtil {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(UserPreferencesUtil.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private final WikiUser user;
 	/** List of default preferences organized by group. */
 	private Map<String, Map<String, String>> defaults;

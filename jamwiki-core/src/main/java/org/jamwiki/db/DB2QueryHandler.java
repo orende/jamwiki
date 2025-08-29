@@ -36,7 +36,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class DB2QueryHandler extends AnsiQueryHandler {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(DB2QueryHandler.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private static final String SQL_PROPERTY_FILE_NAME = "sql/sql.db2.properties";
 
 	/**

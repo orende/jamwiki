@@ -41,7 +41,7 @@ import org.w3c.dom.NodeList;
 public class WikiConfiguration {
 
 	/** Standard logger. */
-	private static final WikiLogger logger = WikiLogger.getLogger(WikiConfiguration.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	private static WikiConfiguration instance = null;
 

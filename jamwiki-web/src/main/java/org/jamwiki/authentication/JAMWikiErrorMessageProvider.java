@@ -30,7 +30,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class JAMWikiErrorMessageProvider {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(JAMWikiErrorMessageProvider.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private LinkedHashMap<RequestMatcher, String> matcherToKeyMap;
 	private LinkedHashMap<String, String> urlPatterns;
 

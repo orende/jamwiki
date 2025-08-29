@@ -33,7 +33,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public abstract class AbstractJAMWikiCustomTagLexer extends JFlexLexer {
 
-	protected static final WikiLogger logger = WikiLogger.getLogger(AbstractJAMWikiCustomTagLexer.class.getName());
+	protected static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** Registry of all active custom tags where the key is the tag name and the value is an instance of the tag class. */
 	private static final Map<String, JFlexCustomTagItem> CUSTOM_TAG_REGISTRY = new HashMap<String, JFlexCustomTagItem>();
 	static {

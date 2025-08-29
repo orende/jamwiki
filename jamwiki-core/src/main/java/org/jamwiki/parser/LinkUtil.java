@@ -43,7 +43,7 @@ import org.jamwiki.utils.WikiUtil;
  */
 public abstract class LinkUtil {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(LinkUtil.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	private static final Pattern INVALID_TOPIC_NAME_PATTERN = Pattern.compile(Environment.getValue(Environment.PROP_PATTERN_INVALID_TOPIC_PATTERN));
 	// pattern for links of the form "http://example.com" or "mailto:email.com".  "(?:X)" means non-capturing group.

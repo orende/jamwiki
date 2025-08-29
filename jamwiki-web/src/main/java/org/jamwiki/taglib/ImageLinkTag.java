@@ -33,7 +33,7 @@ import org.jamwiki.utils.WikiUtil;
  */
 public class ImageLinkTag extends TagSupport {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(ImageLinkTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private String allowEnlarge = null;
 	private WikiFileVersion fileVersion = null;
 	private String maxHeight = null;

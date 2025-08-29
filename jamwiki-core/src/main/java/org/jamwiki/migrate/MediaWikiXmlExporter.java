@@ -50,7 +50,7 @@ import org.jamwiki.utils.XMLUtil;
  */
 public class MediaWikiXmlExporter implements TopicExporter {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(MediaWikiXmlExporter.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private static final SimpleDateFormat MEDIAWIKI_DATE_FORMATTER = new SimpleDateFormat(MediaWikiConstants.ISO_8601_DATE_FORMAT);
 
 	/**

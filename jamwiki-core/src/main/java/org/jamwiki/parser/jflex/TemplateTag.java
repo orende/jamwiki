@@ -41,7 +41,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class TemplateTag implements JFlexParserTag {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(TemplateTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	protected static final String TEMPLATE_INCLUSION = "template-inclusion";
 	protected static final String TEMPLATE_ONLYINCLUDE = "template-onlyinclude";
 

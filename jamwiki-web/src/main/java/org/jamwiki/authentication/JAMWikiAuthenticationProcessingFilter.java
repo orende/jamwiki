@@ -38,7 +38,7 @@ import org.jamwiki.utils.WikiUtil;
 public class JAMWikiAuthenticationProcessingFilter extends UsernamePasswordAuthenticationFilter {
 
 	/** Standard logger. */
-	private static final WikiLogger logger = WikiLogger.getLogger(JAMWikiAuthenticationProcessingFilter.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 *

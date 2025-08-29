@@ -24,7 +24,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class WikiBoldItalicTag implements JFlexParserTag {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(WikiBoldItalicTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 * Parse a call to a Mediawiki noinclude tag of the form

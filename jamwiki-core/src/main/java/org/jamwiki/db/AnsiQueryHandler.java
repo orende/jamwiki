@@ -66,7 +66,7 @@ import org.springframework.jdbc.support.KeyHolder;
  */
 public class AnsiQueryHandler implements QueryHandler {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(AnsiQueryHandler.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	protected static final String SQL_PROPERTY_FILE_NAME = "sql/sql.ansi.properties";
 
 	protected static String STATEMENT_CONNECTION_VALIDATION_QUERY = null;

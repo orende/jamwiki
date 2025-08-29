@@ -49,7 +49,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class SetupServlet extends JAMWikiServlet {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(SetupServlet.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** The name of the JSP file used to render the servlet output. */
 	protected static final String JSP_SETUP = "setup.jsp";
 	private static final JavaVersion MINIMUM_JDK_VERSION = JavaVersion.JAVA_1_5;

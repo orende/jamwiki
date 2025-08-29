@@ -36,7 +36,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
  */
 public class JAMWikiLocaleInterceptor extends LocaleChangeInterceptor {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(JAMWikiServlet.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 * Ensure that the session locale value is set.

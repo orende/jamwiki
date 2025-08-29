@@ -33,7 +33,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class IFrameTag implements JFlexCustomTagItem {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(IFrameTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private static List<String> ALLOWED_ATTRIBUTES = Arrays.asList(
 		"accesskey",
 		"align",

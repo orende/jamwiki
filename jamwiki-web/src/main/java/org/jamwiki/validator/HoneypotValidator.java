@@ -30,7 +30,7 @@ import org.springframework.security.remoting.dns.JndiDnsResolver;
  */
 public class HoneypotValidator implements RequestValidator {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(HoneypotValidator.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** DNS lookup address for Honeypot lookups.  IP and access key will be prepended to this value. */
 	private static final String PROJECT_HONEYPOT_DOMAIN = "dnsbl.httpbl.org";
 	/** Use the Spring DNS resolver as the Java InetAddress methods take excessively long on Windows machines. */

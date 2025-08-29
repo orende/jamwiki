@@ -39,7 +39,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class ImageLinkTag implements JFlexParserTag {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(ImageLinkTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	// look for image size info in image tags. note that "?:" is a regex non-capturing group.
 	private static Pattern IMAGE_SIZE_PATTERN = Pattern.compile("([0-9]+)?(?:[ ]*x[ ]*([0-9]+))?[ ]*px", Pattern.CASE_INSENSITIVE);
 	// look for alt info in image tags

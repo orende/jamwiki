@@ -38,7 +38,7 @@ import org.jamwiki.utils.WikiLogger;
  * <code>jamwiki.properties</code> file.
  */
 public class Environment {
-	private static final WikiLogger logger = WikiLogger.getLogger(Environment.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	public static final String PROP_BASE_COOKIE_EXPIRE = "cookie-expire";
 	public static final String PROP_BASE_DEFAULT_TOPIC = "default-topic";

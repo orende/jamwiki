@@ -35,7 +35,7 @@ import org.jamwiki.model.WikiUser;
  */
 public class DateUtil {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(DateUtil.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	public enum DateFormatType { DATE_ONLY, TIME_ONLY, DATE_AND_TIME };
 
 	/**

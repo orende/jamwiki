@@ -32,7 +32,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public abstract class AbstractJAMWikiLexer extends JFlexLexer {
 
-	protected static final WikiLogger logger = WikiLogger.getLogger(AbstractJAMWikiLexer.class.getName());
+	protected static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/**
 	 * Automatically insert a paragraph tag after all block-level tags EXCEPT
 	 * for paragraph tags (since that is handled by the parser).  This is

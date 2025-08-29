@@ -29,7 +29,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class EditSectionTag implements JFlexParserTag {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(EditSectionTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private static final String CSS_SECTION_COMMENT = "section-link";
 
 	/**

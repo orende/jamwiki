@@ -42,7 +42,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class ImageServlet extends JAMWikiServlet {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(ImageServlet.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 * This servlet requires slightly different initialization parameters from most

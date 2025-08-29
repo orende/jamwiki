@@ -30,7 +30,7 @@ import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuc
 public class JAMWikiLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
 	/** Standard logger. */
-	private static final WikiLogger logger = WikiLogger.getLogger(JAMWikiLogoutSuccessHandler.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 *

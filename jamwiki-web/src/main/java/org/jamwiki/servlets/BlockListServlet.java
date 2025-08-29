@@ -33,7 +33,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class BlockListServlet extends JAMWikiServlet {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(BlockListServlet.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** The name of the JSP file used to render the servlet output when searching. */
 	protected static final String JSP_BLOCK_LIST = "block-list.jsp";
 

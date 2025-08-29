@@ -26,7 +26,7 @@ import java.util.List;
 public class Pagination {
 
 	/** Logger */
-	public static final WikiLogger logger = WikiLogger.getLogger(Pagination.class.getName());
+	public static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	private final int numResults;
 	private final int offset;

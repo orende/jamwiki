@@ -55,7 +55,7 @@ import org.springframework.jdbc.UncategorizedSQLException;
  */
 public class CacheQueryHandler extends AnsiQueryHandler {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(AnsiQueryHandler.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	protected static final String SQL_PROPERTY_FILE_NAME = "sql/sql.cache.properties";
 
 	/**

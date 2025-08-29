@@ -35,7 +35,7 @@ import org.jamwiki.Environment;
 public class LoginServlet extends JAMWikiServlet {
 
 	/** Logger */
-	private static final WikiLogger logger = WikiLogger.getLogger(LoginServlet.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 *

@@ -46,7 +46,7 @@ import org.jamwiki.utils.WikiUtil;
  */
 public class ImageProcessor {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(ImageProcessor.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	static {
 		// manually set the ImageIO temp directory so that systems with incorrect defaults won't fail

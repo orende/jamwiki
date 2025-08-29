@@ -44,7 +44,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class UploadServlet extends JAMWikiServlet {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(UploadServlet.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** The name of the JSP file used to render the servlet output. */
 	protected static final String JSP_UPLOAD = "upload.jsp";
 

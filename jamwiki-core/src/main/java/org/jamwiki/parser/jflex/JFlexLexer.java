@@ -28,7 +28,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public abstract class JFlexLexer {
 
-	protected static final WikiLogger logger = WikiLogger.getLogger(JFlexLexer.class.getName());
+	protected static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/** Member variable used to keep track of the state history for the lexer. */
 	protected Stack<Integer> states = new Stack<Integer>();

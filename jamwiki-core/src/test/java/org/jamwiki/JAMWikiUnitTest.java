@@ -42,7 +42,7 @@ import org.junit.Before;
  */
 public abstract class JAMWikiUnitTest {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(JAMWikiUnitTest.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 * If a test JAMWiki instance does not yet exist, create one to allow running

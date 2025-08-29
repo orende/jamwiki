@@ -38,7 +38,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class DiffServlet extends JAMWikiServlet {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(DiffServlet.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** The name of the JSP file used to render the servlet output. */
 	protected static final String JSP_DIFF = "diff.jsp";
 

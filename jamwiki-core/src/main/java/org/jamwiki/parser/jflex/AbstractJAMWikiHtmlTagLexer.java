@@ -27,7 +27,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public abstract class AbstractJAMWikiHtmlTagLexer extends JFlexLexer {
 
-	protected static final WikiLogger logger = WikiLogger.getLogger(AbstractJAMWikiHtmlTagLexer.class.getName());
+	protected static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** During parsing, the attribute (if any) that is currently being parsed. */
 	protected String currentAttributeKey;
 	/** The raw HTML being parsed. */

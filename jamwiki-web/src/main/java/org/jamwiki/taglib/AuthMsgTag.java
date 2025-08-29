@@ -32,7 +32,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class AuthMsgTag extends TagSupport {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(AuthMsgTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private String css = null;
 
 	/**

@@ -79,7 +79,7 @@ public class Namespace implements Serializable {
 	private Integer mainNamespaceId;
 	private Map<String, String> namespaceTranslations;
 
-	private static final WikiLogger logger = WikiLogger.getLogger(Namespace.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 * Create a namespace.

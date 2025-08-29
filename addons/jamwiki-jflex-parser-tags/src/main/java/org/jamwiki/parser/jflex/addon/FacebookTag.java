@@ -63,7 +63,7 @@ import org.jamwiki.utils.WikiUtil;
  */
 public class FacebookTag implements JFlexCustomTagItem {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(FacebookTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** Facebook attribute value for "like" buttons. */
 	private static final String ACTION_LIKE = "like";
 	/** Facebook attribute value for "recommend" buttons. */

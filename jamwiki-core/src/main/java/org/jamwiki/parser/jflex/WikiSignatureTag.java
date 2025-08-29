@@ -33,7 +33,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class WikiSignatureTag implements JFlexParserTag {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(WikiSignatureTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 *

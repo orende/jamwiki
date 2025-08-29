@@ -45,7 +45,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  */
 public class DatabaseConnection {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(DatabaseConnection.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private static DataSource dataSource = null;
 	private static JdbcTemplate jdbcTemplate = null;
 	private static TransactionTemplate transactionTemplate = null;

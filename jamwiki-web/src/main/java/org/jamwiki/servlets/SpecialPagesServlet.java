@@ -28,7 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class SpecialPagesServlet extends JAMWikiServlet {
 
 	/** Logger for this class and subclasses. */
-	private static final WikiLogger logger = WikiLogger.getLogger(SpecialPagesServlet.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** The name of the JSP file used to render the servlet output. */
 	protected static final String JSP_SPECIAL_PAGES = "all-special-pages.jsp";
 

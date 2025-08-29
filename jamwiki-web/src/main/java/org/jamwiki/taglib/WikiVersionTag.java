@@ -28,7 +28,7 @@ import org.jamwiki.WikiVersion;
  */
 public class WikiVersionTag extends TagSupport {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(WikiVersionTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 *

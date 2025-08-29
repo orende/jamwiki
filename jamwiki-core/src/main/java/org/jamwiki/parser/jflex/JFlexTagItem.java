@@ -28,7 +28,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 class JFlexTagItem {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(JFlexTagItem.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	private static final Map<String, String> EMPTY_BODY_TAGS = Utilities.initializeLookupMap("br", "col", "div", "hr", "td", "th");
 	private static final Map<String, String> LIST_ITEM_TAGS = Utilities.initializeLookupMap("dd", "dt", "li");

@@ -35,7 +35,7 @@ public class WikiCache<K, V> {
 
     private record KeyValueClasses(Class keyClass, Class valueClass) {}
 
-	private static final WikiLogger logger = WikiLogger.getLogger(WikiCache.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private static CacheManager CACHE_MANAGER = null;
 	private static boolean INITIALIZED = false;
     private final static Map<String, KeyValueClasses> keyValueClassesMap = new HashMap<>();

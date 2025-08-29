@@ -28,7 +28,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class JavascriptTag implements JFlexParserTag {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(JavascriptTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 * Parse a Mediawiki HTML link of the form "<script>...</script>".

@@ -32,7 +32,7 @@ import java.util.StringTokenizer;
  */
 public class TiddlyWiki2MediaWikiTranslator {
     
-	private static final WikiLogger logger = WikiLogger.getLogger(TiddlyWiki2MediaWikiTranslator.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	public static String newline = System.getProperty("line.separator");
 

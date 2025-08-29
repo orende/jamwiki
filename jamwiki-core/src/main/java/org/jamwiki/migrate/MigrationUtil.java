@@ -41,7 +41,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class MigrationUtil {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(MigrationUtil.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 * Given a file and a list of topic names, export the topics to the file.

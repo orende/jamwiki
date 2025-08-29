@@ -23,7 +23,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class OnlyIncludeTag implements JFlexParserTag {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(OnlyIncludeTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**
 	 * Parse a call to a Mediawiki onlyinclude tag of the form

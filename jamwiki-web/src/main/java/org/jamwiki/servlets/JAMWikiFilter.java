@@ -37,7 +37,7 @@ import org.jamwiki.utils.WikiUtil;
  */
 public class JAMWikiFilter implements Filter {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(JAMWikiFilter.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private String encoding = "UTF-8";
 
 	/**

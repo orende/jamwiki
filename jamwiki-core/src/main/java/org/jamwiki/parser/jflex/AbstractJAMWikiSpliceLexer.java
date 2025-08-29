@@ -23,7 +23,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public abstract class AbstractJAMWikiSpliceLexer extends JFlexLexer {
 
-	protected static final WikiLogger logger = WikiLogger.getLogger(AbstractJAMWikiSpliceLexer.class.getName());
+	protected static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	protected int section = 0;
 	protected int sectionDepth = 0;
 	protected int targetSection = 0;

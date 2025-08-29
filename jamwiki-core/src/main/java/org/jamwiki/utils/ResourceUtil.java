@@ -39,7 +39,7 @@ import org.springframework.util.ClassUtils;
  */
 public abstract class ResourceUtil {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(ResourceUtil.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** Sub-directory within the JAMWiki system directory that holds resource files. */
 	private static final String RESOURCES_DIR = "resources";
 	/** Sub-directory within the JAMWiki webapp root that holds resource setup files. */

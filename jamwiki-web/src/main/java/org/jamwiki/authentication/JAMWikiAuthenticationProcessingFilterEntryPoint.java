@@ -34,7 +34,7 @@ import org.jamwiki.utils.WikiUtil;
 public class JAMWikiAuthenticationProcessingFilterEntryPoint extends LoginUrlAuthenticationEntryPoint {
 
 	/** Standard logger. */
-	private static final WikiLogger logger = WikiLogger.getLogger(JAMWikiAuthenticationProcessingFilterEntryPoint.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private JAMWikiErrorMessageProvider errorMessageProvider;
 
 	/**

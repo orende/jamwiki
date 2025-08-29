@@ -32,7 +32,7 @@ import org.jamwiki.utils.WikiUtil;
  */
 public abstract class AbstractHeadingTag implements JFlexParserTag {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(AbstractHeadingTag.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** Path to the template used to format a header edit link, relative to the classpath. */
 	private static final String TEMPLATE_HEADER_EDIT_LINK = "templates/header-edit-link.template";
 

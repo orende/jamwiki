@@ -47,7 +47,7 @@ import org.jamwiki.model.WikiGroup;
  */
 public class WikiUtil {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(WikiUtil.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/** webapp context path, initialized from JAMWikiFilter. */
 	public static String WEBAPP_CONTEXT_PATH = null;

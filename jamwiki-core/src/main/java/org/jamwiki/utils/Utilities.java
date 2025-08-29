@@ -39,7 +39,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class Utilities {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(Utilities.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	private static final String ipv4Pattern = "(?:(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])";
 	private static final String ipv6Pattern = "(?:[0-9a-f]{1,4}:){7}(?:[0-9a-f]){1,4}";

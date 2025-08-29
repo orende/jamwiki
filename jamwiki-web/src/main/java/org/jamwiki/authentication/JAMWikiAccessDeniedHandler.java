@@ -31,7 +31,7 @@ import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 public class JAMWikiAccessDeniedHandler extends AccessDeniedHandlerImpl {
 
 	/** Standard logger. */
-	private static final WikiLogger logger = WikiLogger.getLogger(JAMWikiAccessDeniedHandler.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private JAMWikiErrorMessageProvider errorMessageProvider;
 
 	/**

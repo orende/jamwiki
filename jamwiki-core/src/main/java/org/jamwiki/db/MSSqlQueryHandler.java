@@ -27,7 +27,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class MSSqlQueryHandler extends AnsiQueryHandler {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(MSSqlQueryHandler.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private static final String SQL_PROPERTY_FILE_NAME = "sql/sql.mssql.properties";
 
 	/**

@@ -36,7 +36,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class WikiUserDetailsImpl implements UserDetails {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(WikiUserDetailsImpl.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** The default anonymous username.  This value should match the Spring Security <code>AnonymousBeanDefinitionParser.DEF_USERNAME</code> value, which unfortunately is not public. */
 	public static final String ANONYMOUS_USER_USERNAME = "roleAnonymous";
 	private static final long serialVersionUID = -2818435399240684581L;

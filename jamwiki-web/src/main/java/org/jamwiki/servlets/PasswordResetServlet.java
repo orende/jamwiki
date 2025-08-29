@@ -45,7 +45,7 @@ public class PasswordResetServlet extends JAMWikiServlet {
 	// challenge: ?loginUsername=charles&rcode=VWY3HyfcgLNTOoOVy3EyV6uLaAkkf73BvFC82mNURQpHKiD8NJCtkMYXfOrQHpN8dJde5HPXpvLX3LjehWu1bDdEvUzqWnQo
 	
 	/** Logger */
-	private static final WikiLogger logger = WikiLogger.getLogger(PasswordResetServlet.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** The name of the JSP file used to render the servlet output when searching. */
 	protected static final String JSP_LOGIN_RESET = "password-reset.jsp";
 

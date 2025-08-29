@@ -34,7 +34,7 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class JAMWikiModel extends AbstractWikiModel {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(JAMWikiModel.class.getName());
+	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	protected String fContextPath;
 
