@@ -1064,7 +1064,7 @@ public class AnsiDataHandler implements DataHandler {
 			topicName = this.lookupTopicName(sharedVirtualWiki, namespace, pageName);
 		}
         if (topicName == null) {
-            logger.warn("Topic name not found for virtualWikiId %s, virtualWiki %s, namespace %s and pageName %s".formatted(virtualWikiId, virtualWiki, namespace, pageName));
+            logger.debug("Topic name not found for virtualWikiId %s, virtualWiki %s, namespace %s and pageName %s".formatted(virtualWikiId, virtualWiki, namespace, pageName));
         } else {
             CACHE_TOPIC_NAMES_BY_NAME.addToCache(key, topicName);
         }
