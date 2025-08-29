@@ -10,34 +10,24 @@
 		JAMWiki is a Java-based Wiki engine which offers many of the
 		features of MediaWiki.
 	</description>
-	<url>http://www.jamwiki.org</url>
+	<url>https://github.com/orende/jamwiki</url>
 	<modules>
 		<module>jamwiki-core</module>
 		<module>jamwiki-web</module>
 		<module>addons</module>
 		<module>jamwiki-war</module>
 	</modules>
-	<scm>
-        <connection>scm:git:git://git.code.sf.net/p/jamwiki/code</connection>
-        <developerConnection>scm:git:ssh://git.code.sf.net/p/jamwiki/code</developerConnection>
-        <url>http://sourceforge.net/p/jamwiki/code/</url>
-        <tag>1.4.0</tag>
-  </scm>
-	<issueManagement>
-		<system>JIRA</system>
-		<url>http://jira.jamwiki.org/browse/JAMWIKI</url>
-	</issueManagement>
 	<licenses>
 		<license>
 			<name>LGPL</name>
-			<url>http://www.gnu.org/licenses/lgpl.html</url>
+			<url>https://www.gnu.org/licenses/lgpl.html</url>
 			<distribution>manual</distribution>
 		</license>
 	</licenses>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.version>3.9.5</maven.version>
+        <maven.version>3.9.5</maven.version> <!-- Not enforced, but should match mvn wrapper version -->
         <dependency.spring.version>3.2.18.RELEASE</dependency.spring.version>
         <dependency.spring.security.version>3.2.10.RELEASE</dependency.spring.security.version>
 		<slf4j.version>1.6.1</slf4j.version>
@@ -45,9 +35,6 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 	</properties>
-	<prerequisites>
-		<maven>${maven.version}</maven>
-	</prerequisites>
     <repositories>
         <repository>
             <id>central</id>
