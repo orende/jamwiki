@@ -376,11 +376,6 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<artifactId>maven-assembly-plugin</artifactId>
-					<!-- version 2.2 is too different, not upgrading right now -->
-					<version>2.2-beta-5</version>
-				</plugin>
-				<plugin>
 					<artifactId>maven-dependency-plugin</artifactId>
 					<version>2.1</version>
 				</plugin>
@@ -398,18 +393,6 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.0.0</version>
-				<configuration>
-					<descriptors>
-						<descriptor>src/main/assembly/src.xml</descriptor>
-					</descriptors>
-				</configuration>
-			</plugin>
-		</plugins>
 	</build>
 	<!-- FIXME merge versions and configs with pluginManagement if possible -->
 	<reporting>
