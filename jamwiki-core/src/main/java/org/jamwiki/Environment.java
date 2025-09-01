@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -163,7 +164,10 @@ public class Environment {
 	private Environment() {
 		this.initDefaultProperties();
 		logger.debug("Default properties initialized: " + this.defaults.toString());
-		this.props = loadProperties(PROPERTY_FILE_NAME, this.defaults);
+        var propertyFilePathOverride = Optional.ofNullable(System.getenv("PROPERTY_FILE_PATH"));
+        String propertyFilePath = propertyFilePathOverride.orElse(PROPERTY_FILE_NAME);
+        logger.debug("Property file path: " + propertyFilePath);
+		this.props = loadProperties(propertyFilePath, this.defaults);
 		if ("true".equals(System.getProperty("jamwiki.override.file.properties"))) {
 			overrideFromSystemProperties();
 		}

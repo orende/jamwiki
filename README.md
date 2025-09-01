@@ -12,6 +12,9 @@ The modern way of running this application is by deploying it to a Tomcat instan
         -v ./jamwiki-war/target/jamwiki-$VERSION.war:/usr/local/tomcat/webapps/jamwiki.war \
         -v ./hsqldb/:/database/ \
         -v ./wikidata:/usr/local/tomcat/data \
+        -v ./files/:/usr/local/tomcat/data/files/ \
+        -v ./docker/jamwiki.properties:/usr/local/tomcat/conf/jamwiki.properties \
+        -e PROPERTY_FILE_PATH=/usr/local/tomcat/conf/jamwiki.properties \
         -p 8888:8080 \
         tomcat:9.0.108-jdk17-temurin-noble
 
