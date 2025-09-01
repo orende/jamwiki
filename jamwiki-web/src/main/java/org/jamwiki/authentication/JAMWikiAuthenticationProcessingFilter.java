@@ -16,21 +16,23 @@
  */
 package org.jamwiki.authentication;
 
-import java.io.IOException;
-import java.sql.Timestamp;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.jamwiki.WikiBase;
+import org.jamwiki.WikiException;
+import org.jamwiki.model.WikiUser;
+import org.jamwiki.utils.WikiLogger;
+import org.jamwiki.utils.WikiUtil;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.jamwiki.WikiBase;
-import org.jamwiki.WikiException;
-import org.jamwiki.utils.WikiLogger;
-import org.jamwiki.model.WikiUser;
-import org.jamwiki.utils.WikiUtil;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.Timestamp;
 
 /**
  * This class is a hack implemented to support virtual wikis and Spring Security.
@@ -62,6 +64,7 @@ public class JAMWikiAuthenticationProcessingFilter extends UsernamePasswordAuthe
 	 */
 	protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
 		String uri = request.getRequestURI();
+        logger.debug("JAMWikiAuthenticationProcessingFilter.requiresAuthentication: " + uri);
 		// FIXME - move the "strip after semicolon" code to WikiUtil
 		int pathParamIndex = uri.indexOf(';');
 		if (pathParamIndex > 0) {
@@ -69,7 +72,7 @@ public class JAMWikiAuthenticationProcessingFilter extends UsernamePasswordAuthe
 			uri = uri.substring(0, pathParamIndex);
 		}
 		String virtualWiki = WikiUtil.getVirtualWikiFromURI(request);
-		return uri.endsWith(request.getContextPath() + "/" + virtualWiki + this.getFilterProcessesUrl());
+		return uri.endsWith(request.getContextPath() + "/" + virtualWiki + "/j_spring_security_check");
 	}
 
 	/**
@@ -107,4 +110,10 @@ public class JAMWikiAuthenticationProcessingFilter extends UsernamePasswordAuthe
 			}
 		}
 	}
+
+    @Override
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        logger.debug("Setting up AuthenticationManager: %s".formatted(authenticationManager));
+        super.setAuthenticationManager(authenticationManager);
+    }
 }

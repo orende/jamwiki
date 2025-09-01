@@ -16,16 +16,16 @@
  */
 package org.jamwiki.authentication;
 
-import org.jamwiki.utils.Encryption;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.jamwiki.utils.Encryption;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Custom implementation of the JAMWiki password encoder.  This class is (hopefully)
  * a temporary one that can eventually be removed in favor of Spring Security's
  * default SHA password encoder.
  */
-public class JAMWikiPasswordEncoder implements PasswordEncoder {
+public class JAMWikiPasswordEncoder implements PasswordEncoder, org.springframework.security.authentication.encoding.PasswordEncoder {
 
 	/**
 	 * Encode a password as specified by the Spring Security PasswordEncoder interface.
@@ -56,4 +56,34 @@ public class JAMWikiPasswordEncoder implements PasswordEncoder {
 		}
 		return StringUtils.equals(encPass, Encryption.encrypt(rawPass));
 	}
+
+    /**
+     * Encode a password as specified by the Spring Security PasswordEncoder interface.
+     *
+     * @param rawPassword the password to encode
+     * @return encoded password
+     */
+    @Override
+    public String encode(CharSequence rawPassword) {
+        if (StringUtils.isBlank(rawPassword)) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
+        return Encryption.encrypt(rawPassword.toString());
+    }
+
+    /**
+     * Validate a raw password against an encoded password as specified by the Spring
+     * Security PasswordEncoder interface.
+     *
+     * @param encodedPassword a pre-encoded password
+     * @param rawPassword a raw password to encode and compare against the pre-encoded password
+     * @return true if the password is valid , false otherwise
+     */
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        if (StringUtils.isBlank(rawPassword)) {
+            return false;
+        }
+        return StringUtils.equals(encodedPassword, Encryption.encrypt(rawPassword.toString()));
+    }
 }

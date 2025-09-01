@@ -16,20 +16,22 @@
  */
 package org.jamwiki.authentication;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.WikiBase;
 import org.jamwiki.model.Role;
+import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * Loads user data from JAMWiki database.
@@ -39,6 +41,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  * @since 28.11.2006
  */
 public class JAMWikiDaoImpl implements UserDetailsService {
+
+    private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/*
 	 * (non-Javadoc)
@@ -62,7 +66,7 @@ public class JAMWikiDaoImpl implements UserDetailsService {
 	 */
 	private Collection<GrantedAuthority> retrieveUserAuthorities(String username) throws DataAccessException {
 		if (WikiUtil.isFirstUse()) {
-			return new ArrayList<GrantedAuthority>();
+			return List.of();
 		}
 		// add authorities given to all users
 		Collection<GrantedAuthority> results = new ArrayList<GrantedAuthority>();
@@ -79,6 +83,15 @@ public class JAMWikiDaoImpl implements UserDetailsService {
 				}
 			}
 		}
+        if (results.isEmpty()) {
+            logger.warn("GrantedAuthorities was empty for user " + username);
+        }
 		return results;
 	}
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", JAMWikiDaoImpl.class.getSimpleName() + "[", "]")
+                .toString();
+    }
 }

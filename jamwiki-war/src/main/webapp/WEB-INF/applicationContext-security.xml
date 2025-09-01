@@ -4,9 +4,9 @@
     xmlns:b="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans
-             http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+             http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
              http://www.springframework.org/schema/security
-             http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+             http://www.springframework.org/schema/security/spring-security-4.0.xsd">
 
 	<!--
 	This section contains the basic Spring Security configuration settings.  The intercept-url elements
@@ -22,7 +22,7 @@
 	<http pattern="/images/**" security="none" />
 	<http pattern="/js/**" security="none" />
 	<http pattern="/uploads/**" security="none" />
-	<http auto-config="false" entry-point-ref="authenticationEntryPoint">
+	<http auto-config="false" entry-point-ref="authenticationEntryPoint" use-expressions="false">
 		<!--
 		The intercept-url element defines the roles or authentication states that are required
 		to access a URL path.  Roles should be comma-delimited.  To restrict pages by user type
@@ -32,6 +32,8 @@
 		  * IS_AUTHENTICATED_FULLY - Allow access to logged-in users.
 		To remove all Spring Security processing from a page use the filters="none" attribute.
 		-->
+        <headers disabled="true"/>
+        <csrf disabled="true"/>
 		<intercept-url pattern="/**/Special:Account" access="ROLE_REGISTER,IS_AUTHENTICATED_REMEMBERED" />
 		<intercept-url pattern="/**/Special:Admin" access="ROLE_SYSADMIN" />
 		<intercept-url pattern="/**/Special:Block" access="ROLE_ADMIN" />
@@ -52,36 +54,51 @@
 		<remember-me key="jam35Wiki" services-alias="_rememberMeServices" />
 		<anonymous key="jam35Wiki" />
 		<!-- note that the JAMWiki LoginServlet will add the appropriate logout success URL to the request during logout -->
-		<logout success-handler-ref="jamwikiLogoutSuccessHandler" />
+		<logout success-handler-ref="jamwikiLogoutSuccessHandler" logout-url="/j_spring_security_logout"/>
 		<custom-filter position="FORM_LOGIN_FILTER" ref="authenticationProcessingFilter" />
 		<custom-filter before="EXCEPTION_TRANSLATION_FILTER" ref="jamwikiPostAuthenticationFilter" />
 	</http>
 
-	<!--
-	The authentication processing filter controls where a user will be sent when he tries to
-	access a protected URL and how that user will be authenticated after trying to login.
-	-->
+    <!-- This is necessary to enable using the security:authorize access attribute expressions in jsp, e.g. hasAnyRole() -->
+    <b:bean id="webexpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler" />
+
+    <!--
+    The authentication processing filter controls where a user will be sent when he tries to
+    access a protected URL and how that user will be authenticated after trying to login.
+    -->
 	<b:bean id="authenticationProcessingFilter" class="org.jamwiki.authentication.JAMWikiAuthenticationProcessingFilter">
 		<b:property name="authenticationManager" ref="authenticationManager" />
 		<b:property name="authenticationFailureHandler" ref="authenticationFailureHandler" />
-		<!-- do not include virtual wiki in the url, JAMWikiAuthenticationProcessingFilter adds it -->
-		<b:property name="filterProcessesUrl" value="/j_spring_security_check" />
 		<b:property name="rememberMeServices" ref="_rememberMeServices" />
 	</b:bean>
+
 	<!--
 	The authentication provider is the element which is passed user login attempts for verification.
 	-->
 	<authentication-manager alias="authenticationManager">
-		<authentication-provider user-service-ref="jamWikiAuthenticationDao">
-			<password-encoder ref="jamwikiPasswordEncoder" />
-		</authentication-provider>
+		<authentication-provider ref="authenticationProvider"/>
 	</authentication-manager>
-	<b:bean id="jamWikiAuthenticationDao" class="org.jamwiki.authentication.JAMWikiDaoImpl" />
+	<b:bean id="authenticationProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+        <b:property name="userDetailsService" ref="jamWikiAuthenticationDao"/>
+        <b:property name="authoritiesMapper" ref="authoritiesMapper"/>
+        <b:property name="passwordEncoder" ref="jamwikiPasswordEncoder"/>
+    </b:bean>
+    <b:bean id="jamWikiAuthenticationDao" class="org.jamwiki.authentication.JAMWikiDaoImpl"/>
 	<b:bean id="jamwikiPasswordEncoder" class="org.jamwiki.authentication.JAMWikiPasswordEncoder" />
 	<b:bean id="authenticationFailureHandler" class="org.jamwiki.authentication.JAMWikiAuthenticationFailureHandler">
 		<!-- do not include virtual wiki in the url, JAMWikiAuthenticationFailureHandler adds it -->
 		<b:property name="authenticationFailureUrl" value="/Special:Login?message=error.login" />
 	</b:bean>
+    <b:bean id="authoritiesMapper" class="org.springframework.security.access.hierarchicalroles.RoleHierarchyAuthoritiesMapper">
+        <b:constructor-arg ref="roleHierarchy"/>
+    </b:bean>
+    <b:bean id="roleHierarchy" class="org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl">
+        <b:property name="hierarchy">
+            <b:value>
+                ROLE_SYSADMIN > ROLE_ADMIN > ROLE_USER
+            </b:value>
+        </b:property>
+    </b:bean>
 
 	<!--
 	LDAP example #1 - this example authenticates and retrieves roles from LDAP, so the LDAP
@@ -164,8 +181,10 @@
 	The entry point is the page to which users are redirected when login is required.
 	-->
 	<b:bean id="authenticationEntryPoint" class="org.jamwiki.authentication.JAMWikiAuthenticationProcessingFilterEntryPoint">
+        <b:constructor-arg name="loginFormUrl" value="/Special:Login"/>
+        <b:constructor-arg name="errorMessageProvider" ref="jamwikiErrorMessageProvider"/>
 		<!-- do not include virtual wiki in the url, JAMWikiAuthenticationProcessingFilterEntryPoint adds it -->
-		<b:property name="loginFormUrl" value="/Special:Login" />
+<!--		<b:property name="loginFormUrl" value="/Special:Login" />-->
 		<!-- a PortMapper has to be configured if this is true and we are not using default ports -->
 		<b:property name="forceHttps" value="false" />
 		<b:property name="errorMessageProvider" ref="jamwikiErrorMessageProvider" />

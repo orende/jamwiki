@@ -77,7 +77,7 @@
 &nbsp;&nbsp;&nbsp;
 <input type="checkbox" value="true" name="minorEdit"<c:if test="${minorEdit}"> checked</c:if> id="minorEdit" accesskey="i" />
 <label for="minorEdit"><fmt:message key="edit.caption.minor" /></label>
-<security:authorize ifNotGranted="ROLE_ANONYMOUS">
+<security:authorize access="!hasAnyRole('ROLE_ANONYMOUS')">
 &nbsp;&nbsp;&nbsp;
 <input type="checkbox" value="true" name="watchTopic"<c:if test="${watchTopic}"> checked</c:if> id="watchTopic" accesskey="w" />
 <label for="watchTopic"><fmt:message key="edit.caption.watch" /></label>

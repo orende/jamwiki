@@ -16,12 +16,13 @@
  */
 package org.jamwiki.authentication;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * This class is a hack implemented to work around the fact that the default
@@ -37,7 +38,12 @@ public class JAMWikiAuthenticationProcessingFilterEntryPoint extends LoginUrlAut
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private JAMWikiErrorMessageProvider errorMessageProvider;
 
-	/**
+    public JAMWikiAuthenticationProcessingFilterEntryPoint(String loginFormUrl, JAMWikiErrorMessageProvider errorMessageProvider) {
+        super(loginFormUrl);
+        this.errorMessageProvider = errorMessageProvider;
+    }
+
+    /**
 	 *
 	 */
 	public JAMWikiErrorMessageProvider getErrorMessageProvider() {

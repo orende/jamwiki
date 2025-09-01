@@ -16,12 +16,13 @@
  */
 package org.jamwiki.authentication;
 
+import org.jamwiki.utils.WikiLogger;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.security.web.util.AntPathRequestMatcher;
-import org.springframework.security.web.util.RequestMatcher;
-import org.jamwiki.utils.WikiLogger;
 
 /**
  * This class provides a configurable bean object that can be used with the
