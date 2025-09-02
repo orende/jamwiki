@@ -8,14 +8,13 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 
 import static java.lang.invoke.MethodHandles.lookup;
 
-public class JamwikiWebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer implements WebApplicationInitializer {
+public class JamwikiWebAppInitializer implements WebApplicationInitializer {
     private static final WikiLogger logger = WikiLogger.getLogger(lookup().lookupClass());
 
     @Override
@@ -54,23 +53,5 @@ public class JamwikiWebAppInitializer extends AbstractAnnotationConfigDispatcher
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/en/*");
         dispatcher.addMapping("/uploads/*");
-    }
-
-    @Override
-    protected String[] getServletMappings() {
-        logger.debug("Entering JamwikiWebAppInitializer.getServletMappings");
-        return new String[0];
-    }
-
-    @Override
-    protected Class<?>[] getRootConfigClasses() {
-        logger.debug("Entering JamwikiWebAppInitializer.getRootConfigClasses");
-        return new Class[] { SecurityConfig.class };
-    }
-
-    @Override
-    protected Class<?>[] getServletConfigClasses() {
-        logger.debug("Entering JamwikiWebAppInitializer.getServletConfigClasses");
-        return new Class[0];
     }
 }
