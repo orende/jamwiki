@@ -9,3 +9,7 @@
 # local db for testing
 hsqldb/
 wikidata/
+# uploaded files
+files/
+
+*.iml
