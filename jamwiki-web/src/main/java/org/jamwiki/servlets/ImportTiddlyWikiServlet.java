@@ -27,6 +27,7 @@ import org.jamwiki.model.WikiUser;
 import org.jamwiki.utils.TiddlyWikiParser;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -43,7 +44,8 @@ import java.util.List;
  *  0.6.0 and will be removed in a future release unless a new maintainer is
  *  found.
  */
-@WebServlet(name = "ImportTiddly")
+@WebServlet(name="ImportTiddly")
+@Component("ImportTiddly")
 public class ImportTiddlyWikiServlet extends JAMWikiServlet {
 
 

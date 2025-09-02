@@ -21,6 +21,7 @@ import org.jamwiki.Environment;
 import org.jamwiki.authentication.JAMWikiAuthenticationConstants;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -33,7 +34,8 @@ import java.net.URLEncoder;
 /**
  * Used to handle requests or redirects to the login page, as well as requests to logout.
  */
-@WebServlet(name = "Login")
+@WebServlet(name="Login")
+@Component("Login")
 public class LoginServlet extends JAMWikiServlet {
 
 	/** Logger */

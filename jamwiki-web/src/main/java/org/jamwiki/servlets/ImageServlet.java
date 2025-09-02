@@ -23,6 +23,7 @@ import org.jamwiki.model.ImageData;
 import org.jamwiki.model.WikiFile;
 import org.jamwiki.parser.image.ImageUtil;
 import org.jamwiki.utils.WikiLogger;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.ServletException;
@@ -37,7 +38,8 @@ import java.text.ParseException;
 /**
  * Get image requests handler.
  */
-@WebServlet(name = "Image")
+@WebServlet(name="Image")
+@Component("Image")
 public class ImageServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

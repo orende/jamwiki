@@ -21,6 +21,7 @@ import org.jamwiki.WikiMessage;
 import org.jamwiki.model.UserBlock;
 import org.jamwiki.utils.Pagination;
 import org.jamwiki.utils.WikiLogger;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -33,7 +34,8 @@ import java.util.Map;
 /**
  * Display a list of currently blocked usernames and IP addresses.
  */
-@WebServlet(name = "BlockList")
+@WebServlet(name="BlockList")
+@Component("BlockList")
 public class BlockListServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

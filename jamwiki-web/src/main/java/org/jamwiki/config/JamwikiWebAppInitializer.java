@@ -20,7 +20,6 @@ public class JamwikiWebAppInitializer implements WebApplicationInitializer {
     @Override
     public void onStartup(ServletContext container) {
         logger.debug("Entering JAMWikiWebAppInitializer.onStartup");
-        // TODO can this be replaced with @ComponentScan?
         // Create the 'root' Spring application context
         AnnotationConfigWebApplicationContext rootContext =
                 new AnnotationConfigWebApplicationContext();
@@ -32,8 +31,7 @@ public class JamwikiWebAppInitializer implements WebApplicationInitializer {
         container.addListener(new ContextLoaderListener(rootContext));
 
         var filterRegistration = container.addFilter("JAMWikiFilter", JAMWikiFilter.class);
-        boolean setResult = filterRegistration.setInitParameter("encoding", "UTF-8");
-        logger.debug("Init parameter encoding set on filter reg result: " + setResult);
+        filterRegistration.setInitParameter("encoding", "UTF-8");
         var secFilterRegistration = container.addFilter("springSecurityFilterChain", DelegatingFilterProxy.class);
 
         filterRegistration.addMappingForUrlPatterns(null, true, "/*");

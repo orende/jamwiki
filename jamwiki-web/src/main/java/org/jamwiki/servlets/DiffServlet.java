@@ -24,6 +24,7 @@ import org.jamwiki.model.*;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.jamwiki.web.utils.DiffUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -34,7 +35,8 @@ import java.util.List;
 /**
  * Used to display a diff between two versions of a topic.
  */
-@WebServlet(name = "Diff")
+@WebServlet(name="Diff")
+@Component("Diff")
 public class DiffServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

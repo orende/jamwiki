@@ -30,6 +30,7 @@ import org.jamwiki.utils.Utilities;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -44,7 +45,8 @@ import java.util.Map;
  *
  * @see org.jamwiki.servlets.UpgradeServlet
  */
-@WebServlet(name = "Setup")
+@WebServlet(name="Setup")
+@Component("Setup")
 public class SetupServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

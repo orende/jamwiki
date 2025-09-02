@@ -26,6 +26,7 @@ import org.jamwiki.utils.ResourceUtil;
 import org.jamwiki.utils.SortedProperties;
 import org.jamwiki.utils.Utilities;
 import org.jamwiki.utils.WikiLogger;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -42,7 +43,8 @@ import java.util.TreeSet;
  * keys.  Note that the application server must be restarted for any
  * translation changes to be visible on the site.
  */
-@WebServlet(name = "Translation")
+@WebServlet(name="Translation")
+@Component("Translation")
 public class TranslationServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

@@ -27,6 +27,7 @@ import org.jamwiki.model.WikiUser;
 import org.jamwiki.utils.Pagination;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -37,7 +38,8 @@ import java.util.List;
 /**
  * Used to display the edit history information for a topic.
  */
-@WebServlet(name = "History")
+@WebServlet(name="History")
+@Component("History")
 public class HistoryServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

@@ -26,6 +26,7 @@ import org.jamwiki.model.RoleMap;
 import org.jamwiki.model.WikiGroup;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -38,7 +39,8 @@ import java.util.List;
 /**
  *
  */
-@WebServlet(name = "Roles")
+@WebServlet(name="Roles")
+@Component("Roles")
 public class RolesServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

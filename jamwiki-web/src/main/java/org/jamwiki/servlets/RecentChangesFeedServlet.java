@@ -26,6 +26,7 @@ import org.jamwiki.utils.Pagination;
 import org.jamwiki.utils.Utilities;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -53,7 +54,8 @@ import java.util.List;
  * @author Rainer Schmitz
  * @since 22.12.2006
  */
-@WebServlet(name = "RecentChangesFeed")
+@WebServlet(name="RecentChangesFeed")
+@Component("RecentChangesFeed")
 public class RecentChangesFeedServlet extends AbstractController {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

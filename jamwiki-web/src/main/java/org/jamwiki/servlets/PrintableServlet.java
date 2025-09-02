@@ -23,6 +23,7 @@ import org.jamwiki.WikiMessage;
 import org.jamwiki.model.Topic;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -32,7 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Used to display a print-friendly version of a topic.
  */
-@WebServlet(name = "Printable")
+@WebServlet(name="Printable")
+@Component("Printable")
 public class PrintableServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

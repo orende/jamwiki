@@ -29,6 +29,7 @@ import org.jamwiki.parser.LinkUtil;
 import org.jamwiki.utils.Pagination;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -39,7 +40,8 @@ import java.util.List;
 /**
  * Used to handle updating and viewing a user's watchlist.
  */
-@WebServlet(name = "Watchlist")
+@WebServlet(name="Watchlist")
+@Component("Watchlist")
 public class WatchlistServlet extends JAMWikiServlet {
 
 	/** Logger for this class and subclasses. */

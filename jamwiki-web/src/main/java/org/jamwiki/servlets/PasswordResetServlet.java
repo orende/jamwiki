@@ -26,6 +26,7 @@ import org.jamwiki.model.WikiUser;
 import org.jamwiki.utils.Encryption;
 import org.jamwiki.utils.Utilities;
 import org.jamwiki.utils.WikiLogger;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -39,7 +40,8 @@ import java.util.Locale;
 /**
  * Used to handle requests or redirects to the login page, as well as requests to logout.
  */
-@WebServlet(name = "PasswordReset")
+@WebServlet(name="PasswordReset")
+@Component("PasswordReset")
 public class PasswordResetServlet extends JAMWikiServlet {
 
 	// Remove after testing

@@ -24,6 +24,7 @@ import org.jamwiki.utils.Pagination;
 import org.jamwiki.utils.Utilities;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -37,7 +38,8 @@ import java.util.Map;
 /**
  * Used to render a list of all topics that link to another topic.
  */
-@WebServlet(name = "LinkTo")
+@WebServlet(name="LinkTo")
+@Component("LinkTo")
 public class LinkToServlet extends JAMWikiServlet {
 
 	/** Logger for this class and subclasses. */

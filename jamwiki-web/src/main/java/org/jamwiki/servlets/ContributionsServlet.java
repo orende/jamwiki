@@ -24,6 +24,7 @@ import org.jamwiki.model.RecentChange;
 import org.jamwiki.utils.Pagination;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -34,7 +35,8 @@ import java.util.List;
 /**
  * Used to generate a list of all edits made by a user.
  */
-@WebServlet(name = "Contributions")
+@WebServlet(name="Contributions")
+@Component("Contributions")
 public class ContributionsServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

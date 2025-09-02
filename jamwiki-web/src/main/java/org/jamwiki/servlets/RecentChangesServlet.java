@@ -22,6 +22,7 @@ import org.jamwiki.WikiMessage;
 import org.jamwiki.model.RecentChange;
 import org.jamwiki.utils.Pagination;
 import org.jamwiki.utils.WikiLogger;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -32,7 +33,8 @@ import java.util.List;
 /**
  * Used to display a summary of edits made, ordered chronologically.
  */
-@WebServlet(name = "RecentChanges")
+@WebServlet(name="RecentChanges")
+@Component("RecentChanges")
 public class RecentChangesServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

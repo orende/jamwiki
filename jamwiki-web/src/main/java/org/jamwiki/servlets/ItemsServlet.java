@@ -23,6 +23,7 @@ import org.jamwiki.model.TopicType;
 import org.jamwiki.utils.Pagination;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -34,7 +35,8 @@ import java.util.*;
  * Used to build Special: pages that display lists of topics on the Wiki, such
  * as when displaying lists of all existing images or topics.
  */
-@WebServlet(name = "Items")
+@WebServlet(name="Items")
+@Component("Items")
 public class ItemsServlet extends JAMWikiServlet {
 
 	/** Logger for this class and subclasses. */

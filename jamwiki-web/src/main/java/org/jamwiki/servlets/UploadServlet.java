@@ -25,6 +25,7 @@ import org.jamwiki.model.*;
 import org.jamwiki.parser.image.ImageUtil;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.imageio.ImageIO;
@@ -40,7 +41,8 @@ import java.util.List;
 /**
  * Used to handle file uploads.
  */
-@WebServlet(name = "Upload")
+@WebServlet(name="Upload")
+@Component("Upload")
 public class UploadServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

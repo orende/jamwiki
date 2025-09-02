@@ -30,6 +30,7 @@ import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.jamwiki.validator.ReCaptchaUtil;
 import org.jamwiki.web.utils.DiffUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -41,7 +42,8 @@ import java.util.List;
  * Used to process topic edits including saving an edit, preview, resolving
  * conflicts and dealing with spam.
  */
-@WebServlet(name = "Edit")
+@WebServlet(name="Edit")
+@Component("Edit")
 public class EditServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

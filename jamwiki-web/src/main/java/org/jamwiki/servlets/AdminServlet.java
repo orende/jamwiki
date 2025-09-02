@@ -30,6 +30,7 @@ import org.jamwiki.model.WikiConfigurationObject;
 import org.jamwiki.model.WikiUser;
 import org.jamwiki.utils.*;
 import org.jamwiki.web.utils.UserPreferencesUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -46,6 +47,7 @@ import java.util.Properties;
  * configuration settings and refreshing internal Wiki objects.
  */
 @WebServlet(name="Admin")
+@Component("Admin")
 public class AdminServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

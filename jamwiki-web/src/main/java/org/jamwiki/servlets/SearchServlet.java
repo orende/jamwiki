@@ -25,6 +25,7 @@ import org.jamwiki.model.SearchResultEntry;
 import org.jamwiki.parser.LinkUtil;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -40,7 +41,8 @@ import java.util.TreeMap;
  *
  * @see org.jamwiki.SearchEngine
  */
-@WebServlet(name = "Search")
+@WebServlet(name="Search")
+@Component("Search")
 public class SearchServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

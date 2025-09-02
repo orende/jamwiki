@@ -24,6 +24,7 @@ import org.jamwiki.migrate.MigrationException;
 import org.jamwiki.migrate.MigrationUtil;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -36,7 +37,8 @@ import java.util.List;
 /**
  * Used to export an XML file from a wiki topic.
  */
-@WebServlet(name = "Export")
+@WebServlet(name="Export")
+@Component("Export")
 public class ExportServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

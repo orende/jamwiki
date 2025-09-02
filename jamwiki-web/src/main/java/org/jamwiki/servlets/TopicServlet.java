@@ -23,6 +23,7 @@ import org.jamwiki.model.Topic;
 import org.jamwiki.model.VirtualWiki;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -32,7 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Used to display a JAMWiki topic.
  */
-@WebServlet(name = "Topic")
+@WebServlet(name="Topic")
+@Component("Topic")
 public class TopicServlet extends JAMWikiServlet {
 
 	/** Logger for this class and subclasses. */

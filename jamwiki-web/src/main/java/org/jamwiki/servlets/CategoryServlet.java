@@ -22,6 +22,7 @@ import org.jamwiki.model.Category;
 import org.jamwiki.model.Namespace;
 import org.jamwiki.utils.Pagination;
 import org.jamwiki.utils.WikiLogger;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -34,7 +35,8 @@ import java.util.List;
  * Used for display a list of all categories that are currently in use for a
  * virtual wiki.
  */
-@WebServlet(name = "Category")
+@WebServlet(name="Category")
+@Component("Category")
 public class CategoryServlet extends JAMWikiServlet {
 
 	/** Logger for this class and subclasses. */

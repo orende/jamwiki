@@ -27,6 +27,7 @@ import org.jamwiki.model.VirtualWiki;
 import org.jamwiki.model.WikiUser;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -38,7 +39,8 @@ import java.util.List;
 /**
  *
  */
-@WebServlet(name = "VirtualWiki")
+@WebServlet(name="VirtualWiki")
+@Component("VirtualWiki")
 public class AdminVirtualWikiServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

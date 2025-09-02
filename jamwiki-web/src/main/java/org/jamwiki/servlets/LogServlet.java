@@ -22,6 +22,7 @@ import org.jamwiki.WikiMessage;
 import org.jamwiki.model.LogItem;
 import org.jamwiki.utils.Pagination;
 import org.jamwiki.utils.WikiLogger;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -32,7 +33,8 @@ import java.util.List;
 /**
  * Used to build the Special:Log page for displaying log information.
  */
-@WebServlet(name = "Log")
+@WebServlet(name="Log")
+@Component("Log")
 public class LogServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

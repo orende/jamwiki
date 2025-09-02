@@ -27,6 +27,7 @@ import org.jamwiki.parser.WikiLink;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -39,7 +40,8 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @see org.jamwiki.servlets.SetupServlet
  */
-@WebServlet(name = "Upgrade")
+@WebServlet(name="Upgrade")
+@Component("Upgrade")
 public class UpgradeServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

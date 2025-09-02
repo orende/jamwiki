@@ -24,6 +24,7 @@ import org.jamwiki.migrate.MigrationUtil;
 import org.jamwiki.model.WikiUser;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -36,7 +37,8 @@ import java.util.Locale;
 /**
  * Used to import an XML file creating a topic as a result.
  */
-@WebServlet(name = "Image")
+@WebServlet(name="Import")
+@Component("Import")
 public class ImportServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

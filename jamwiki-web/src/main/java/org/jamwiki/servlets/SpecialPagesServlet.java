@@ -18,6 +18,7 @@ package org.jamwiki.servlets;
 
 import org.jamwiki.WikiMessage;
 import org.jamwiki.utils.WikiLogger;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -27,7 +28,8 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Used to generate an index of all Special: pages on the wiki.
  */
-@WebServlet(name = "SpecialPages")
+@WebServlet(name="SpecialPages")
+@Component("SpecialPages")
 public class SpecialPagesServlet extends JAMWikiServlet {
 
 	/** Logger for this class and subclasses. */

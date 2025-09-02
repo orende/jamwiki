@@ -18,6 +18,7 @@ package org.jamwiki.servlets;
 
 import org.jamwiki.WikiBase;
 import org.jamwiki.utils.WikiLogger;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -28,7 +29,8 @@ import java.io.PrintWriter;
 /**
  * Used to generate the jamwiki.css stylesheet.
  */
-@WebServlet(name = "Stylesheet")
+@WebServlet(name="Stylesheet")
+@Component("Stylesheet")
 public class StylesheetServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

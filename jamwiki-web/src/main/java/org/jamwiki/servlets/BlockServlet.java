@@ -25,6 +25,7 @@ import org.jamwiki.model.UserBlock;
 import org.jamwiki.model.WikiUser;
 import org.jamwiki.utils.Utilities;
 import org.jamwiki.utils.WikiLogger;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.annotation.WebServlet;
@@ -37,7 +38,8 @@ import java.util.GregorianCalendar;
 /**
  * Used to provide capability for blocking a user by login or IP address.
  */
-@WebServlet(name = "Block")
+@WebServlet(name="Block")
+@Component("Block")
 public class BlockServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

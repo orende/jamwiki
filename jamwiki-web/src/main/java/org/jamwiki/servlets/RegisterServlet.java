@@ -39,6 +39,7 @@ import org.jamwiki.web.utils.UserPreferencesUtil.UserPreferenceItem;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
@@ -53,7 +54,8 @@ import java.util.Map;
 /**
  * Used to process new user account setup.
  */
-@WebServlet(name = "Register")
+@WebServlet(name="Register")
+@Component("Register")
 public class RegisterServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
