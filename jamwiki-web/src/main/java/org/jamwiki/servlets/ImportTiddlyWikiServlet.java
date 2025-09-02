@@ -17,10 +17,6 @@ package org.jamwiki.servlets;
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-import java.io.File;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.WikiException;
@@ -33,6 +29,12 @@ import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.util.List;
+
 /**
  * Used to import an HTML file (in TiddlyWiki format), creating or updating a
  * topic as a result.
@@ -41,6 +43,7 @@ import org.springframework.web.servlet.ModelAndView;
  *  0.6.0 and will be removed in a future release unless a new maintainer is
  *  found.
  */
+@WebServlet(name = "ImportTiddly")
 public class ImportTiddlyWikiServlet extends JAMWikiServlet {
 
 

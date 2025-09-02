@@ -16,13 +16,6 @@
  */
 package org.jamwiki.servlets;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.jamwiki.WikiBase;
 import org.jamwiki.WikiMessage;
 import org.jamwiki.model.Namespace;
@@ -32,10 +25,16 @@ import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
+
 /**
  * Used to build Special: pages that display lists of topics on the Wiki, such
  * as when displaying lists of all existing images or topics.
  */
+@WebServlet(name = "Items")
 public class ItemsServlet extends JAMWikiServlet {
 
 	/** Logger for this class and subclasses. */

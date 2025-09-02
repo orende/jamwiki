@@ -16,21 +16,10 @@
  */
 package org.jamwiki.servlets;
 
-import java.text.SimpleDateFormat;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.jamwiki.Environment;
-import org.jamwiki.WikiBase;
-import org.jamwiki.WikiConfiguration;
-import org.jamwiki.WikiException;
-import org.jamwiki.WikiMessage;
+import org.jamwiki.*;
 import org.jamwiki.authentication.WikiUserDetailsImpl;
 import org.jamwiki.db.WikiDatabase;
 import org.jamwiki.mail.SMTPWikiMail;
@@ -39,18 +28,24 @@ import org.jamwiki.model.Role;
 import org.jamwiki.model.VirtualWiki;
 import org.jamwiki.model.WikiConfigurationObject;
 import org.jamwiki.model.WikiUser;
-import org.jamwiki.utils.Encryption;
-import org.jamwiki.utils.SpamFilter;
-import org.jamwiki.utils.WikiCache;
-import org.jamwiki.utils.WikiLogger;
-import org.jamwiki.utils.WikiUtil;
+import org.jamwiki.utils.*;
 import org.jamwiki.web.utils.UserPreferencesUtil;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Used to provide administrative functions including changing Wiki
  * configuration settings and refreshing internal Wiki objects.
  */
+@WebServlet(name="Admin")
 public class AdminServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

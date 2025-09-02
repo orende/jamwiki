@@ -16,26 +16,25 @@
  */
 package org.jamwiki.servlets;
 
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.WikiBase;
 import org.jamwiki.WikiException;
 import org.jamwiki.WikiMessage;
-import org.jamwiki.model.RecentChange;
-import org.jamwiki.model.Topic;
-import org.jamwiki.model.TopicVersion;
-import org.jamwiki.model.WikiDiff;
-import org.jamwiki.model.WikiUser;
-import org.jamwiki.web.utils.DiffUtil;
+import org.jamwiki.model.*;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.jamwiki.web.utils.DiffUtil;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Used to display a diff between two versions of a topic.
  */
+@WebServlet(name = "Diff")
 public class DiffServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

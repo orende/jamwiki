@@ -16,11 +16,6 @@
  */
 package org.jamwiki.servlets;
 
-import java.io.File;
-import java.util.List;
-import java.util.Locale;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.jamwiki.WikiException;
 import org.jamwiki.WikiMessage;
@@ -31,9 +26,17 @@ import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.util.List;
+import java.util.Locale;
+
 /**
  * Used to import an XML file creating a topic as a result.
  */
+@WebServlet(name = "Image")
 public class ImportServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

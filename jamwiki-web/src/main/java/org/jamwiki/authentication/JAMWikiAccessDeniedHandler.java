@@ -35,7 +35,11 @@ public class JAMWikiAccessDeniedHandler extends AccessDeniedHandlerImpl {
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private JAMWikiErrorMessageProvider errorMessageProvider;
 
-	/**
+    public JAMWikiAccessDeniedHandler(JAMWikiErrorMessageProvider errorMessageProvider) {
+        this.errorMessageProvider = errorMessageProvider;
+    }
+
+    /**
 	 *
 	 */
 	public JAMWikiErrorMessageProvider getErrorMessageProvider() {

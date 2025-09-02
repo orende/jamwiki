@@ -29,7 +29,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.version>3.9.5</maven.version> <!-- Not enforced, but should match mvn wrapper version -->
         <dependency.spring.version>4.3.30.RELEASE</dependency.spring.version>
-        <dependency.spring.security.version>4.0.4.RELEASE</dependency.spring.security.version>
+        <dependency.spring.security.version>4.1.5.RELEASE</dependency.spring.security.version>
 		<slf4j.version>1.6.1</slf4j.version>
         <ehcache.version>3.10.0</ehcache.version>
         <maven.compiler.source>17</maven.compiler.source>

@@ -16,11 +16,6 @@
  */
 package org.jamwiki.servlets;
 
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jamwiki.WikiBase;
@@ -32,9 +27,17 @@ import org.jamwiki.utils.Utilities;
 import org.jamwiki.utils.WikiLogger;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 /**
  * Used to provide capability for blocking a user by login or IP address.
  */
+@WebServlet(name = "Block")
 public class BlockServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

@@ -16,34 +16,33 @@
  */
 package org.jamwiki.servlets;
 
-import java.io.File;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.Environment;
 import org.jamwiki.WikiBase;
 import org.jamwiki.WikiMessage;
-import org.jamwiki.model.Namespace;
-import org.jamwiki.model.Topic;
-import org.jamwiki.model.TopicType;
-import org.jamwiki.model.TopicVersion;
-import org.jamwiki.model.WikiUser;
+import org.jamwiki.model.*;
 import org.jamwiki.utils.ResourceUtil;
 import org.jamwiki.utils.SortedProperties;
 import org.jamwiki.utils.Utilities;
 import org.jamwiki.utils.WikiLogger;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
 /**
  * Used to provide admins with the ability to create and edit JAMWiki message
  * keys.  Note that the application server must be restarted for any
  * translation changes to be visible on the site.
  */
+@WebServlet(name = "Translation")
 public class TranslationServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

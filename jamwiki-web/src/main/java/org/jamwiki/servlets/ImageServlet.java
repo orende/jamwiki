@@ -16,19 +16,6 @@
  */
 package org.jamwiki.servlets;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.text.ParseException;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.web.servlet.ModelAndView;
 import org.apache.commons.io.IOUtils;
 import org.jamwiki.Environment;
 import org.jamwiki.WikiBase;
@@ -36,10 +23,21 @@ import org.jamwiki.model.ImageData;
 import org.jamwiki.model.WikiFile;
 import org.jamwiki.parser.image.ImageUtil;
 import org.jamwiki.utils.WikiLogger;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLDecoder;
+import java.text.ParseException;
 
 /**
  * Get image requests handler.
  */
+@WebServlet(name = "Image")
 public class ImageServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

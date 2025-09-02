@@ -16,31 +16,40 @@
  */
 package org.jamwiki.servlets;
 
-import java.io.IOException;
-import javax.servlet.Filter;
+import org.jamwiki.authentication.JAMWikiAuthenticationConstants;
+import org.jamwiki.model.VirtualWiki;
+import org.jamwiki.utils.WikiLogger;
+import org.jamwiki.utils.WikiUtil;
+import org.springframework.web.filter.GenericFilterBean;
+
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.jamwiki.authentication.JAMWikiAuthenticationConstants;
-import org.jamwiki.model.VirtualWiki;
-import org.jamwiki.utils.WikiLogger;
-import org.jamwiki.utils.WikiUtil;
+import java.io.IOException;
 
 /**
  * Perform filtering of all Wiki page requests, including setting the
  * character encoding to UTF-8 and verifying that no setup or upgrade is
  * required.
  */
-public class JAMWikiFilter implements Filter {
+public class JAMWikiFilter extends GenericFilterBean {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private String encoding = "UTF-8";
 
-	/**
+    public JAMWikiFilter() {
+    }
+
+    public JAMWikiFilter(String encoding) {
+        if (encoding != null) {
+            this.encoding = encoding;
+        }
+    }
+
+    /**
 	 * Standard servlet filter destroy() method implementation.
 	 */
 	public void destroy() {
@@ -59,18 +68,10 @@ public class JAMWikiFilter implements Filter {
 		if (redirectNeeded(request, response)) {
 			return;
 		}
-		chain.doFilter(request, response);
-	}
+        chain.doFilter(request, response);
+    }
 
-	/**
-	 * Standard servlet filter init() method implementation to configure
-	 * parameters specified via web.xml init-param configuration.
-	 */
-	public void init(FilterConfig config) throws ServletException {
-		this.encoding = config.getInitParameter("encoding");
-	}
-
-	/**
+    /**
 	 * Utility method for determining if a request is for an ignorable file such as
 	 * a CSS file.
 	 */
@@ -100,6 +101,9 @@ public class JAMWikiFilter implements Filter {
 		}
 		HttpServletRequest request = (HttpServletRequest)servletRequest;
 		HttpServletResponse response = (HttpServletResponse)servletResponse;
+        if (request.getRequestURI().contains(";")) {
+            logger.debug("Request URI contains a semicolon: " + request.getRequestURI());
+        }
 		if (redirectSetup(request)) {
 			// redirect to setup page
 			String url = request.getContextPath() + "/" + VirtualWiki.defaultVirtualWiki().getName() + "/Special:Setup";

@@ -16,16 +16,6 @@
  */
 package org.jamwiki.servlets;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.Environment;
 import org.jamwiki.WikiBase;
@@ -40,6 +30,14 @@ import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.jamwiki.web.utils.UserPreferencesUtil;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 /**
  * The <code>WikiPageInfo</code> class provides an object containing common
  * data used for generating wiki page display.
@@ -53,21 +51,21 @@ public class WikiPageInfo {
 	private String canonicalUrl = null;
 	private String contentJsp = JSP_TOPIC;
 	/** A list of error messages generated during servlet processing to display on the front end. */
-	private List<WikiMessage> errors = new ArrayList<WikiMessage>();
-	private List<String> interwikiLinks = new ArrayList<String>();
+	private List<WikiMessage> errors = new ArrayList<>();
+	private List<String> interwikiLinks = new ArrayList<>();
 	/** A list of non-error messages generated during servlet processing to display on the front end. */
-	private List<WikiMessage> messages = new ArrayList<WikiMessage>();
+	private List<WikiMessage> messages = new ArrayList<>();
 	private WikiMessage pageTitle = null;
 	private String redirectName = null;
 	private String redirectUrl = null;
 	private String selectedTab = null;
 	private boolean special = false;
-	private LinkedHashMap<String, WikiMessage> tabMenu = new LinkedHashMap<String, WikiMessage>();
+	private LinkedHashMap<String, WikiMessage> tabMenu = new LinkedHashMap<>();
 	private String topicName = "";
 	private final WikiUser user;
-	private LinkedHashMap<String, WikiMessage> userMenu = new LinkedHashMap<String, WikiMessage>();
+	private LinkedHashMap<String, WikiMessage> userMenu = new LinkedHashMap<>();
 	private final UserPreferencesUtil userPreferencesUtil;
-	private List<String> virtualWikiLinks = new ArrayList<String>();
+	private List<String> virtualWikiLinks = new ArrayList<>();
 	private String virtualWikiName = null;
 
 	/**
@@ -91,17 +89,17 @@ public class WikiPageInfo {
 		this.admin = false;
 		this.canonicalUrl = null;
 		this.contentJsp = JSP_TOPIC;
-		this.errors = new ArrayList<WikiMessage>();
-		this.interwikiLinks = new ArrayList<String>();
-		this.messages = new ArrayList<WikiMessage>();
+		this.errors = new ArrayList<>();
+		this.interwikiLinks = new ArrayList<>();
+		this.messages = new ArrayList<>();
 		this.pageTitle = null;
 		this.redirectName = null;
 		this.selectedTab = null;
 		this.special = false;
-		this.tabMenu = new LinkedHashMap<String, WikiMessage>();
+		this.tabMenu = new LinkedHashMap<>();
 		this.topicName = "";
-		this.userMenu = new LinkedHashMap<String, WikiMessage>();
-		this.virtualWikiLinks = new ArrayList<String>();
+		this.userMenu = new LinkedHashMap<>();
+		this.virtualWikiLinks = new ArrayList<>();
 	}
 
 	/**
@@ -319,7 +317,7 @@ public class WikiPageInfo {
 			return "";
 		}
 		MessageFormat formatter = new MessageFormat(pattern);
-		Object params[] = new Object[1];
+		Object[] params = new Object[1];
 		params[0] = (this.topicName == null) ? "" : this.topicName;
 		return formatter.format(params);
 	}
@@ -329,11 +327,11 @@ public class WikiPageInfo {
 	 * namespace id and value for the virtual wiki.
 	 */
 	public Map<String, Map<String, String>> getNamespaces() {
-		Map<String, Map<String, String>> results = new HashMap<String, Map<String, String>>();
+		Map<String, Map<String, String>> results = new HashMap<>();
 		List<Namespace> namespaces = WikiBase.getDataHandler().lookupNamespaces();
 		List<VirtualWiki> virtualWikis = WikiBase.getDataHandler().getVirtualWikiList();
 		for (VirtualWiki virtualWiki : virtualWikis) {
-			Map<String, String> namespaceMap = new HashMap<String, String>();
+			Map<String, String> namespaceMap = new HashMap<>();
 			for (Namespace namespace : namespaces) {
 				namespaceMap.put(namespace.getDefaultLabel(), namespace.getLabel(virtualWiki.getName()));
 			}
@@ -526,7 +524,7 @@ public class WikiPageInfo {
 	 *  by the current page.
 	 */
 	public String getTopicNameUrlEncoded() throws UnsupportedEncodingException {
-		return (this.topicName != null) ? URLEncoder.encode(this.topicName, "UTF-8") : null;
+		return (this.topicName != null) ? URLEncoder.encode(this.topicName, StandardCharsets.UTF_8) : null;
 	}
 
 	/**

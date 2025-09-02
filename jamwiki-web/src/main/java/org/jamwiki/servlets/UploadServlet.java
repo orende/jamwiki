@@ -16,32 +16,31 @@
  */
 package org.jamwiki.servlets;
 
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.WikiException;
 import org.jamwiki.WikiMessage;
-import org.jamwiki.model.ImageData;
-import org.jamwiki.model.Namespace;
-import org.jamwiki.model.Topic;
-import org.jamwiki.model.WikiFileVersion;
-import org.jamwiki.model.WikiUser;
+import org.jamwiki.model.*;
 import org.jamwiki.parser.image.ImageUtil;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.imageio.ImageIO;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 /**
  * Used to handle file uploads.
  */
+@WebServlet(name = "Upload")
 public class UploadServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

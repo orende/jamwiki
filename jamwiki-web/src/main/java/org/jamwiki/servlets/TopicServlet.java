@@ -16,8 +16,6 @@
  */
 package org.jamwiki.servlets;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.WikiBase;
 import org.jamwiki.WikiMessage;
@@ -27,9 +25,14 @@ import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Used to display a JAMWiki topic.
  */
+@WebServlet(name = "Topic")
 public class TopicServlet extends JAMWikiServlet {
 
 	/** Logger for this class and subclasses. */

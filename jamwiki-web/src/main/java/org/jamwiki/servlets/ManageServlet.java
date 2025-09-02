@@ -16,29 +16,28 @@
  */
 package org.jamwiki.servlets;
 
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jamwiki.WikiBase;
 import org.jamwiki.WikiException;
 import org.jamwiki.WikiMessage;
 import org.jamwiki.authentication.WikiUserDetailsImpl;
-import org.jamwiki.model.RecentChange;
-import org.jamwiki.model.Role;
-import org.jamwiki.model.Topic;
-import org.jamwiki.model.TopicVersion;
-import org.jamwiki.model.WikiUser;
+import org.jamwiki.model.*;
 import org.jamwiki.parser.LinkUtil;
 import org.jamwiki.utils.Pagination;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+
 /**
  * Used to provide capability for deleting, undeleting, and protecting topics.
  */
+@WebServlet(name = "Manage")
 public class ManageServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

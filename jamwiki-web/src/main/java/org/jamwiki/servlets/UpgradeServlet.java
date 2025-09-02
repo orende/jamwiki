@@ -16,32 +16,22 @@
  */
 package org.jamwiki.servlets;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.Environment;
-import org.jamwiki.WikiBase;
-import org.jamwiki.WikiConfiguration;
 import org.jamwiki.WikiException;
 import org.jamwiki.WikiMessage;
 import org.jamwiki.WikiVersion;
-import org.jamwiki.db.DatabaseUpgrades;
-import org.jamwiki.db.WikiDatabase;
-import org.jamwiki.model.Topic;
-import org.jamwiki.model.TopicVersion;
 import org.jamwiki.model.VirtualWiki;
-import org.jamwiki.model.WikiUser;
 import org.jamwiki.parser.LinkUtil;
 import org.jamwiki.parser.WikiLink;
-import org.jamwiki.utils.WikiCache;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Used to automatically handle JAMWiki upgrades, including configuration and
@@ -49,6 +39,7 @@ import org.springframework.web.servlet.ModelAndView;
  *
  * @see org.jamwiki.servlets.SetupServlet
  */
+@WebServlet(name = "Upgrade")
 public class UpgradeServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

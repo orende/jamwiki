@@ -16,17 +16,18 @@
  */
 package org.jamwiki.authentication;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.model.VirtualWiki;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * This class is a hack implemented to support virtual wikis and Spring Security.
@@ -37,7 +38,11 @@ public class JAMWikiAuthenticationFailureHandler extends SimpleUrlAuthentication
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private String authenticationFailureUrl;
 
-	/**
+    public JAMWikiAuthenticationFailureHandler(String authenticationFailureUrl) {
+        this.authenticationFailureUrl = authenticationFailureUrl;
+    }
+
+    /**
 	 *
 	 */
 	public String getAuthenticationFailureUrl() {

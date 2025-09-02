@@ -16,8 +16,6 @@
  */
 package org.jamwiki.authentication;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.model.Role;
 import org.jamwiki.utils.WikiLogger;
@@ -27,6 +25,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.StringJoiner;
 
 /**
  * JAMWiki implementation of the Spring Security <code>UserDetails</code> interface.
@@ -238,4 +240,17 @@ public class WikiUserDetailsImpl implements UserDetails {
 		}
 		return new WikiUserDetailsImpl((UserDetails)auth.getPrincipal());
 	}
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", WikiUserDetailsImpl.class.getSimpleName() + "[", "]")
+                .add("username='" + username + "'")
+                .add("password='" + "****" + "'")
+                .add("authorities=" + authorities)
+                .add("accountNonExpired=" + accountNonExpired)
+                .add("accountNonLocked=" + accountNonLocked)
+                .add("credentialsNonExpired=" + credentialsNonExpired)
+                .add("enabled=" + enabled)
+                .toString();
+    }
 }

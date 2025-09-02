@@ -16,9 +16,6 @@
  */
 package org.jamwiki.servlets;
 
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jamwiki.WikiBase;
 import org.jamwiki.WikiMessage;
@@ -27,9 +24,15 @@ import org.jamwiki.utils.Pagination;
 import org.jamwiki.utils.WikiLogger;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+
 /**
  * Used to build the Special:Log page for displaying log information.
  */
+@WebServlet(name = "Log")
 public class LogServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

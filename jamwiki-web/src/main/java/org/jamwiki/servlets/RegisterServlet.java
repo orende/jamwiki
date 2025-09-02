@@ -16,12 +16,6 @@
  */
 package org.jamwiki.servlets;
 
-import java.text.SimpleDateFormat;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.WikiBase;
@@ -48,9 +42,18 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
+
 /**
  * Used to process new user account setup.
  */
+@WebServlet(name = "Register")
 public class RegisterServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

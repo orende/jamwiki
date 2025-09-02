@@ -35,7 +35,11 @@ public class JAMWikiErrorMessageProvider {
 	private LinkedHashMap<RequestMatcher, String> matcherToKeyMap;
 	private LinkedHashMap<String, String> urlPatterns;
 
-	/**
+    public JAMWikiErrorMessageProvider(LinkedHashMap<String, String> urlPatterns) {
+        this.urlPatterns = urlPatterns;
+    }
+
+    /**
 	 *
 	 */
 	public String getErrorMessageKey(HttpServletRequest request) {

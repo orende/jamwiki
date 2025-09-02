@@ -16,17 +16,6 @@
  */
 package org.jamwiki.authentication;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.WikiBase;
 import org.jamwiki.WikiException;
@@ -37,6 +26,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Provide processing of a successfully authenticated user.  This filter will examine
@@ -53,7 +49,12 @@ public class JAMWikiPostAuthenticationFilter implements Filter {
 	private String key;
 	private boolean useJAMWikiAnonymousRoles;
 
-	/**
+    public JAMWikiPostAuthenticationFilter(String key, boolean useJAMWikiAnonymousRoles) {
+        this.key = key;
+        this.useJAMWikiAnonymousRoles = useJAMWikiAnonymousRoles;
+    }
+
+    /**
 	 *
 	 */
 	public void destroy() {

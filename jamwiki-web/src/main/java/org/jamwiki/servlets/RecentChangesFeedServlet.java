@@ -16,12 +16,7 @@
  */
 package org.jamwiki.servlets;
 
-import com.rometools.rome.feed.synd.SyndContent;
-import com.rometools.rome.feed.synd.SyndContentImpl;
-import com.rometools.rome.feed.synd.SyndEntry;
-import com.rometools.rome.feed.synd.SyndEntryImpl;
-import com.rometools.rome.feed.synd.SyndFeed;
-import com.rometools.rome.feed.synd.SyndFeedImpl;
+import com.rometools.rome.feed.synd.*;
 import com.rometools.rome.io.SyndFeedOutput;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.Environment;
@@ -35,6 +30,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
@@ -57,6 +53,7 @@ import java.util.List;
  * @author Rainer Schmitz
  * @since 22.12.2006
  */
+@WebServlet(name = "RecentChangesFeed")
 public class RecentChangesFeedServlet extends AbstractController {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());

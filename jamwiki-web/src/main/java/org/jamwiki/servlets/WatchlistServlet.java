@@ -16,9 +16,6 @@
  */
 package org.jamwiki.servlets;
 
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.WikiBase;
 import org.jamwiki.WikiException;
@@ -34,9 +31,15 @@ import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+
 /**
  * Used to handle updating and viewing a user's watchlist.
  */
+@WebServlet(name = "Watchlist")
 public class WatchlistServlet extends JAMWikiServlet {
 
 	/** Logger for this class and subclasses. */

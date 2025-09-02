@@ -16,6 +16,12 @@
  */
 package org.jamwiki.utils;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.jamwiki.*;
+import org.jamwiki.model.*;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -25,21 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.jamwiki.Environment;
-import org.jamwiki.JAMWikiParser;
-import org.jamwiki.SearchEngine;
-import org.jamwiki.WikiBase;
-import org.jamwiki.WikiException;
-import org.jamwiki.WikiMessage;
-import org.jamwiki.WikiVersion;
-import org.jamwiki.model.Namespace;
-import org.jamwiki.model.Role;
-import org.jamwiki.model.TopicType;
-import org.jamwiki.model.VirtualWiki;
-import org.jamwiki.model.WikiGroup;
 
 /**
  * This class provides a variety of general utility methods for handling
@@ -636,4 +627,13 @@ public class WikiUtil {
 			throw new WikiException(new WikiMessage("common.exception.name", virtualWikiName));
 		}
 	}
+
+    public static String stripSemicolon(String uri) {
+        int pathParamIndex = uri.indexOf(';');
+        if (pathParamIndex > 0) {
+            // strip everything after the first semi-colon
+            uri = uri.substring(0, pathParamIndex);
+        }
+        return uri;
+    }
 }

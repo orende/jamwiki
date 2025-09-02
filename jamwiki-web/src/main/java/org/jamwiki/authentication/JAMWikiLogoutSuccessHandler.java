@@ -16,13 +16,14 @@
  */
 package org.jamwiki.authentication;
 
-import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.jamwiki.utils.WikiLogger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  *
@@ -46,7 +47,7 @@ public class JAMWikiLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 		// Special:Logout adds a proper redirection URL as a parameter in the
 		// Spring logout URL.
 		String targetUrl = request.getParameter(JAMWikiAuthenticationConstants.SPRING_SECURITY_LOGOUT_REDIRECT_QUERY_PARAM);
-		logger.info("Redirecting to: " + targetUrl);
+		logger.info("Logout successful, redirecting to: " + targetUrl);
 		response.sendRedirect(targetUrl);
 	}
 }

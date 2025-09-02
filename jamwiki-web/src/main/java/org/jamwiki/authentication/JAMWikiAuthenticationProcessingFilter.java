@@ -65,12 +65,7 @@ public class JAMWikiAuthenticationProcessingFilter extends UsernamePasswordAuthe
 	protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
 		String uri = request.getRequestURI();
         logger.debug("JAMWikiAuthenticationProcessingFilter.requiresAuthentication: " + uri);
-		// FIXME - move the "strip after semicolon" code to WikiUtil
-		int pathParamIndex = uri.indexOf(';');
-		if (pathParamIndex > 0) {
-			// strip everything after the first semi-colon
-			uri = uri.substring(0, pathParamIndex);
-		}
+		uri = WikiUtil.stripSemicolon(uri);
 		String virtualWiki = WikiUtil.getVirtualWikiFromURI(request);
 		return uri.endsWith(request.getContextPath() + "/" + virtualWiki + "/j_spring_security_check");
 	}

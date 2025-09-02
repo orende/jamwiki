@@ -16,14 +16,6 @@
  */
 package org.jamwiki.servlets;
 
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.Environment;
 import org.jamwiki.WikiBase;
@@ -36,9 +28,18 @@ import org.jamwiki.utils.Utilities;
 import org.jamwiki.utils.WikiLogger;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+
 /**
  * Used to handle requests or redirects to the login page, as well as requests to logout.
  */
+@WebServlet(name = "PasswordReset")
 public class PasswordResetServlet extends JAMWikiServlet {
 
 	// Remove after testing

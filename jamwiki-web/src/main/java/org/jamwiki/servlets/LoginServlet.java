@@ -16,22 +16,24 @@
  */
 package org.jamwiki.servlets;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.jamwiki.Environment;
 import org.jamwiki.authentication.JAMWikiAuthenticationConstants;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.springframework.web.servlet.ModelAndView;
 
-import org.jamwiki.Environment;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Used to handle requests or redirects to the login page, as well as requests to logout.
  */
+@WebServlet(name = "Login")
 public class LoginServlet extends JAMWikiServlet {
 
 	/** Logger */

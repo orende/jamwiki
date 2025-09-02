@@ -16,10 +16,6 @@
  */
 package org.jamwiki.servlets;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.Environment;
 import org.jamwiki.WikiBase;
@@ -33,9 +29,16 @@ import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  */
+@WebServlet(name = "VirtualWiki")
 public class AdminVirtualWikiServlet extends JAMWikiServlet {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
