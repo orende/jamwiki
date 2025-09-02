@@ -16,31 +16,35 @@
  */
 package org.jamwiki.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Properties;
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESKeySpec;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.Environment;
 import org.jamwiki.WikiException;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.Properties;
+
 /**
  * Provide capability for encrypting and decrypting values.  Inspired by an
- * example from http://www.devx.com/assets/sourcecode/10387.zip.
+ * example from <a href="http://www.devx.com/assets/sourcecode/10387.zip">devx.com</a>.
  */
 public class Encryption {
 
-	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	public static final String DES_ALGORITHM = "DES";
 	public static final String ENCRYPTION_KEY = "JAMWiki Key 12345";
+    public static final Base64.Encoder ENCODER = Base64.getEncoder();
+    public static final Base64.Decoder DECODER = Base64.getDecoder();
 
-	/**
+    /**
 	 * Hide the constructor by making it private.
 	 */
 	private Encryption() {
@@ -59,7 +63,7 @@ public class Encryption {
 		SecretKey key = createKey();
 		Cipher cipher = Cipher.getInstance(key.getAlgorithm());
 		cipher.init(Cipher.ENCRYPT_MODE, key);
-		byte[] encryptedBytes = Base64.encodeBase64(cipher.doFinal(unencryptedBytes));
+		byte[] encryptedBytes = ENCODER.encode(cipher.doFinal(unencryptedBytes));
 		return bytes2String(encryptedBytes);
 	}
 
@@ -91,12 +95,12 @@ public class Encryption {
 				Environment.saveConfiguration();
 			} catch (WikiException e) {
 				// FIXME - shouldn't this be better handled ???
-				logger.info("Failure while saving encryption algorithm property", e);
+				logger.error("Failure while saving encryption algorithm property", e);
 			}
 		}
 		try {
-			md.update(unencryptedString.getBytes("UTF-8"));
-			byte raw[] = md.digest();
+			md.update(unencryptedString.getBytes(StandardCharsets.UTF_8));
+			byte[] raw = md.digest();
 			return encrypt64(raw);
 		} catch (GeneralSecurityException e) {
 			logger.error("Encryption failure", e);
@@ -120,8 +124,8 @@ public class Encryption {
 		SecretKey key = createKey();
 		Cipher cipher = Cipher.getInstance(key.getAlgorithm());
 		cipher.init(Cipher.DECRYPT_MODE, key);
-		byte[] encryptedBytes = encryptedString.getBytes("UTF8");
-		byte[] unencryptedBytes = cipher.doFinal(Base64.decodeBase64(encryptedBytes));
+		byte[] encryptedBytes = encryptedString.getBytes(StandardCharsets.UTF_8);
+		byte[] unencryptedBytes = cipher.doFinal(DECODER.decode(encryptedBytes));
 		return bytes2String(unencryptedBytes);
 	}
 
@@ -133,9 +137,9 @@ public class Encryption {
 	 */
 	private static String bytes2String(byte[] bytes) {
 		StringBuilder buffer = new StringBuilder();
-		for (int i = 0; i < bytes.length; i++) {
-			buffer.append((char)bytes[i]);
-		}
+        for (byte aByte : bytes) {
+            buffer.append((char) aByte);
+        }
 		return buffer.toString();
 	}
 
@@ -145,7 +149,7 @@ public class Encryption {
 	 * @return An encryption key value implementing the DES encryption algorithm.
 	 */
 	private static SecretKey createKey() throws GeneralSecurityException, UnsupportedEncodingException {
-		byte[] bytes = ENCRYPTION_KEY.getBytes("UTF8");
+		byte[] bytes = ENCRYPTION_KEY.getBytes(StandardCharsets.UTF_8);
 		DESKeySpec spec = new DESKeySpec(bytes);
 		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(DES_ALGORITHM);
 		return keyFactory.generateSecret(spec);
@@ -198,7 +202,7 @@ public class Encryption {
 		if (!StringUtils.isBlank(value)) {
 			byte[] unencryptedBytes = null;
 			try {
-				unencryptedBytes = value.getBytes("UTF8");
+				unencryptedBytes = value.getBytes(StandardCharsets.UTF_8);
 				encrypted = Encryption.encrypt64(unencryptedBytes);
 			} catch (GeneralSecurityException e) {
 				logger.error("Encryption failure", e);
