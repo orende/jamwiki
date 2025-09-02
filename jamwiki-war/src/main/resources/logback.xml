@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration xmlns="http://ch.qos.logback/xml/ns/logback"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://ch.qos.logback/xml/ns/logback">
 	<contextName>jamwiki</contextName>
 
 	<!-- Define a directory where all of your logging goes, e.g. ${catalina.base}/logs -->
@@ -47,6 +49,7 @@
 	</appender>
 	-->
 
+	<logger name="org.jamwiki.db.AnsiDataHandler" level="WARN" />
 	<logger name="org.jamwiki" level="DEBUG" />
 	<logger name="org.ehcache.sizeof" level="ERROR" />
 
