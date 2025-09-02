@@ -13,6 +13,7 @@ The modern way of running this application is by deploying it to a Tomcat instan
         -v ./hsqldb/:/database/ \
         -v ./wikidata:/usr/local/tomcat/data \
         -v ./files/:/usr/local/tomcat/data/files/ \
+        -v ./docker/logging.properties:/usr/local/tomcat/conf/logging.properties \
         -v ./docker/jamwiki.properties:/usr/local/tomcat/conf/jamwiki.properties \
         -e PROPERTY_FILE_PATH=/usr/local/tomcat/conf/jamwiki.properties \
         -p 8888:8080 \
