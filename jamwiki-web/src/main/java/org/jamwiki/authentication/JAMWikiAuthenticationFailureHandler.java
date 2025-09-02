@@ -34,8 +34,7 @@ import java.net.URLEncoder;
  */
 public class JAMWikiAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
-	/** Standard logger. */
-	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
+    private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private String authenticationFailureUrl;
 
     public JAMWikiAuthenticationFailureHandler(String authenticationFailureUrl) {

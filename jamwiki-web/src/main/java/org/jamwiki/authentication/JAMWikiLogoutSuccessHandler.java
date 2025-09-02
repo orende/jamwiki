@@ -30,7 +30,6 @@ import java.io.IOException;
  */
 public class JAMWikiLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
-	/** Standard logger. */
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**

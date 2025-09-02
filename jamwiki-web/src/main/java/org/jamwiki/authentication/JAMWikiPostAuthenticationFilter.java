@@ -44,7 +44,6 @@ import java.util.List;
  */
 public class JAMWikiPostAuthenticationFilter implements Filter {
 
-	/** Standard logger. */
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private String key;
 	private boolean useJAMWikiAnonymousRoles;

@@ -19,11 +19,13 @@ package org.jamwiki.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+
 /**
  * This class provides a wrapper around the <a href="http://www.slf4j.org">SFL4J</a>
  * logging facade framework. A logging framework can be chosen at runtime.
  */
-public class WikiLogger {
+public class WikiLogger { // TODO delete this and use slf4j directly
 
 	private final Logger logger;
 
@@ -48,25 +50,26 @@ public class WikiLogger {
 		return new WikiLogger(logger);
 	}
 
+    @SuppressWarnings("rawtypes")
 	public static WikiLogger getLogger(Class clazz) {
 		Logger logger = LoggerFactory.getLogger(clazz);
 		return new WikiLogger(logger);
 	}
 
 	/**
-	 * Log a message at the {@link org.slf4j.Logger#DEBUG} level,
-	 * provided that the current log level is {@link org.slf4j.Logger#DEBUG}
+	 * Log a message at the DEBUG level,
+	 * provided that the current log level is DEBUG
 	 * or greater.
 	 *
 	 * @param msg The message to be written to the log.
 	 */
-	public void debug(String msg) {
-		this.logger.debug(msg);
+	public void debug(String msg, Object... args) {
+		this.logger.debug(msg, Arrays.stream(args).toArray());
 	}
 
 	/**
-	 * Log a message and an exception at the {@link org.slf4j.Logger#DEBUG}
-	 * level, provided that the current log level is {@link org.slf4j.Logger#DEBUG}
+	 * Log a message and an exception at the DEBUG
+	 * level, provided that the current log level is DEBUG
 	 * or greater.
 	 *
 	 * @param msg The message to be written to the log.
@@ -77,19 +80,19 @@ public class WikiLogger {
 	}
 
 	/**
-	 * Log a message at the {@link org.slf4j.Logger#ERROR} level,
-	 * provided that the current log level is {@link org.slf4j.Logger#ERROR}
+	 * Log a message at the ERROR level,
+	 * provided that the current log level is ERROR
 	 * or greater.
 	 *
 	 * @param msg The message to be written to the log.
 	 */
-	public void error(String msg) {
-		this.logger.error(msg);
+	public void error(String msg, Object... args) {
+		this.logger.error(msg, Arrays.stream(args).toArray());
 	}
 
 	/**
-	 * Log a message and an exception at the {@link org.slf4j.Logger#ERROR}
-	 * level, provided that the current log level is {@link org.slf4j.Logger#ERROR}
+	 * Log a message and an exception at the ERROR
+	 * level, provided that the current log level is ERROR
 	 * or greater.
 	 *
 	 * @param msg The message to be written to the log.
@@ -100,19 +103,19 @@ public class WikiLogger {
 	}
 
 	/**
-	 * Log a message at the {@link org.slf4j.Logger#INFO} level,
-	 * provided that the current log level is {@link org.slf4j.Logger#INFO}
+	 * Log a message at the INFO level,
+	 * provided that the current log level is INFO
 	 * or greater.
 	 *
 	 * @param msg The message to be written to the log.
 	 */
-	public void info(String msg) {
-		this.logger.info(msg);
+	public void info(String msg, Object... args) {
+		this.logger.info(msg, Arrays.stream(args).toArray());
 	}
 
 	/**
-	 * Log a message and an exception at the {@link org.slf4j.Logger#INFO}
-	 * level, provided that the current log level is {@link org.slf4j.Logger#INFO}
+	 * Log a message and an exception at the INFO
+	 * level, provided that the current log level is INFO
 	 * or greater.
 	 *
 	 * @param msg The message to be written to the log.
@@ -123,7 +126,7 @@ public class WikiLogger {
 	}
 
 	/**
-	 * Return <code>true</code> if a log message of level {@link org.slf4j.Logger#DEBUG}
+	 * Return <code>true</code> if a log message of level DEBUG
 	 * can be logged.
 	 */
 	public boolean isDebugEnabled() {
@@ -131,7 +134,7 @@ public class WikiLogger {
 	}
 
 	/**
-	 * Return <code>true</code> if a log message of level {@link org.slf4j.Logger#INFO}
+	 * Return <code>true</code> if a log message of level INFO
 	 * can be logged.
 	 */
 	public boolean isInfoEnabled() {
@@ -139,7 +142,7 @@ public class WikiLogger {
 	}
 
 	/**
-	 * Return <code>true</code> if a log message of level {@link org.slf4j.Logger#TRACE}
+	 * Return <code>true</code> if a log message of level TRACE
 	 * can be logged.
 	 */
 	public boolean isTraceEnabled() {
@@ -147,7 +150,7 @@ public class WikiLogger {
 	}
 
 	/**
-	 * Return <code>true</code> if a log message of level {@link org.slf4j.Logger#WARN}
+	 * Return <code>true</code> if a log message of level WARN
 	 * can be logged.
 	 */
 	public boolean isWarnEnabled() {
@@ -155,19 +158,19 @@ public class WikiLogger {
 	}
 
 	/**
-	 * Log a message at the {@link org.slf4j.Logger#TRACE} level,
-	 * provided that the current log level is {@link org.slf4j.Logger#TRACE}
+	 * Log a message at the TRACE level,
+	 * provided that the current log level is TRACE
 	 * or greater.
 	 *
 	 * @param msg The message to be written to the log.
 	 */
-	public void trace(String msg) {
-		this.logger.trace(msg);
+	public void trace(String msg, Object... args) {
+		this.logger.trace(msg, Arrays.stream(args).toArray());
 	}
 
 	/**
-	 * Log a message and an exception at the {@link org.slf4j.Logger#TRACE}
-	 * level, provided that the current log level is {@link org.slf4j.Logger#TRACE}
+	 * Log a message and an exception at the TRACE
+	 * level, provided that the current log level is TRACE
 	 * or greater.
 	 *
 	 * @param msg The message to be written to the log.
@@ -178,19 +181,19 @@ public class WikiLogger {
 	}
 
 	/**
-	 * Log a message at the {@link org.slf4j.Logger#WARN} level,
-	 * provided that the current log level is {@link org.slf4j.Logger#WARN}
+	 * Log a message at the WARN level,
+	 * provided that the current log level is WARN
 	 * or greater.
 	 *
 	 * @param msg The message to be written to the log.
 	 */
-	public void warn(String msg) {
-		this.logger.warn(msg);
+	public void warn(String msg, Object... args) {
+		this.logger.warn(msg, Arrays.stream(args).toArray());
 	}
 
 	/**
-	 * Log a message and an exception at the {@link org.slf4j.Logger#WARN}
-	 * level, provided that the current log level is {@link org.slf4j.Logger#WARN}
+	 * Log a message and an exception at the WARN
+	 * level, provided that the current log level is WARN
 	 * or greater.
 	 *
 	 * @param msg The message to be written to the log.

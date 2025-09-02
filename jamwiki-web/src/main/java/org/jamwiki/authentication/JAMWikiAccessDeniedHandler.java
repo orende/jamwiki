@@ -31,7 +31,6 @@ import java.io.IOException;
  */
 public class JAMWikiAccessDeniedHandler extends AccessDeniedHandlerImpl {
 
-	/** Standard logger. */
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	private JAMWikiErrorMessageProvider errorMessageProvider;
 

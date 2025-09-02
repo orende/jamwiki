@@ -16,15 +16,16 @@
  */
 package org.jamwiki;
 
-import java.io.IOException;
-import java.util.Locale;
 import org.jamwiki.db.AnsiDataHandler;
 import org.jamwiki.db.DataHandler;
 import org.jamwiki.model.WikiGroup;
 import org.jamwiki.model.WikiUser;
-import org.jamwiki.utils.WikiUtil;
 import org.jamwiki.utils.WikiCache;
 import org.jamwiki.utils.WikiLogger;
+import org.jamwiki.utils.WikiUtil;
+
+import java.io.IOException;
+import java.util.Locale;
 
 /**
  * <code>WikiBase</code> is loaded as a singleton class and provides access
@@ -35,7 +36,6 @@ import org.jamwiki.utils.WikiLogger;
  */
 public class WikiBase {
 
-	/** Standard logger. */
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** The singleton instance of this class. */
 	private static WikiBase instance = null;

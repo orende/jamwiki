@@ -16,9 +16,6 @@
  */
 package org.jamwiki.authentication;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import org.jamwiki.WikiBase;
 import org.jamwiki.model.Role;
 import org.jamwiki.model.WikiGroup;
@@ -27,13 +24,16 @@ import org.jamwiki.utils.WikiUtil;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * This class acts as a utility class for holding information used by the authentication
  * and authorization code.
  */
 public class JAMWikiAuthenticationConfiguration {
 
-	/** Standard logger. */
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**

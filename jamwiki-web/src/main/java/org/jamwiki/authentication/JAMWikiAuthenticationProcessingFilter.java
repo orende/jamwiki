@@ -39,7 +39,6 @@ import java.sql.Timestamp;
  */
 public class JAMWikiAuthenticationProcessingFilter extends UsernamePasswordAuthenticationFilter {
 
-	/** Standard logger. */
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	/**

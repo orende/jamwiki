@@ -16,13 +16,6 @@
  */
 package org.jamwiki;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.model.WikiConfigurationObject;
 import org.jamwiki.utils.ResourceUtil;
@@ -32,6 +25,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * The <code>WikiConfiguration</code> class provides the infrastructure for
  * retrieving configuration values.  Note that with JAMWiki configuration
@@ -40,7 +41,6 @@ import org.w3c.dom.NodeList;
  */
 public class WikiConfiguration {
 
-	/** Standard logger. */
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 
 	private static WikiConfiguration instance = null;
@@ -173,18 +173,18 @@ public class WikiConfiguration {
 	 *
 	 */
 	private void initialize() {
-		this.queryHandlers = new ArrayList<WikiConfigurationObject>();
-		this.dateFormats = new ArrayList<String>();
-		this.editors = new LinkedHashMap<String, String>();
-		this.jflexParserCustomTags = new ArrayList<WikiConfigurationObject>();
-		this.parsers = new ArrayList<WikiConfigurationObject>();
-		this.searchEngines = new ArrayList<WikiConfigurationObject>();
-		this.translations = new LinkedHashMap<String, String>();
-		this.smtpContentTypes = new ArrayList<String>();
+		this.queryHandlers = new ArrayList<>();
+		this.dateFormats = new ArrayList<>();
+		this.editors = new LinkedHashMap<>();
+		this.jflexParserCustomTags = new ArrayList<>();
+		this.parsers = new ArrayList<>();
+		this.searchEngines = new ArrayList<>();
+		this.translations = new LinkedHashMap<>();
+		this.smtpContentTypes = new ArrayList<>();
 		// content types hard coded. This is not likely to change.
 		this.smtpContentTypes.add("text/plain");
 		this.smtpContentTypes.add("text/html");
-		this.timeFormats = new ArrayList<String>();
+		this.timeFormats = new ArrayList<>();
 		File file = null;
 		Document document = null;
 		try {
@@ -201,28 +201,23 @@ public class WikiConfiguration {
 		}
 		Node node = document.getElementsByTagName(XML_CONFIGURATION_ROOT).item(0);
 		NodeList children = node.getChildNodes();
-		Node child = null;
+		Node child;
 		for (int i = 0; i < children.getLength(); i++) {
 			child = children.item(i);
-			if (child.getNodeName().equals(XML_PARSER_ROOT)) {
-				this.parsers = this.parseConfigurationObjects(child, XML_PARSER);
-			} else if (child.getNodeName().equals(XML_PARSER_CUSTOM_TAG_ROOT)) {
-				this.jflexParserCustomTags = this.parseConfigurationObjects(child, XML_PARSER_CUSTOM_TAG);
-			} else if (child.getNodeName().equals(XML_QUERY_HANDLER_ROOT)) {
-				this.queryHandlers = this.parseConfigurationObjects(child, XML_QUERY_HANDLER);
-			} else if (child.getNodeName().equals(XML_EDITOR_ROOT)) {
-				this.parseMapNodes(child, this.editors, XML_EDITOR);
-			} else if (child.getNodeName().equals(XML_SEARCH_ENGINE_ROOT)) {
-				this.searchEngines = this.parseConfigurationObjects(child, XML_SEARCH_ENGINE);
-			} else if (child.getNodeName().equals(XML_TRANSLATION_ROOT)) {
-				this.parseMapNodes(child, this.translations, XML_TRANSLATION);
-			} else if (child.getNodeName().equals(XML_DATE_FORMAT_ROOT)) {
-				this.parseListNodes(child, this.dateFormats, XML_DATE_FORMAT);
-			} else if (child.getNodeName().equals(XML_TIME_FORMAT_ROOT)) {
-				this.parseListNodes(child, this.timeFormats, XML_TIME_FORMAT);
-			} else {
-				logUnknownChild(node, child);
-			}
+            switch (child.getNodeName()) {
+                case XML_PARSER_ROOT -> this.parsers = this.parseConfigurationObjects(child, XML_PARSER);
+                case XML_PARSER_CUSTOM_TAG_ROOT ->
+                        this.jflexParserCustomTags = this.parseConfigurationObjects(child, XML_PARSER_CUSTOM_TAG);
+                case XML_QUERY_HANDLER_ROOT ->
+                        this.queryHandlers = this.parseConfigurationObjects(child, XML_QUERY_HANDLER);
+                case XML_EDITOR_ROOT -> this.parseMapNodes(child, this.editors, XML_EDITOR);
+                case XML_SEARCH_ENGINE_ROOT ->
+                        this.searchEngines = this.parseConfigurationObjects(child, XML_SEARCH_ENGINE);
+                case XML_TRANSLATION_ROOT -> this.parseMapNodes(child, this.translations, XML_TRANSLATION);
+                case XML_DATE_FORMAT_ROOT -> this.parseListNodes(child, this.dateFormats, XML_DATE_FORMAT);
+                case XML_TIME_FORMAT_ROOT -> this.parseListNodes(child, this.timeFormats, XML_TIME_FORMAT);
+                default -> logUnknownChild(node, child);
+            }
 		}
 		logger.info("Configuration values loaded from " + file.getPath());
 	}
@@ -235,34 +230,30 @@ public class WikiConfiguration {
 		NodeList children = node.getChildNodes();
 		for (int j = 0; j < children.getLength(); j++) {
 			Node child = children.item(j);
-			if (child.getNodeName().equals(XML_PARAM_CLASS)) {
-				configurationObject.setClazz(XMLUtil.getTextContent(child));
-			} else if (child.getNodeName().equals(XML_PARAM_KEY)) {
-				configurationObject.setKey(XMLUtil.getTextContent(child));
-			} else if (child.getNodeName().equals(XML_PARAM_KEY2)) {
-				configurationObject.setKey2(XMLUtil.getTextContent(child));
-			} else if (child.getNodeName().equals(XML_PARAM_NAME)) {
-				configurationObject.setName(XMLUtil.getTextContent(child));
-			} else if (child.getNodeName().equals(XML_PARAM_STATE)) {
-				configurationObject.setState(XMLUtil.getTextContent(child));
-			} else if (child.getNodeName().equals(XML_INIT_PARAM)) {
-				NodeList initParamNodes = child.getChildNodes();
-				String key = null;
-				String value = null;
-				for (int k = 0; k < initParamNodes.getLength(); k++) {
-					Node initParamNode = initParamNodes.item(k);
-					if (initParamNode.getNodeName().equals(XML_INIT_PARAM_NAME)) {
-						key = XMLUtil.getTextContent(initParamNode);
-					} else if (initParamNode.getNodeName().equals(XML_INIT_PARAM_VALUE)) {
-						value = XMLUtil.getTextContent(initParamNode);
-					}
-				}
-				if (!StringUtils.isBlank(key) && !StringUtils.isBlank(value)) {
-					configurationObject.addInitParam(key, value);
-				}
-			} else {
-				logUnknownChild(node, child);
-			}
+            switch (child.getNodeName()) {
+                case XML_PARAM_CLASS -> configurationObject.setClazz(XMLUtil.getTextContent(child));
+                case XML_PARAM_KEY -> configurationObject.setKey(XMLUtil.getTextContent(child));
+                case XML_PARAM_KEY2 -> configurationObject.setKey2(XMLUtil.getTextContent(child));
+                case XML_PARAM_NAME -> configurationObject.setName(XMLUtil.getTextContent(child));
+                case XML_PARAM_STATE -> configurationObject.setState(XMLUtil.getTextContent(child));
+                case XML_INIT_PARAM -> {
+                    NodeList initParamNodes = child.getChildNodes();
+                    String key = null;
+                    String value = null;
+                    for (int k = 0; k < initParamNodes.getLength(); k++) {
+                        Node initParamNode = initParamNodes.item(k);
+                        if (initParamNode.getNodeName().equals(XML_INIT_PARAM_NAME)) {
+                            key = XMLUtil.getTextContent(initParamNode);
+                        } else if (initParamNode.getNodeName().equals(XML_INIT_PARAM_VALUE)) {
+                            value = XMLUtil.getTextContent(initParamNode);
+                        }
+                    }
+                    if (!StringUtils.isBlank(key) && !StringUtils.isBlank(value)) {
+                        configurationObject.addInitParam(key, value);
+                    }
+                }
+                default -> logUnknownChild(node, child);
+            }
 		}
 		return configurationObject;
 	}
@@ -271,7 +262,7 @@ public class WikiConfiguration {
 	 *
 	 */
 	private List<WikiConfigurationObject> parseConfigurationObjects(Node node, String name) {
-		List<WikiConfigurationObject> results = new ArrayList<WikiConfigurationObject>();
+		List<WikiConfigurationObject> results = new ArrayList<>();
 		NodeList children = node.getChildNodes();
 		for (int j = 0; j < children.getLength(); j++) {
 			Node child = children.item(j);
@@ -336,8 +327,8 @@ public class WikiConfiguration {
 
 	/**
 	 * Utility class to log two XML nodes.
-	 * @param node
-	 * @param child
+	 * @param node A DOM node
+	 * @param child A DOM child node
 	 */
 	private void logUnknownChild(Node node, Node child) {
 		if (logger.isTraceEnabled()) {
