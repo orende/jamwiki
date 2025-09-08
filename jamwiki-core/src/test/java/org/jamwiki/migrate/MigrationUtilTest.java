@@ -16,10 +16,6 @@
  */
 package org.jamwiki.migrate;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import org.apache.commons.io.FileUtils;
 import org.jamwiki.JAMWikiUnitTest;
 import org.jamwiki.TestFileUtil;
@@ -31,9 +27,14 @@ import org.jamwiki.utils.Pagination;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.junit.rules.TemporaryFolder;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -63,9 +64,10 @@ public class MigrationUtilTest extends JAMWikiUnitTest {
 	public void setup() throws Exception {
 		super.setup();
 		if (!INITIALIZED) {
-			this.setupTopic(null, "CharacterUtf8");
-			this.setupTopic(null, "Example1");
-			this.setupTopic(null, "Example2");
+            var dataHandler = super.getTestDataHandler();
+			this.setupTopic(null, "CharacterUtf8", dataHandler);
+			this.setupTopic(null, "Example1", dataHandler);
+			this.setupTopic(null, "Example2", dataHandler);
 			INITIALIZED = true;
 		}
 	}

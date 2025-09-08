@@ -1,5 +1,6 @@
 package org.jamwiki.config;
 
+import org.jamwiki.JamwikiAppContext;
 import org.jamwiki.servlets.JAMWikiFilter;
 import org.jamwiki.servlets.JAMWikiListener;
 import org.jamwiki.utils.WikiLogger;
@@ -24,6 +25,7 @@ public class JamwikiWebAppInitializer implements WebApplicationInitializer {
         AnnotationConfigWebApplicationContext rootContext =
                 new AnnotationConfigWebApplicationContext();
         rootContext.register(AppConfig.class);
+        rootContext.register(JamwikiAppContext.class);
 
         rootContext.register(SecurityConfig.class);
 

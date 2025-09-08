@@ -18,22 +18,22 @@
  */
 package org.jamwiki;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 import org.apache.commons.io.FileUtils;
-import org.jamwiki.db.WikiDatabase;
-import org.jamwiki.model.Topic;
-import org.jamwiki.model.TopicType;
-import org.jamwiki.model.TopicVersion;
-import org.jamwiki.model.VirtualWiki;
-import org.jamwiki.model.WikiFileVersion;
-import org.jamwiki.model.WikiUser;
+import org.jamwiki.db.AnsiDataHandler;
+import org.jamwiki.db.DataHandler;
+import org.jamwiki.db.DatabaseUtils;
+import org.jamwiki.model.*;
 import org.jamwiki.parser.WikiLink;
 import org.jamwiki.parser.image.ImageUtil;
 import org.jamwiki.utils.WikiLogger;
 import org.junit.Before;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * JAMWiki parent class for unit tests.  This class will verify that a test
@@ -68,9 +68,12 @@ public abstract class JAMWikiUnitTest {
 		File databaseDirectory = new File(rootDirectory, "database");
 		if (!databaseDirectory.exists()) {
 			logger.info("Setting up test database in directory " + databaseDirectory.getAbsolutePath());
-			this.setupDatabase();
+            JdbcTemplate jdbcTemplate = null;
+            TransactionTemplate transactionTemplate = null;
+            var dataHandler = new AnsiDataHandler(jdbcTemplate, transactionTemplate); // FIXME create this here
+            this.setupDatabase(dataHandler);
 			logger.info("Setting up test topic data");
-			this.setupTopics();
+			this.setupTopics(dataHandler);
 		}
 	}
 
@@ -78,68 +81,68 @@ public abstract class JAMWikiUnitTest {
 	 * Initialize a test HSQL database for JAMWiki including two virtual wikis
 	 * and a default user account.
 	 */
-	private void setupDatabase() throws Exception {
-		WikiDatabase.setupDefaultDatabase(Environment.getInstance());
+	private void setupDatabase(DataHandler dataHandler) throws Exception {
+		DatabaseUtils.setupDefaultDatabase(Environment.getInstance());
 		Locale locale = new Locale("en-US");
 		String username = "user";
 		String password = "password";
 		WikiUser wikiUser = new WikiUser(username);
-		WikiBase.reset(locale, wikiUser, username, password);
+//		WikiBase.reset(locale, wikiUser, username, password); // FIXME create wikibase for tests here
 		// set up a second "test" virtual wiki
 		VirtualWiki virtualWiki = new VirtualWiki("test");
 		virtualWiki.setRootTopicName("StartingPoints");
-		WikiBase.getDataHandler().writeVirtualWiki(virtualWiki);
-		WikiBase.getDataHandler().setupSpecialPages(locale, wikiUser, virtualWiki);
+        dataHandler.writeVirtualWiki(virtualWiki);
+		dataHandler.setupSpecialPages(locale, wikiUser, virtualWiki);
 	}
 
 	/**
 	 * Read and load a test topic from the file system.
 	 */
-	protected Topic setupTopic(VirtualWiki virtualWiki, String fileName) throws IOException, WikiException {
+	protected Topic setupTopic(VirtualWiki virtualWiki, String fileName, DataHandler dataHandler) throws IOException, WikiException {
 		String contents = TestFileUtil.retrieveFileContent(TestFileUtil.TEST_TOPICS_DIR, fileName);
 		String topicName = TestFileUtil.decodeTopicName(fileName);
-		return this.setupTopic(virtualWiki, topicName, contents);
+		return this.setupTopic(virtualWiki, topicName, contents, dataHandler);
 	}
 
 	/**
 	 * Crate a test topic.
 	 */
-	protected Topic setupTopic(VirtualWiki virtualWiki, String topicName, String contents) throws IOException, WikiException {
+	protected Topic setupTopic(VirtualWiki virtualWiki, String topicName, String contents, DataHandler dataHandler) throws IOException, WikiException {
 		if (virtualWiki == null) {
-			virtualWiki = WikiBase.getDataHandler().lookupVirtualWiki("en");
+			virtualWiki = dataHandler.lookupVirtualWiki("en");
 		}
 		WikiLink wikiLink = new WikiLink(null, virtualWiki.getName(), topicName);
 		Topic topic = new Topic(virtualWiki.getName(), wikiLink.getNamespace(), wikiLink.getArticle());
 		topic.setTopicContent(contents);
 		if (topicName.toLowerCase().startsWith("file:")) {
-			this.setupImage(virtualWiki, topic);
+			this.setupImage(virtualWiki, topic, dataHandler);
 			return topic;
 		}
-		this.setupTopic(topic);
+		this.setupTopic(topic, dataHandler);
 		return topic;
 	}
 
 	/**
 	 * Crate a test topic.  Cannot be used for images.
 	 */
-	protected void setupTopic(Topic topic) throws WikiException {
+	protected void setupTopic(Topic topic, DataHandler dataHandler) throws WikiException {
 		TopicVersion topicVersion = new TopicVersion(null, "127.0.0.1", null, topic.getTopicContent(), topic.getTopicContent().length());
-		WikiBase.getDataHandler().writeTopic(topic, topicVersion, null, null);
+		dataHandler.writeTopic(topic, topicVersion, null, null);
 	}
 
 	/**
 	 * Read and load default topics from the /jamwiki-core/src/test/resources/data/topics
 	 * folder.
 	 */
-	private void setupTopics() throws IOException, WikiException {
+	private void setupTopics(DataHandler dataHandler) throws IOException, WikiException {
 		File topicDir = TestFileUtil.getClassLoaderFile(TestFileUtil.TEST_TOPICS_DIR);
 		File[] topicFiles = topicDir.listFiles();
-		List<VirtualWiki> virtualWikis = WikiBase.getDataHandler().getVirtualWikiList();
+		List<VirtualWiki> virtualWikis = dataHandler.getVirtualWikiList();
 		for (VirtualWiki virtualWiki : virtualWikis) {
 			if (topicFiles != null) {
 				for (File topicFile : topicFiles) {
 					String fileName = topicFile.getName();
-					this.setupTopic(virtualWiki, fileName);
+					this.setupTopic(virtualWiki, fileName, dataHandler);
 				}
 			}
 		}
@@ -149,7 +152,7 @@ public abstract class JAMWikiUnitTest {
 	 * Set up images separately - one image is created in both virtual wikis, the
 	 * second image is set up in only the shared virtual wiki.
 	 */
-	private void setupImage(VirtualWiki virtualWiki, Topic topic) throws IOException, WikiException {
+	private void setupImage(VirtualWiki virtualWiki, Topic topic, DataHandler dataHandler) throws IOException, WikiException {
 		if (!topic.getName().toLowerCase().startsWith("file:")) {
 			throw new IllegalArgumentException("Cannot call JAMWikiUtilTest.setupImage for non-image topics");
 		}
@@ -161,14 +164,19 @@ public abstract class JAMWikiUnitTest {
 		// the "test" virtual wiki.
 		WikiFileVersion wikiFileVersion = new WikiFileVersion();
 		if (topic.getName().equals("File:Test Image.jpg") && virtualWiki.getName().equals("en")) {
-			WikiBase.getDataHandler().writeTopic(topic, topicVersion, null, null);
+			dataHandler.writeTopic(topic, topicVersion, null, null);
 			ImageUtil.writeWikiFile(topic, wikiFileVersion, null, "127.0.0.1", "test_image.jpg", "/test_image.jpg", "image/jpeg", 61136, null);
 		} else if (topic.getName().equals("File:Test Image.jpg") && virtualWiki.getName().equals("test")) {
-			WikiBase.getDataHandler().writeTopic(topic, topicVersion, null, null);
+			dataHandler.writeTopic(topic, topicVersion, null, null);
 			ImageUtil.writeWikiFile(topic, wikiFileVersion, null, "127.0.0.1", "test_image_shared.jpg", "/test_image_shared.jpg", "image/jpeg", 61136, null);
 		} else if (topic.getName().equals("File:Test Image2.jpg") && virtualWiki.getName().equals("test")) {
-			WikiBase.getDataHandler().writeTopic(topic, topicVersion, null, null);
+			dataHandler.writeTopic(topic, topicVersion, null, null);
 			ImageUtil.writeWikiFile(topic, wikiFileVersion, null, "127.0.0.1", "test_image2_shared.jpg", "/test_image2_shared.jpg", "image/jpeg", 61136, null);
 		}
 	}
+
+    protected DataHandler getTestDataHandler() {
+        // TODO create a mock DataHandler here
+        return null;
+    }
 }

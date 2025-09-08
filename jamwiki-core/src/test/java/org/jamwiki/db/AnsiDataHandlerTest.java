@@ -16,8 +16,6 @@
  */
 package org.jamwiki.db;
 
-import java.io.IOException;
-import java.util.List;
 import org.jamwiki.JAMWikiUnitTest;
 import org.jamwiki.WikiBase;
 import org.jamwiki.WikiException;
@@ -25,7 +23,12 @@ import org.jamwiki.model.RecentChange;
 import org.jamwiki.model.Topic;
 import org.jamwiki.utils.Pagination;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import java.io.IOException;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for data handler functionality.
@@ -55,17 +58,18 @@ public class AnsiDataHandlerTest extends JAMWikiUnitTest {
 	 */
 	@Test
 	public void testPurgeTopicVersion() throws IOException, WikiException {
-		// load a test topic with three versions
+		var dataHandler = super.getTestDataHandler();
+        // load a test topic with three versions
 		String topicName = "Purge Topic Test";
 		Topic topic = null;
 		for (int i = 0; i < 3; i++) {
 			String contents = "Test topic content " + i;
 			if (topic == null) {
 				// create a new record
-				topic = this.setupTopic(null, topicName, contents);
+				topic = this.setupTopic(null, topicName, contents, dataHandler);
 			} else {
 				// update the existing record
-				this.setupTopic(topic);
+				this.setupTopic(topic, dataHandler);
 			}
 		}
 		// delete the first two versions
@@ -95,9 +99,10 @@ public class AnsiDataHandlerTest extends JAMWikiUnitTest {
 	 */
 	@Test
 	public void testWriteAndTopicLookup1() throws IOException, WikiException {
-		String FILE_NAME = "Help_-_Test";
+        var dataHandler = super.getTestDataHandler();
+        String FILE_NAME = "Help_-_Test";
 		String TOPIC_NAME = "Help:Test";
-		this.setupTopic(null, FILE_NAME);
+		this.setupTopic(null, FILE_NAME, dataHandler);
 		Topic topic = WikiBase.getDataHandler().lookupTopic("en", TOPIC_NAME, false);
 		assertEquals("Incorrect topic name (case-sensitive)", topic.getName(), TOPIC_NAME);
 		topic = WikiBase.getDataHandler().lookupTopic("en", "HELP:Test", false);

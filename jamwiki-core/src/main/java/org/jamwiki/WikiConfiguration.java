@@ -88,7 +88,7 @@ public class WikiConfiguration {
 	/**
 	 *
 	 */
-	private WikiConfiguration() {
+    protected WikiConfiguration() {
 		this.initialize();
 	}
 

@@ -22,6 +22,7 @@ import org.jamwiki.WikiBase;
 import org.jamwiki.WikiMessage;
 import org.jamwiki.mail.SMTPWikiMail;
 import org.jamwiki.mail.WikiMail;
+import org.jamwiki.model.WikiGroup;
 import org.jamwiki.model.WikiUser;
 import org.jamwiki.utils.Encryption;
 import org.jamwiki.utils.Utilities;
@@ -207,7 +208,8 @@ public class PasswordResetServlet extends JAMWikiServlet {
 			// store new password
 			WikiUser user = WikiBase.getDataHandler().lookupWikiUser(username);
 			try {
-				WikiBase.getDataHandler().writeWikiUser(user, username, Encryption.encrypt(newPassword));
+                WikiGroup registeredUsersGroup = WikiBase.getDataHandler().lookupWikiGroup(WikiGroup.GROUP_REGISTERED_USER);
+                WikiBase.getDataHandler().writeWikiUser(user, username, Encryption.encrypt(newPassword), registeredUsersGroup);
 				pageInfo.addMessage(new WikiMessage("password.reset.password.success"));
 				result = true; 
 			} catch(Exception ex) {

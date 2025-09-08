@@ -25,6 +25,7 @@ import org.jamwiki.authentication.JAMWikiAuthenticationConfiguration;
 import org.jamwiki.authentication.WikiUserDetailsImpl;
 import org.jamwiki.model.Role;
 import org.jamwiki.model.VirtualWiki;
+import org.jamwiki.model.WikiGroup;
 import org.jamwiki.model.WikiUser;
 import org.jamwiki.parser.ParserException;
 import org.jamwiki.parser.ParserInput;
@@ -141,7 +142,8 @@ public class RegisterServlet extends JAMWikiServlet {
 			if (!StringUtils.isBlank(newPassword)) {
 				encryptedPassword = Encryption.encrypt(newPassword);
 			}
-			WikiBase.getDataHandler().writeWikiUser(user, username, encryptedPassword);
+            WikiGroup registeredUsersGroup = WikiBase.getDataHandler().lookupWikiGroup(WikiGroup.GROUP_REGISTERED_USER);
+            WikiBase.getDataHandler().writeWikiUser(user, username, encryptedPassword, registeredUsersGroup);
 			if (!StringUtils.isBlank(newPassword)) {
 				// login the user
 				this.login(request, user.getUsername(), newPassword);

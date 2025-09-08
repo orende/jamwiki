@@ -19,6 +19,7 @@ package org.jamwiki.authentication;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.WikiBase;
 import org.jamwiki.WikiException;
+import org.jamwiki.model.WikiGroup;
 import org.jamwiki.model.WikiUser;
 import org.jamwiki.utils.WikiLogger;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -137,7 +138,8 @@ public class JAMWikiPostAuthenticationFilter implements Filter {
 				WikiUser user = new WikiUser(username);
 				// default the password empty so that the user cannot login directly
 				String encryptedPassword = "";
-				WikiBase.getDataHandler().writeWikiUser(user, username, encryptedPassword);
+                WikiGroup registeredUsersGroup = WikiBase.getDataHandler().lookupWikiGroup(WikiGroup.GROUP_REGISTERED_USER);
+                WikiBase.getDataHandler().writeWikiUser(user, username, encryptedPassword, registeredUsersGroup);
 			}
 		} catch (WikiException e) {
 			logger.error("Failure while processing user credentials for " + username, e);

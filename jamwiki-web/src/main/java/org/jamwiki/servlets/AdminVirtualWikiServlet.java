@@ -18,9 +18,9 @@ package org.jamwiki.servlets;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.Environment;
-import org.jamwiki.WikiBase;
 import org.jamwiki.WikiException;
 import org.jamwiki.WikiMessage;
+import org.jamwiki.db.DataHandler;
 import org.jamwiki.model.Interwiki;
 import org.jamwiki.model.Namespace;
 import org.jamwiki.model.VirtualWiki;
@@ -46,8 +46,13 @@ public class AdminVirtualWikiServlet extends JAMWikiServlet {
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
 	/** The name of the JSP file used to render the servlet output when searching. */
 	protected static final String JSP_ADMIN_VIRTUAL_WIKI = "admin-virtual-wiki.jsp";
+    private final DataHandler dataHandler;
 
-	/**
+    public AdminVirtualWikiServlet(DataHandler dataHandler) {
+        this.dataHandler = dataHandler;
+    }
+
+    /**
 	 * This method handles the request after its parent class receives control.
 	 *
 	 * @param request - Standard HttpServletRequest object.
@@ -89,7 +94,7 @@ public class AdminVirtualWikiServlet extends JAMWikiServlet {
 		try {
 			Interwiki interwiki = new Interwiki(interwikiPrefix, interwikiPattern, interwikiDisplay);
 			// write to the database.  this will also perform required validation.
-			WikiBase.getDataHandler().writeInterwiki(interwiki);
+			dataHandler.writeInterwiki(interwiki);
 		} catch (WikiException e) {
 			pageInfo.addError(e.getWikiMessage());
 		}
@@ -118,11 +123,11 @@ public class AdminVirtualWikiServlet extends JAMWikiServlet {
 			WikiUtil.validateNamespaceName(commentsNamespace);
 			// write namespaces to the database
 			Namespace mainNamespaceObj = new Namespace(null, mainNamespace);
-			WikiBase.getDataHandler().writeNamespace(mainNamespaceObj);
+			dataHandler.writeNamespace(mainNamespaceObj);
 			if (!StringUtils.isBlank(commentsNamespace)) {
 				Namespace commentsNamespaceObj = new Namespace(null, commentsNamespace);
 				commentsNamespaceObj.setMainNamespaceId(mainNamespaceObj.getId());
-				WikiBase.getDataHandler().writeNamespace(commentsNamespaceObj);
+				dataHandler.writeNamespace(commentsNamespaceObj);
 			}
 		} catch (WikiException e) {
 			pageInfo.addError(e.getWikiMessage());
@@ -180,7 +185,7 @@ public class AdminVirtualWikiServlet extends JAMWikiServlet {
 		String translatedLabel;
 		for (String namespaceId : namespaceIds) {
 			defaultLabel = request.getParameter(namespaceId + "_label");
-			Namespace namespace = WikiBase.getDataHandler().lookupNamespace(null, defaultLabel);
+			Namespace namespace = dataHandler.lookupNamespace(null, defaultLabel);
 			translatedLabel = request.getParameter(namespaceId + "_vwiki");
 			if (StringUtils.equals(defaultLabel, translatedLabel) || StringUtils.isBlank(translatedLabel)) {
 				namespace.getNamespaceTranslations().remove(virtualWiki);
@@ -189,7 +194,7 @@ public class AdminVirtualWikiServlet extends JAMWikiServlet {
 			}
 			namespaces.add(namespace);
 		}
-		WikiBase.getDataHandler().writeNamespaceTranslations(namespaces, virtualWiki);
+		dataHandler.writeNamespaceTranslations(namespaces, virtualWiki);
 		pageInfo.addMessage(new WikiMessage("admin.vwiki.message.namespacesuccess", virtualWiki));
 		this.view(request, next, pageInfo);
 	}
@@ -214,9 +219,9 @@ public class AdminVirtualWikiServlet extends JAMWikiServlet {
 					Interwiki interwiki = new Interwiki(interwikiPrefix, interwikiPattern, interwikiDisplay);
 					// write to the database.  this will also perform required validation.
 					if (!StringUtils.equals(request.getParameter("delete-" + interwikiPrefix), "true")) {
-						WikiBase.getDataHandler().writeInterwiki(interwiki);
+						dataHandler.writeInterwiki(interwiki);
 					} else {
-						WikiBase.getDataHandler().deleteInterwiki(interwiki);
+						dataHandler.deleteInterwiki(interwiki);
 					}
 				} catch (WikiException e) {
 					pageInfo.addError(e.getWikiMessage());
@@ -236,7 +241,7 @@ public class AdminVirtualWikiServlet extends JAMWikiServlet {
 		// find the current virtual wiki
 		String selected = request.getParameter("selected");
 		if (!StringUtils.isBlank(selected)) {
-			VirtualWiki virtualWiki = WikiBase.getDataHandler().lookupVirtualWiki(selected);
+			VirtualWiki virtualWiki = dataHandler.lookupVirtualWiki(selected);
 			if (virtualWiki != null) {
 				next.addObject("selected", virtualWiki);
 			}
@@ -245,11 +250,11 @@ public class AdminVirtualWikiServlet extends JAMWikiServlet {
 		next.addObject("props", Environment.getInstance());
 		// initialize page defaults
 		pageInfo.setAdmin(true);
-		List<VirtualWiki> virtualWikiList = WikiBase.getDataHandler().getVirtualWikiList();
+		List<VirtualWiki> virtualWikiList = dataHandler.getVirtualWikiList();
 		next.addObject("wikis", virtualWikiList);
-		List<Namespace> namespaces = WikiBase.getDataHandler().lookupNamespaces();
+		List<Namespace> namespaces = dataHandler.lookupNamespaces();
 		next.addObject("namespaces", namespaces);
-		List<Interwiki> interwikis = WikiBase.getDataHandler().lookupInterwikis();
+		List<Interwiki> interwikis = dataHandler.lookupInterwikis();
 		next.addObject("interwikis", interwikis);
 		pageInfo.setContentJsp(JSP_ADMIN_VIRTUAL_WIKI);
 		pageInfo.setPageTitle(new WikiMessage("admin.vwiki.title"));
@@ -277,10 +282,10 @@ public class AdminVirtualWikiServlet extends JAMWikiServlet {
 			virtualWiki.setSiteName(request.getParameter("virtualWikiSiteName"));
 		}
 		try {
-			WikiBase.getDataHandler().writeVirtualWiki(virtualWiki);
+			dataHandler.writeVirtualWiki(virtualWiki);
 			if (StringUtils.isBlank(request.getParameter("virtualWikiId"))) {
 				// add
-				WikiBase.getDataHandler().setupSpecialPages(request.getLocale(), user, virtualWiki);
+				dataHandler.setupSpecialPages(request.getLocale(), user, virtualWiki);
 				pageInfo.addMessage(new WikiMessage("admin.message.virtualwikiadded", virtualWiki.getName()));
 			} else {
 				// update

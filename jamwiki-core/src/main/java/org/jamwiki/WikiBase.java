@@ -16,7 +16,7 @@
  */
 package org.jamwiki;
 
-import org.jamwiki.db.AnsiDataHandler;
+import org.apache.commons.lang3.NotImplementedException;
 import org.jamwiki.db.DataHandler;
 import org.jamwiki.model.WikiGroup;
 import org.jamwiki.model.WikiUser;
@@ -37,10 +37,8 @@ import java.util.Locale;
 public class WikiBase {
 
 	private static final WikiLogger logger = WikiLogger.getLogger(java.lang.invoke.MethodHandles.lookup().lookupClass());
-	/** The singleton instance of this class. */
-	private static WikiBase instance = null;
 	/** The data handler that looks after read/write operations. */
-	private static DataHandler dataHandler = null;
+	private DataHandler dataHandler = null;
 	/** The search engine instance. */
 	private static SearchEngine searchEngine = null;
 	/** An instance of the current parser. */
@@ -75,15 +73,17 @@ public class WikiBase {
 	/** Use a whitelist to determine what file types can be uploaded. */
 	public static final int UPLOAD_WHITELIST = 3;
 	/** Enum indicating where uploaded files are stored. */
-	public static enum UPLOAD_STORAGE { JAMWIKI, DOCROOT, DATABASE }
+	public enum UPLOAD_STORAGE { JAMWIKI, DOCROOT, DATABASE }
 
-	static {
-		try {
-			WikiBase.instance = new WikiBase();
-		} catch (Exception e) {
-			logger.error("Failure while initializing WikiBase", e);
-		}
-	}
+    private WikiConfiguration wikiConfiguration;
+
+//	static {
+//		try {
+//			WikiBase.instance = new WikiBase(dataHandler, wikiConfiguration);
+//		} catch (Exception e) {
+//			logger.error("Failure while initializing WikiBase", e);
+//		}
+//	}
 
 	/**
 	 * Creates an instance of <code>WikiBase</code>, initializing the default
@@ -91,7 +91,9 @@ public class WikiBase {
 	 *
 	 * @throws IOException If the instance cannot be instantiated.
 	 */
-	private WikiBase() throws IOException {
+    protected WikiBase(DataHandler dataHandler, WikiConfiguration wikiConfiguration) throws IOException {
+        this.dataHandler = dataHandler;
+        this.wikiConfiguration = wikiConfiguration;
 		this.reload();
 	}
 
@@ -101,28 +103,9 @@ public class WikiBase {
 	 * @return The current data handler instance, or <code>null</code>
 	 *  if the handler has not yet been initialized.
 	 */
+    @Deprecated(forRemoval = false)
 	public static DataHandler getDataHandler() {
-		if (WikiBase.dataHandler == null) {
-			WikiBase.dataHandler = new AnsiDataHandler();
-		}
-		return WikiBase.dataHandler;
-	}
-
-	/**
-	 *
-	 */
-	public static WikiGroup getGroupRegisteredUser() {
-		if (WikiUtil.isFirstUse() || WikiUtil.isUpgrade()) {
-			throw new IllegalStateException("Cannot retrieve group information prior to completing setup/upgrade");
-		}
-		if (WikiBase.GROUP_REGISTERED_USER == null) {
-			try {
-				WikiBase.GROUP_REGISTERED_USER = WikiBase.getDataHandler().lookupWikiGroup(WikiGroup.GROUP_REGISTERED_USER);
-			} catch (Exception e) {
-				throw new RuntimeException("Unable to retrieve registered users group", e);
-			}
-		}
-		return WikiBase.GROUP_REGISTERED_USER;
+		throw new NotImplementedException();
 	}
 
 	/**
@@ -147,9 +130,9 @@ public class WikiBase {
 	 * Reload the data handler, user handler, and other basic wiki
 	 * data structures.
 	 */
-	public static void reload() throws IOException {
+	public void reload() throws IOException {
 		WikiConfiguration.reset();
-		WikiBase.dataHandler = new AnsiDataHandler();
+//		WikiBase.dataHandler = new AnsiDataHandler();
 		if (WikiBase.searchEngine != null) {
 			WikiBase.searchEngine.shutdown();
 		}
@@ -171,13 +154,12 @@ public class WikiBase {
 	 * @throws IOException Thrown if an error occurs during re-initialization.
 	 * @throws WikiException Thrown if an error occurs during re-initialization.
 	 */
-	public static void reset(Locale locale, WikiUser user, String username, String encryptedPassword) throws IOException, WikiException {
-		WikiBase.instance = new WikiBase();
+	public void reset(Locale locale, WikiUser user, String username, String encryptedPassword) throws IOException, WikiException {
+//		WikiBase.instance = new WikiBase(dataHandler, wikiConfiguration);
 		WikiCache.initialize();
-		WikiBase.dataHandler.setup(locale, user, username, encryptedPassword);
+//        DatabaseUtils.initialize(dataHandler);
+        // determine if database exists
+        dataHandler.doExistenceValidationQuery();
+//        WikiDatabase.setup(locale, user, username, encryptedPassword);
 	}
-
-    public static void overrideDataHandler(DataHandler dataHandler) {
-        WikiBase.dataHandler = dataHandler;
-    }
 }

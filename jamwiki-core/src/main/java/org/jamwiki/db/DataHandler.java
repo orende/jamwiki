@@ -3,6 +3,7 @@ package org.jamwiki.db;
 import org.jamwiki.WikiException;
 import org.jamwiki.model.*;
 import org.jamwiki.utils.Pagination;
+import org.springframework.dao.DataAccessException;
 
 import java.util.List;
 import java.util.Locale;
@@ -689,6 +690,8 @@ public interface DataHandler {
      */
     void setup(Locale locale, WikiUser user, String username, String encryptedPassword) throws WikiException;
 
+    void doExistenceValidationQuery() throws DataAccessException;
+
     /**
      * Create the special pages used on the wiki, such as the left menu and
      * default stylesheet.
@@ -718,22 +721,6 @@ public interface DataHandler {
      */
     void undeleteTopic(Topic topic, TopicVersion topicVersion) throws WikiException;
 
-    /**
-     * Update a special page used on the wiki, such as the left menu or
-     * default stylesheet.
-     *
-     * @param locale      The locale to be used when updating a special page such
-     *                    as the left menu and default stylesheet.  This parameter will affect
-     *                    the language used when updating up the page.
-     * @param virtualWiki The VirtualWiki for which the special page are being
-     *                    updated.
-     * @param topicName   The name of the special page topic that is being
-     *                    updated.
-     * @param userDisplay A display name for the user updating special pages,
-     *                    typically the IP address.
-     * @throws WikiException Thrown if the topic information is invalid.
-     */
-    void updateSpecialPage(Locale locale, String virtualWiki, String topicName, String userDisplay) throws WikiException;
 
     void updatePwResetChallengeData(WikiUser user);
 
@@ -932,15 +919,16 @@ public interface DataHandler {
      * if the WikiUser does not have a user ID, otherwise it will perform an
      * update.
      *
-     * @param user              The WikiUser being added or updated.  If the WikiUser does
-     *                          not have a user ID then a new record is created, otherwise an update
-     *                          is performed.
-     * @param username          The user's username (login).
-     * @param encryptedPassword The user's encrypted password.  Required only when the
-     *                          password is being updated.
+     * @param user                 The WikiUser being added or updated.  If the WikiUser does
+     *                             not have a user ID then a new record is created, otherwise an update
+     *                             is performed.
+     * @param username             The user's username (login).
+     * @param encryptedPassword    The user's encrypted password.  Required only when the
+     *                             password is being updated.
+     * @param registeredUsersGroup
      * @throws WikiException Thrown if the user information is invalid.
      */
-    void writeWikiUser(WikiUser user, String username, String encryptedPassword) throws WikiException;
+    void writeWikiUser(WikiUser user, String username, String encryptedPassword, WikiGroup registeredUsersGroup) throws WikiException;
 
     /**
      * Insert or update a user preference default value.

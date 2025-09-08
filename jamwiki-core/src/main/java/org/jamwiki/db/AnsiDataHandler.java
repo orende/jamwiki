@@ -16,55 +16,27 @@
  */
 package org.jamwiki.db;
 
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.Environment;
 import org.jamwiki.WikiBase;
 import org.jamwiki.WikiException;
 import org.jamwiki.WikiMessage;
-import org.jamwiki.model.Category;
-import org.jamwiki.model.GroupMap;
-import org.jamwiki.model.ImageData;
-import org.jamwiki.model.Interwiki;
-import org.jamwiki.model.LogItem;
-import org.jamwiki.model.Namespace;
-import org.jamwiki.model.RecentChange;
-import org.jamwiki.model.Role;
-import org.jamwiki.model.RoleMap;
-import org.jamwiki.model.Topic;
-import org.jamwiki.model.TopicType;
-import org.jamwiki.model.TopicVersion;
-import org.jamwiki.model.UserBlock;
-import org.jamwiki.model.VirtualWiki;
-import org.jamwiki.model.Watchlist;
-import org.jamwiki.model.WikiFile;
-import org.jamwiki.model.WikiFileVersion;
-import org.jamwiki.model.WikiGroup;
-import org.jamwiki.model.WikiUser;
-import org.jamwiki.model.WikiUserDetails;
+import org.jamwiki.model.*;
 import org.jamwiki.parser.LinkUtil;
 import org.jamwiki.parser.ParserException;
 import org.jamwiki.parser.ParserOutput;
 import org.jamwiki.parser.ParserUtil;
-import org.jamwiki.utils.Encryption;
-import org.jamwiki.utils.Pagination;
-import org.jamwiki.utils.ResourceUtil;
-import org.jamwiki.utils.WikiCache;
-import org.jamwiki.utils.WikiLogger;
-import org.jamwiki.utils.WikiUtil;
+import org.jamwiki.utils.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.dao.NonTransientDataAccessResourceException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.*;
 
 /**
  * Default handler for ANSI SQL compatible databases.
@@ -109,13 +81,17 @@ public class AnsiDataHandler implements DataHandler {
 	}
 
 	protected final QueryHandler queryHandler;
-	protected AnsiDataValidator dataValidator = new AnsiDataValidator();
+    private final JdbcTemplate jdbcTemplate;
+    private final TransactionTemplate transactionTemplate;
+    protected AnsiDataValidator dataValidator = new AnsiDataValidator();
 
 	/**
 	 *
 	 */
-	public AnsiDataHandler() {
-		this.queryHandler = this.queryHandlerInstance();
+	public AnsiDataHandler(JdbcTemplate jdbcTemplate, TransactionTemplate transactionTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.transactionTemplate = transactionTemplate;
+        this.queryHandler = this.queryHandlerInstance();
 	}
 
 	/**
@@ -1621,18 +1597,24 @@ public class AnsiDataHandler implements DataHandler {
 	 *  is only required when creating a new admin user.
 	 * @throws WikiException Thrown if a setup failure occurs.
 	 */
+    @Deprecated
     @Override
     public void setup(Locale locale, WikiUser user, String username, String encryptedPassword) throws WikiException {
-		WikiDatabase.initialize();
-		// determine if database exists
-		try {
-			DatabaseConnection.getJdbcTemplate().execute(this.queryHandler().existenceValidationQuery());
-			return;
-		} catch (DataAccessException e) {
-			// database not yet set up
-		}
-		WikiDatabase.setup(locale, user, username, encryptedPassword);
+//		WikiDatabase.initialize();
+//		// determine if database exists
+//		try {
+//			DatabaseConnection.getJdbcTemplate().execute(this.queryHandler().existenceValidationQuery());
+//			return;
+//		} catch (DataAccessException e) {
+//			// database not yet set up
+//		}
+//		WikiDatabase.setup(locale, user, username, encryptedPassword);
 	}
+
+    @Override
+    public void doExistenceValidationQuery() throws DataAccessException {
+        jdbcTemplate.execute(this.queryHandler().existenceValidationQuery());
+    }
 
 	/**
 	 * Create the special pages used on the wiki, such as the left menu and
@@ -1648,17 +1630,18 @@ public class AnsiDataHandler implements DataHandler {
 	 */
     @Override
     public void setupSpecialPages(final Locale locale, final WikiUser user, final VirtualWiki virtualWiki) throws WikiException {
+        var dataHandler = this;
 		DatabaseConnection.getTransactionTemplate().execute(
 			new TransactionCallbackWithoutResult() {
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
 					try {
 						// create the default topics
-						WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_STARTING_POINTS, user, false, false);
-						WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_SIDEBAR, user, true, false);
-						WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_FOOTER, user, true, false);
-						WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_HEADER, user, true, false);
-						WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_SYSTEM_CSS, user, true, true);
-						WikiDatabase.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_CUSTOM_CSS, user, true, false);
+						DatabaseUtils.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_STARTING_POINTS, user, false, false, dataHandler);
+						DatabaseUtils.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_SIDEBAR, user, true, false, dataHandler);
+						DatabaseUtils.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_FOOTER, user, true, false, dataHandler);
+						DatabaseUtils.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_HEADER, user, true, false, dataHandler);
+						DatabaseUtils.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_SYSTEM_CSS, user, true, true, dataHandler);
+						DatabaseUtils.setupSpecialPage(locale, virtualWiki.getName(), WikiBase.SPECIAL_PAGE_CUSTOM_CSS, user, true, false, dataHandler);
 					} catch (IOException e) {
 						status.setRollbackOnly();
 						throw new TransactionRuntimeException(e);
@@ -1695,40 +1678,6 @@ public class AnsiDataHandler implements DataHandler {
 			this.writeTopic(topic, topicVersion, parserOutput.getCategories(), parserOutput.getLinks());
 		} catch (ParserException e) {
 			throw new InvalidDataAccessApiUsageException("Failure while parsing topic " + topic.getName(), e);
-		}
-	}
-
-	/**
-	 * Update a special page used on the wiki, such as the left menu or
-	 * default stylesheet.
-	 *
-	 * @param locale The locale to be used when updating a special page such
-	 *  as the left menu and default stylesheet.  This parameter will affect
-	 *  the language used when updating up the page.
-	 * @param virtualWiki The VirtualWiki for which the special page are being
-	 *  updated.
-	 * @param topicName The name of the special page topic that is being
-	 *  updated.
-	 * @param userDisplay A display name for the user updating special pages,
-	 *  typically the IP address.
-	 * @throws WikiException Thrown if the topic information is invalid.
-	 */
-    @Override
-    public void updateSpecialPage(Locale locale, String virtualWiki, String topicName, String userDisplay) throws WikiException {
-		logger.info("Updating special page " + virtualWiki + " / " + topicName);
-		try {
-			String contents = WikiDatabase.readSpecialPage(locale, topicName);
-			Topic topic = this.lookupTopic(virtualWiki, topicName, false, false);
-			int charactersChanged = StringUtils.length(contents) - StringUtils.length(topic.getTopicContent());
-			topic.setTopicContent(contents);
-			// FIXME - hard coding
-			TopicVersion topicVersion = new TopicVersion(null, userDisplay, "Automatically updated by system upgrade", contents, charactersChanged);
-			ParserOutput parserOutput = ParserUtil.parserOutput(topic.getTopicContent(), virtualWiki, topicName);
-			writeTopic(topic, topicVersion, parserOutput.getCategories(), parserOutput.getLinks());
-		} catch (ParserException e) {
-			throw new InvalidDataAccessApiUsageException("Failure while parsing topic " + topicName, e);
-		} catch (IOException e) {
-			throw new NonTransientDataAccessResourceException("I/O exception accessing special page for " + virtualWiki + " / " + topicName, e);
 		}
 	}
 
@@ -2278,20 +2227,21 @@ public class AnsiDataHandler implements DataHandler {
 	}
 
 	/**
-	 * Add or update a WikiUser object.  This method will add a new record
-	 * if the WikiUser does not have a user ID, otherwise it will perform an
-	 * update.
-	 *
-	 * @param user The WikiUser being added or updated.  If the WikiUser does
-	 *  not have a user ID then a new record is created, otherwise an update
-	 *  is performed.
-	 * @param username The user's username (login).
-	 * @param encryptedPassword The user's encrypted password.  Required only when the
-	 *  password is being updated.
-	 * @throws WikiException Thrown if the user information is invalid.
-	 */
+     * Add or update a WikiUser object.  This method will add a new record
+     * if the WikiUser does not have a user ID, otherwise it will perform an
+     * update.
+     *
+     * @param user                 The WikiUser being added or updated.  If the WikiUser does
+     *                             not have a user ID then a new record is created, otherwise an update
+     *                             is performed.
+     * @param username             The user's username (login).
+     * @param encryptedPassword    The user's encrypted password.  Required only when the
+     *                             password is being updated.
+     * @param registeredUsersGroup
+     * @throws WikiException Thrown if the user information is invalid.
+     */
     @Override
-    public void writeWikiUser(final WikiUser user, final String username, final String encryptedPassword) throws WikiException {
+    public void writeWikiUser(final WikiUser user, final String username, final String encryptedPassword, WikiGroup registeredUsersGroup) throws WikiException {
 		WikiUtil.validateUserName(user.getUsername());
 		DatabaseConnection.getTransactionTemplate().execute(
 			new TransactionCallbackWithoutResult() {
@@ -2305,7 +2255,8 @@ public class AnsiDataHandler implements DataHandler {
 							queryHandler().insertWikiUser(user);
 							queryHandler().updateWikiUserPreferences(user);
 							// add all users to the registered user group
-							queryHandler().insertGroupMember(user.getUsername(), WikiBase.getGroupRegisteredUser().getGroupId());
+                            // TODO pass in result of WikiBase.getGroupRegisteredUser() instead of calling here
+							queryHandler().insertGroupMember(user.getUsername(), registeredUsersGroup.getGroupId());
 							// Flush cache to force reading from database for next search
 							// This should be more efficient than looping over the authorities of the
 							// group and update them individually

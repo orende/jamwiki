@@ -16,6 +16,14 @@
  */
 package org.jamwiki;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.pool.impl.GenericObjectPool;
+import org.jamwiki.db.QueryHandler;
+import org.jamwiki.utils.ResourceUtil;
+import org.jamwiki.utils.SortedProperties;
+import org.jamwiki.utils.WikiLogger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,14 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-// FIXME - remove this import
-import org.apache.commons.pool.impl.GenericObjectPool;
-import org.jamwiki.db.QueryHandler;
-import org.jamwiki.utils.ResourceUtil;
-import org.jamwiki.utils.SortedProperties;
-import org.jamwiki.utils.WikiLogger;
 
 /**
  * The <code>Environment</code> class is instantiated as a singleton to
@@ -161,7 +161,7 @@ public class Environment {
 	/**
 	 * The constructor loads property values from the property file.
 	 */
-	private Environment() {
+    protected Environment() {
 		this.initDefaultProperties();
 		logger.debug("Default properties initialized: " + this.defaults.toString());
         var propertyFilePathOverride = Optional.ofNullable(System.getenv("PROPERTY_FILE_PATH"));

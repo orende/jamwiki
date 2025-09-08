@@ -18,6 +18,7 @@ package org.jamwiki.authentication;
 
 import org.jamwiki.WikiBase;
 import org.jamwiki.WikiException;
+import org.jamwiki.model.WikiGroup;
 import org.jamwiki.model.WikiUser;
 import org.jamwiki.utils.WikiLogger;
 import org.jamwiki.utils.WikiUtil;
@@ -90,7 +91,8 @@ public class JAMWikiAuthenticationProcessingFilter extends UsernamePasswordAuthe
 				WikiUser wikiUser = WikiBase.getDataHandler().lookupWikiUser(username);
 				if (wikiUser != null) {
 					wikiUser.setLastLoginDate(new Timestamp(System.currentTimeMillis()));
-					WikiBase.getDataHandler().writeWikiUser(wikiUser, wikiUser.getUsername(), "");
+                    WikiGroup registeredUsersGroup = WikiBase.getDataHandler().lookupWikiGroup(WikiGroup.GROUP_REGISTERED_USER);
+                    WikiBase.getDataHandler().writeWikiUser(wikiUser, wikiUser.getUsername(), "", registeredUsersGroup);
 					// update password reset challenge fields, just in case
 					wikiUser.setChallengeValue(null);
 					wikiUser.setChallengeDate(null);

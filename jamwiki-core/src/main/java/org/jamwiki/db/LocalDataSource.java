@@ -16,13 +16,14 @@
  */
 package org.jamwiki.db;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.jamwiki.Environment;
 import org.jamwiki.utils.Encryption;
 import org.jamwiki.utils.ResourceUtil;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Extension of the Commons DBCP BasicDataSource class that
@@ -56,7 +57,7 @@ public class LocalDataSource extends BasicDataSource {
 		setTestWhileIdle(Environment.getBooleanValue(Environment.PROP_DBCP_TEST_WHILE_IDLE));
 		setTimeBetweenEvictionRunsMillis(Environment.getIntValue(Environment.PROP_DBCP_TIME_BETWEEN_EVICTION_RUNS) * 1000);
 		setNumTestsPerEvictionRun(Environment.getIntValue(Environment.PROP_DBCP_NUM_TESTS_PER_EVICTION_RUN));
-		setValidationQuery(WikiDatabase.getConnectionValidationQuery());
+		setValidationQuery(DatabaseUtils.getConnectionValidationQuery(null));
 		setPoolPreparedStatements(Environment.getBooleanValue(Environment.PROP_DBCP_POOL_PREPARED_STATEMENTS));
 		setMaxOpenPreparedStatements(Environment.getIntValue(Environment.PROP_DBCP_MAX_OPEN_PREPARED_STATEMENTS));
 		if (Environment.getValue(Environment.PROP_DB_TYPE).equals(QueryHandler.QUERY_HANDLER_ORACLE)) {

@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.jamwiki.*;
 import org.jamwiki.db.DatabaseConnection;
-import org.jamwiki.db.WikiDatabase;
+import org.jamwiki.db.DatabaseUtils;
 import org.jamwiki.model.VirtualWiki;
 import org.jamwiki.model.WikiConfigurationObject;
 import org.jamwiki.model.WikiUser;
@@ -53,13 +53,15 @@ public class SetupServlet extends JAMWikiServlet {
 	/** The name of the JSP file used to render the servlet output. */
 	protected static final String JSP_SETUP = "setup.jsp";
 	private static final JavaVersion MINIMUM_JDK_VERSION = JavaVersion.JAVA_1_5;
+    private final WikiBase wikiBase;
 
-	/**
+    /**
 	 * This servlet requires slightly different initialization parameters from most
 	 * servlets.
 	 */
-	public SetupServlet() {
-		this.layout = false;
+	public SetupServlet(WikiBase wikiBase) {
+        this.wikiBase = wikiBase;
+        this.layout = false;
 		this.displayJSP = "setup";
 	}
 
@@ -143,7 +145,7 @@ public class SetupServlet extends JAMWikiServlet {
 		String username = request.getParameter("username");
 		String newPassword = request.getParameter("newPassword");
 		String encryptedPassword = Encryption.encrypt(newPassword);
-		WikiBase.reset(request.getLocale(), user, username, encryptedPassword);
+		wikiBase.reset(request.getLocale(), user, username, encryptedPassword);
 		Environment.saveConfiguration();
 		// the setup process does not add new topics to the index (currently)
 		// TODO - remove this once setup uses safe connection handling
@@ -218,7 +220,7 @@ public class SetupServlet extends JAMWikiServlet {
 			Encryption.setEncryptedProperty(Environment.PROP_DB_PASSWORD, request.getParameter(Environment.PROP_DB_PASSWORD), null);
 			next.addObject("dbPassword", request.getParameter(Environment.PROP_DB_PASSWORD));
 		} else {
-			WikiDatabase.setupDefaultDatabase(Environment.getInstance());
+			DatabaseUtils.setupDefaultDatabase(Environment.getInstance());
 		}
 		Environment.setValue(Environment.PROP_SERVER_URL, Utilities.getServerUrl(request));
 	}
